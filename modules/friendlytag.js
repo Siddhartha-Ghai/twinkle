@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** friendlytag.js: Tag module
  ****************************************
@@ -43,16 +43,16 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 	switch( Twinkle.tag.mode ) {
 		case 'article':
-			Window.setTitle( "Article maintenance tagging" );
+			Window.setTitle( "लेख रखरखाव टैगिंग" );
 
 			form.append( {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Group into {{multiple issues}} if possible',
+							label: ''यदि संभव  हो तो {{multiple issues}} में वर्गीकृत करें',
 							value: 'group',
 							name: 'group',
-							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
+							tooltip: 'यदि {{multiple issues}} द्वारा  स्वीकृत 3 से अधिक साँचों का प्रयोग कर रहे हों और ये चैकबौक्स checked हो, तो सभी स्वीकृत साँचे एक {{multiple issues}} साँचे में एकत्रित कर दिए जायेंगे।',
 							checked: Twinkle.getFriendlyPref('groupByDefault')
 						}
 					]
