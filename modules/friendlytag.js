@@ -87,7 +87,7 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
 
-			form.append({ type: 'header', label: 'Cleanup tags' } );
+			form.append({ type: 'header', label: 'सफ़ाई टैग' } );
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
 
 			form.append({ type: 'header', label: 'Image quality tags' } );
