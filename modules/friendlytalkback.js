@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** friendlytalkback.js: Talkback module
  ****************************************
@@ -21,26 +21,26 @@ Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
 	}
 
 	var Window = new SimpleWindow( 600, 350 );
-	Window.setTitle( "Talkback" );
+	Window.setTitle( "सन्देश" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "About {{talkback}}", "Template:Talkback" );
+	Window.addFooterLink( "{{सन्देश}} पर जानकारी", "साँचा:सन्देश" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#talkback" );
 
 	var form = new QuickForm( Twinkle.talkback.callback.evaluate );
 
 	form.append( { type: 'radio', name: 'tbtarget',
 				list: [ {
-						label: 'My talk page',
+						label: 'मेरे वार्ता पृष्ठ पर',
 						value: 'mytalk',
 						checked: 'true' },
 					{
-						label: 'Other user talk page',
+						label: 'किसी अन्य सदस्य के वार्ता पृष्ठ पर',
 						value: 'usertalk' },
 					{
-						label: "Administrators' noticeboard",
+						label: 'प्रबंधक सूचनापट',
 						value: 'an' },
 					{
-						label: 'Other page',
+						label: 'किसी अन्य पृष्ठ पर',
 						value: 'other' } ],
 				event: Twinkle.talkback.callback.change_target
 			} );
@@ -91,7 +91,7 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 	}
 	var work_area = new QuickForm.element( { 
 			type: 'field',
-			label: 'Talkback information',
+			label: 'सन्देश जानकारी',
 			name: 'work_area'
 		} );
 
@@ -102,8 +102,8 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 			work_area.append( { 
 					type:'input',
 					name:'section',
-					label:'Linked section (optional)',
-					tooltip:'The section heading on your talk page where you left a message. Leave empty for no section to be linked.',
+					label:'सम्बंधित अनुभाग (वैकल्पिक)',
+					tooltip:'आपके वार्ता पन्ने के उस भाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
 					value: Twinkle.talkback.prev_section
 				} );
 			break;
@@ -111,41 +111,25 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 			work_area.append( { 
 					type:'input',
 					name:'page',
-					label:'User',
-					tooltip:'The username of the user on whose talk page you left a message.',
+					label:'सदस्य',
+					tooltip:'उस सदस्य का नाम जिसके वार्ता पन्ने पर आपने सन्देश छोड़ा है।',
 					value: Twinkle.talkback.prev_page
 				} );
 			
 			work_area.append( { 
 					type:'input',
 					name:'section',
-					label:'Linked section (optional)',
-					tooltip:'The section heading on the page where you left a message. Leave empty for no section to be linked.',
+					label:'सम्बंधित अनुभाग (वैकल्पिक)',
+					tooltip:'उस भाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
 					value: Twinkle.talkback.prev_section
 				} );
 			break;
 		case 'an':
-			var noticeboard = work_area.append( {
-					type: 'select',
-					name: 'noticeboard',
-					label: 'Noticeboard:'
-				} );
-			noticeboard.append( {
-					type: 'option',
-					label: "WP:AN (Administrators' noticeboard)",
-					value: "Wikipedia:Administrators' noticeboard"
-				} );
-			noticeboard.append( {
-					type: 'option',
-					label: 'WP:ANI (Administrators\' noticeboard/Incidents)',
-					selected: true,
-					value: "Wikipedia:Administrators' noticeboard/Incidents"
-				} );
 			work_area.append( {
 					type:'input',
 					name:'section',
-					label:'Linked thread',
-					tooltip:'The heading of the relevant AN or ANI thread.',
+					label:'सम्बंधित अनुभाग (वैकल्पिक)',
+					tooltip:'उस अनुभाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ सूचनापट की कड़ी छोड़ने के लिये खाली छोड़ दें।',
 					value: Twinkle.talkback.prev_section
 				} );
 			break;
@@ -153,23 +137,23 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 			work_area.append( { 
 					type:'input',
 					name:'page',
-					label:'Full page name',
-					tooltip:'The full page name where you left the message.  For example: "Wikipedia talk:Twinkle".',
+					label:'पन्ने का पूरा नाम',
+					tooltip:'उस पन्ने का पूरा नाम जिस पर आपने सन्देश छोड़ा है। उदहारण: "विकिपीडिया:चौपाल"।',
 					value: Twinkle.talkback.prev_page
 				} );
 			
 			work_area.append( { 
 					type:'input',
 					name:'section',
-					label:'Linked section (optional)',
-					tooltip:'The section heading on the page where you left a message. Leave empty for no section to be linked.',
+					label:'सम्बंधित अनुभाग (वैकल्पिक)',
+					tooltip:'उस अनुभाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
 					value: Twinkle.talkback.prev_section
 				} );
 			break;
 	}
 
 	if (value !== "an") {
-		work_area.append( { type:'textarea', label:'Additional message (optional):', name:'message', tooltip:'An additional message that you would like to leave below the talkback template.  Your signature will be added to the end of the message if you leave one.' } );
+		work_area.append( { type:'textarea', label:'अतिरिक्त सन्देश (वैकल्पिक):', name:'message', tooltip:'कोई सन्देश जो आप सन्देश साँचे के बाद छोड़ना चाहेंगे।' } );
 	}
 
 	work_area = work_area.render();
@@ -188,17 +172,17 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		
 		if( tbtarget === 'usertalk' ) {
 			if( !page ) {
-				alert( 'You must specify the username of the user whose talk page you left a message on.' );
+				alert( 'आपको उस सदस्य का नाम बताना होगा जिसके वार्ता पन्ने पर आपने सन्देश छोड़ा है।' );
 				return;
 			}
 		} else {
 			if( !page ) {
-				alert( 'You must specify the full page name when your message is not on a user talk page.' );
+				alert( 'यदि आपका सन्देश सदस्य वार्ता पन्ने की जगह किसी और पन्ने पर है तो आपको उस पन्ने का पूरा नाम बताना होगा।' );
 				return;
 			}
 		}
 	} else if (tbtarget === "an") {
-		page = e.target.noticeboard.value;
+		page = 'विकिपीडिया:प्रबंधक सूचनापट';
 	}
 
 	var message;
@@ -210,9 +194,9 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	Status.init( e.target );
 
 	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
+	Wikipedia.actionCompleted.notice = "सन्देश दे दिया, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
 
-	var talkpage = new Wikipedia.page(mw.config.get('wgPageName'), "Adding talkback");
+	var talkpage = new Wikipedia.page(mw.config.get('wgPageName'), "सन्देश जोड़ा जा रहा है");
 	var tbPageName = (tbtarget === 'mytalk') ? mw.config.get('wgUserName') : page;
 
 	var text;
@@ -220,10 +204,10 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		text = "\n== " + Twinkle.getFriendlyPref('adminNoticeHeading') + " ==\n{{subst:ANI-notice|thread=";
 		text += section + "|noticeboard=" + tbPageName + "}} ~~~~";
 
-		talkpage.setEditSummary("Notice of AN/ANI discussion" + Twinkle.getPref('summaryAd'));
+		talkpage.setEditSummary("प्रबंधक सूचनापट पर चर्चा का नोटिस" + Twinkle.getPref('summaryAd'));
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{{talkback|';
+		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{{सन्देश|';
 		text += tbPageName;
 
 		if( section ) {
@@ -238,8 +222,8 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 			text += '\n~~~~';
 		}
 
-		talkpage.setEditSummary("Talkback ([[" + (tbtarget === 'other' ? '' : 'User talk:') + tbPageName +
-			(section ? ('#' + section) : '') + "]])" + Twinkle.getPref('summaryAd'));
+		talkpage.setEditSummary("सन्देश [[" + (tbtarget === 'other' ? '' : 'सदस्य वार्ता:') + tbPageName +
+			(section ? ('#' + section) : '') + "]] पर" + Twinkle.getPref('summaryAd'));
 	}
 
 	talkpage.setAppendText(text);
