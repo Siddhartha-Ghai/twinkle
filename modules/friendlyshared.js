@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** friendlyshared.js: Shared IP tagging module
  ****************************************
@@ -16,42 +16,42 @@ Twinkle.shared = function friendlyshared() {
 
 Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 	var Window = new SimpleWindow( 600, 400 );
-	Window.setTitle( "Shared IP address tagging" );
+	Window.setTitle( "साझा आई॰पी॰ पता टैगिंग" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#shared" );
 
 	var form = new QuickForm( Twinkle.shared.callback.evaluate );
 
-	form.append( { type:'header', label:'Shared IP address templates' } );
+	form.append( { type:'header', label:'साझा आई॰पी॰ पता साँचे' } );
 	form.append( { type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
 		event: function( e ) {
 			Twinkle.shared.callback.change_shared( e );
 			e.stopPropagation();
 		} } );
 
-	var org = form.append( { type:'field', label:'Fill in IP address owner/operator, hostname and contact information (if applicable) and hit \"Submit\"' } );
+	var org = form.append( { type:'field', label:'नीचे आई॰पी॰ पते के स्वामी/संचालक का नाम, होस्ट-नाम तथा संपर्क-सूचना (यदि लागू हो तो) भरें, और \"Submit\" बटन पर क्लिक करें।' } );
 	org.append( {
 			type: 'input',
 			name: 'organization',
-			label: 'Organization name',
+			label: 'संगठन का नाम (वैकल्पिक)',
 			disabled: true,
-			tooltip: 'Some of these templates support an optional parameter for the organization name that owns/operates the IP address.  The organization name can be entered here for those templates, including wikimarkup if necessary.'
+			tooltip: 'इनमें से कुछ साँचे एक वैकल्पिक पैरामीटर की सुविधा प्रदान करते हैं, जिसमें आई॰पी॰ पतों के स्वामी या इनको संचालित करने वाले संगठन का नाम भरा जा सकता है। आप वह नाम यहाँ डाल सकते हैं। यदि आवश्यक हो तो wikimarkup का प्रयोग कर सकते हैं।'
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'host',
-			label: 'Host name (optional)',
+			label: 'होस्ट नाम (वैकल्पिक)',
 			disabled: true,
-			tooltip: 'These templates support an optional parameter for the host name.  The host name (for example, proxy.example.com) can be entered here and will be linked by the template.'
+			tooltip: 'ये साँचे होस्ट नाम के लिए एक वैकल्पिक पैरामीटर स्वीकार करते हैं। आप होस्ट नाम (जैसे proxy.example.com) यहाँ डाल सकते हैं।'
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'contact',
-			label: 'Contact information (only if requested)',
+			label: 'संगठन के संपर्कसूत्र (सिर्फ संगठन के अनुरोध पर भरें)',
 			disabled: true,
-			tooltip: 'Some of these templates support an optional parameter for the organization\'s contact information.  Use this parameter only if the organization has specifically request that it be added.  This contact information can be entered here for those templates, including wikimarkup if necessary.'
+			tooltip: 'इनमें से कुछ साँचे संगठनो के संपर्कसूत्र के लिए एक वैकल्पिक पैरामीटर स्वीकार करते हैं। इस पैरामीटर का इस्तेमाल संगठन के विशेष अनुरोध पर ही किया जाना चाहिए। यदि आवश्यक हो तो wikimarkup का प्रयोग कर सकते हैं।'
 		}
 	);
 	
@@ -64,36 +64,32 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 
 Twinkle.shared.standardList = [
 	{
-		label: '{{shared IP}}: standard shared IP address template',
+		label: '{{shared IP}}: मानक साझा आई॰पी॰ साँचा',
 		value: 'shared IP',
-		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
+		tooltip: 'आई॰पी॰ सदस्य वार्ता पृष्ठ पर प्रयोग हेतु साँचा। यह साँचा आई॰पी॰ सदस्य तथा उन लोगों को जो उसे चेतावनी देना चाहते हैं या प्रतिबन्धित करना चाहते हैं, को उपयोगी जानकारी उपलब्ध करता है।'
 	},
 	{ 
-		label: '{{shared IP edu}}: shared IP address template modified for educational institutions',
+		label: '{{shared IP edu}}: शैक्षिक संस्थानों के लिए संशोधित साझा आई॰पी॰ साँचा',
 		value: 'shared IP edu'
 	},
 	{
-		label: '{{shared IP corp}}: shared IP address template modified for businesses',
-		value: 'shared IP corp'
-	},
-	{
-		label: '{{shared IP public}}: shared IP address template modified for public terminals',
+		label: '{{shared IP public}}: सार्वजनिक टर्मिनलों के लिए संशोधित साझा आई॰पी॰ साँचा',
 		value: 'shared IP public'
 	},
 	{
-		label: '{{shared IP gov}}: shared IP address template modified for government agencies or facilities',
+		label: '{{shared IP gov}}: सरकारी सुविधाओं या एजेंसियों के लिए संशोधित साझा आई॰पी॰ साँचा',
 		value: 'shared IP gov'
 	},
 	{
-		label: '{{dynamicIP}}: shared IP address template modified for organizations with dynamic addressing',
+		label: '{{dynamicIP}}: अस्थिर पतों(dynamic IP) वाले संगठनो के लिए संशोधित साझा आई॰पी॰ साँचा',
 		value: 'dynamicIP'
 	},
 	{ 
-		label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
+		label: '{{ISP}}: इंटरनेट सेवा प्रदाता(ISP) संगठनों(खासकर प्रॉक्सीज़) के लिए संशोधित साझा आई॰पी॰ साँचा',
 		value: 'ISP'
 	},
 	{ 
-		label: '{{mobileIP}}: shared IP address template modified for mobile phone companies and their customers',
+		label: '{{mobileIP}}: मोबाइल फोन कंपनी और उनके ग्राहकों के लिए संशोधित साझा आई॰पी॰ साँचा',
 		value: 'mobileIP'
 	}
 ];
@@ -171,7 +167,7 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	Status.init( e.target );
 
 	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";
+	Wikipedia.actionCompleted.notice = "टैगिंग संपूर्ण, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
 
 	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
