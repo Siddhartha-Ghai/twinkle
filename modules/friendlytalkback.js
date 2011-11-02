@@ -103,7 +103,7 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 					type:'input',
 					name:'section',
 					label:'सम्बंधित अनुभाग (वैकल्पिक)',
-					tooltip:'आपके वार्ता पन्ने के उस भाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
+					tooltip:'आपके वार्ता पन्ने के उस अनुभाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
 					value: Twinkle.talkback.prev_section
 				} );
 			break;
@@ -202,7 +202,7 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	var text;
 	if ( tbtarget === "an" ) {
 		text = "\n== " + Twinkle.getFriendlyPref('adminNoticeHeading') + " ==\n{{subst:ANI-notice|thread=";
-		text += section + "|noticeboard=" + tbPageName + "}} ~~~~";
+		text += section + "|noticeboard=" + tbPageName + "}} --~~~~";
 
 		talkpage.setEditSummary("प्रबंधक सूचनापट पर चर्चा का नोटिस" + Twinkle.getPref('summaryAd'));
 	} else {
