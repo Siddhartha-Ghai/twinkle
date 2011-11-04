@@ -98,10 +98,9 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 
 Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	if( uid === mw.config.get('wgUserName') ){
-		alert( 'You\'re very welcome! Very welcome indeed!' );
+		alert( 'आपका बहुत बहुत स्वागत है!' );
 		return;
-	}
-	
+	}	
 	var Window = new SimpleWindow( 600, 400 );
 	Window.setTitle( "सदस्य स्वागत" );
 	Window.setScriptName( "Twinkle" );
@@ -113,9 +112,9 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	form.append( {
 			type: 'input',
 			name: 'article',
-			label: 'सम्बन्धित लेख (यदि साँचे द्वारा स्वीकृत',//Linked article (if supported by template)
+			label: 'सम्बन्धित लेख (यदि साँचे द्वारा स्वीकृत)',
 			value:( QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '' ),
-			tooltip: 'स्वागत में एक लेख की कड़ी जोड़ी जा सकती है, यदि स्वागत साँचे द्वारा स्वीकृत हो। ऐसे साँचों के आगे * लगा है। किसी भी लेख की कड़ी न जोड़ने के लिये खाली छोड़ दें।',//An article might be linked to the welcome if the template supports it. Leave empty for no artice to be linked.  Templates that support a linked article are marked with an asterisk.  Ignored for templates that do not support a linked article.
+			tooltip: 'स्वागत में एक लेख की कड़ी जोड़ी जा सकती है, यदि स्वागत साँचे द्वारा स्वीकृत हो। ऐसे साँचों के आगे * लगा है। किसी भी लेख की कड़ी न जोड़ने के लिये खाली छोड़ दें।',
 			event: function( event ) {
 				event.stopPropagation();
 			}

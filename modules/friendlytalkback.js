@@ -120,7 +120,7 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 					type:'input',
 					name:'section',
 					label:'सम्बंधित अनुभाग (वैकल्पिक)',
-					tooltip:'उस भाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
+					tooltip:'उस अनुभाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
 					value: Twinkle.talkback.prev_section
 				} );
 			break;
@@ -146,7 +146,7 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 					type:'input',
 					name:'section',
 					label:'सम्बंधित अनुभाग (वैकल्पिक)',
-					tooltip:'उस अनुभाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
+					tooltip:'उस अनुभाग का नाम जहाँ आपने सन्देश छोड़ा है। अनुभाग की जगह सिर्फ़ वार्ता पन्ने की कड़ी छोड़ने के लिये खाली छोड़ दें।',
 					value: Twinkle.talkback.prev_section
 				} );
 			break;

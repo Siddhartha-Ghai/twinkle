@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** twinkleconfig.js: Preferences module
  ****************************************
@@ -798,7 +798,7 @@ Twinkle.config.sections = [
 
 Twinkle.config.init = function twinkleconfigInit() {
 
-	if ((mw.config.get("wgPageName") === "Wikipedia:Twinkle/Preferences" ||
+	if (((mw.config.get("wgNamespaceNumber") === 4 && mw.config.get("wgTitle") === "Twinkle/Preferences") ||
 	    (mw.config.get("wgNamespaceNumber") === 2 && mw.config.get("wgTitle").lastIndexOf("/Twinkle preferences") === (mw.config.get("wgTitle").length - 20))) &&
 	    mw.config.get("wgAction") === "view") {
 		// create the config page at Wikipedia:Twinkle/Preferences, and at user subpages (for testing purposes)
@@ -1159,7 +1159,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
 			}
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.wikiGetlink("Wikipedia:Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.wikiGetlink("विकिपीडिया:Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode(", or by editing this page."));
@@ -1171,7 +1171,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.wikiGetlink("Wikipedia:Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.wikiGetlink("विकिपीडिया:Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode("."));

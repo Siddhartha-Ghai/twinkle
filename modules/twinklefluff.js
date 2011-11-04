@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** twinklefluff.js: Revert/rollback module
  ****************************************
@@ -15,7 +15,7 @@ Twinkle.fluff = {
 	auto: function() {
 		if( parseInt( QueryString.get('oldid'), 10) !== mw.config.get('wgCurRevisionId') ) {
 			// not latest revision
-			alert("Can't rollback, page has changed in the meantime.");
+			alert("रोलबैक नहीं किया जा सकता। पृष्ठ बदला जा चुका है।");
 			return;
 		}
 
@@ -261,7 +261,7 @@ Twinkle.fluff.callbacks = {
 				return;
 			}
 
-			var optional_summary = prompt( "Please specify a reason for the revert:", "" );
+			var optional_summary = prompt( "वापस लेने के लिये कोई कारण बताएँ:", "" );
 			if (optional_summary === null)
 			{
 				self.statelem.error( 'Aborted by user.' );
@@ -535,9 +535,6 @@ Twinkle.fluff.init = function twinklefluffinit() {
 		// This only affect vandalism rollback, for good faith rollback, it will stop, indicating a bot 
 		// has no faith, and for normal rollback, it will rollback that edit.
 		Twinkle.fluff.whiteList = [
-			'AnomieBOT',
-			'ClueBot NG',
-			'SineBot'
 		];
 
 		if ( QueryString.exists( 'twinklerevert' ) ) {
