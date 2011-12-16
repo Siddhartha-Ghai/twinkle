@@ -10,7 +10,7 @@
 Twinkle.talkback = function friendlytalkback() {
 	if( mw.config.get('wgNamespaceNumber') === 3 ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		$(twAddPortletLink("#", "TB", "friendly-talkback", "Easy talkback", "")).click(function() { Twinkle.talkback.callback(username); });
+		$(twAddPortletLink("#", "सन्देश", "friendly-talkback", "सरल सन्देश", "")).click(function() { Twinkle.talkback.callback(username); });
 	}
 };
 
