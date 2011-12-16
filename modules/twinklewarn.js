@@ -747,6 +747,10 @@ Twinkle.warn.messages = {
 			label:"Fair use image has been removed from your userpage", 
 			summary:"Notice: A fair use image has been removed from your userpage" 
 		},
+		"uw-hangon": { 
+			label:"User forgets to place a hang-on reasoning to the talk page", 
+			summary:"Notice: User forgets to place a hang-on reasoning to the talk page" 
+		},
 		"uw-hasty": { 
 			label:"Hasty addition of speedy deletion tags", 
 			summary:"Notice: Allow creators time to improve their articles before tagging them for deletion"
@@ -790,10 +794,6 @@ Twinkle.warn.messages = {
 		"uw-notifysd": { 
 			label:"Notify authors of speedy deletion tagged articles", 
 			summary:"Notice: Please notify authors of articles tagged for speedy deletion"
-		},
-		"uw-notvand": {
-			label:"Mislabelling edits as vandalism",
-			summary:"Notice: Misidentifying edits as vandalism"
 		},
 		"uw-notvote": {
 			label:"We use consensus, not voting", 
@@ -875,10 +875,6 @@ Twinkle.warn.messages = {
 			label:"Reporting of username to WP:UAA not accepted", 
 			summary:"Notice: Reporting of username to WP:UAA not accepted" 
 		},
-		"uw-userspace draft finish": { 
-			label:"Stale userspace draft", 
-			summary:"Notice: Stale userspace draft" 
-		},
 		"uw-userspacenoindex": { 
 			label:"User page/subpage isn't appropriate for search engine indexing", 
 			summary:"Notice: User (sub)page isn't appropriate for search engine indexing" 
@@ -894,9 +890,8 @@ Twinkle.warn.messages = {
 	},
 	singlewarn: {
 		"uw-3rr": { 
-			label:"Violating the three-revert rule; see also uw-ew",
-			summary:"Warning: Violating the three-revert rule"
-		},
+			label:"Edit warring, and/or violating the three revert rule",
+			summary:"Warning: Edit warring, and/or violating the three revert rule"		},
 		"uw-affiliate": { 
 			label:"Affiliate marketing", 
 			summary:"Warning: Affiliate marketing"
@@ -941,10 +936,6 @@ Twinkle.warn.messages = {
 		"uw-efsummary": {
 			label:"Edit summary triggering the edit filter",
 			summary:"Warning: Edit summary triggering the edit filter"
-		},
-		"uw-ew": {
-			label:"Edit warring; see also uw-3rr",
-			summary:"Warning: Edit warring"
 		},
 		"uw-hoax": { 
 			label:"Creating hoaxes", 
@@ -1075,11 +1066,6 @@ Twinkle.warn.messages = {
 		"uw-3block": {
 			label: "Three-revert rule violation block",
 			summary: "You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]",
-			pageParam: true
-		},
-		"uw-disruptblock": {
-			label: "Disruptive editing block",
-			summary: "You have been blocked from editing for [[WP:DE|disruptive editing]]",
 			pageParam: true
 		},
 		"uw-deoablock": {

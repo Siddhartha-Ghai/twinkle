@@ -1,4 +1,4 @@
-/**
+﻿/**
  * +-------------------------------------------------------------------------+
  * |                  === WARNING: GLOBAL GADGET FILE ===                    |
  * |                Changes to this page affect many users.                  |
@@ -127,7 +127,7 @@ Twinkle.defaultConfig.friendly = {
 	 // Welcome
 	topWelcomes: false,
 	watchWelcomes: true,
-	welcomeHeading: "Welcome",
+	welcomeHeading: "स्वागत",
 	insertHeadings: true,
 	insertUsername: true,
 	insertSignature: true,  // sign welcome templates, where appropriate
@@ -139,7 +139,7 @@ Twinkle.defaultConfig.friendly = {
 	 // Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: "Talkback",
+	talkbackHeading: "सन्देश",
 	adminNoticeHeading: "Notice",
 	 // Shared
 	markSharedIPAsMinor: true

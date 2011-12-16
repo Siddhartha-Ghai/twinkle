@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** friendlywelcome.js: Welcome module
  ****************************************
@@ -74,7 +74,7 @@ Twinkle.welcome.normal = function() {
 	}
 	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
 		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		$(twAddPortletLink("#", "Wel", "friendly-welcome", "Welcome user", "")).click(function() { Twinkle.welcome.callback(username); });
+		$(twAddPortletLink("#", "स्वागत", "friendly-welcome", "सदस्य स्वागत", "")).click(function() { Twinkle.welcome.callback(username); });
 	}
 };
 
@@ -88,7 +88,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	};
 
 	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+	Wikipedia.actionCompleted.notice =  "स्वागत संपूर्ण, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
 
 	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
@@ -98,14 +98,13 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 
 Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	if( uid === mw.config.get('wgUserName') ){
-		alert( 'You\'re very welcome! Very welcome indeed!' );
+		alert( 'आपका बहुत बहुत स्वागत है!' );
 		return;
-	}
-	
+	}	
 	var Window = new SimpleWindow( 600, 400 );
-	Window.setTitle( "Welcome user" );
+	Window.setTitle( "सदस्य स्वागत" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Welcoming Committee", "WP:WC" );
+	//Window.addFooterLink( "Welcoming Committee", "WP:WC" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#welcome" );
 
 	var form = new QuickForm( Twinkle.welcome.callback.evaluate, 'change' );
@@ -113,29 +112,35 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	form.append( {
 			type: 'input',
 			name: 'article',
-			label: 'Linked article (if supported by template)',
+			label: 'सम्बन्धित लेख (यदि साँचे द्वारा स्वीकृत)',
 			value:( QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '' ),
-			tooltip: 'An article might be linked to the welcome if the template supports it. Leave empty for no artice to be linked.  Templates that support a linked article are marked with an asterisk.  Ignored for templates that do not support a linked article.',
+			tooltip: 'स्वागत में एक लेख की कड़ी जोड़ी जा सकती है, यदि स्वागत साँचे द्वारा स्वीकृत हो। ऐसे साँचों के आगे * लगा है। किसी भी लेख की कड़ी न जोड़ने के लिये खाली छोड़ दें।',
 			event: function( event ) {
 				event.stopPropagation();
 			}
 		} );
 
-	form.append( { type:'header', label:'Simple templates' } );
-	form.append( { type: 'radio', name: 'simple', list: Twinkle.welcome.standardList } );
+	form.append( { type:'header', label:'मानक स्वागत' } );
+	form.append( { type: 'radio', name: 'Standard', list: Twinkle.welcome.StandardList } );
+ 
+	form.append( { type:'header', label:'संक्षिप्त स्वागत' } );
+	form.append( { type: 'radio', name: 'short', list: Twinkle.welcome.shortList } );
 
+	form.append( {type:'header', label:'मूल जानकारी सहित स्वागत' } );
+	form.append( {type: 'radio', name: 'basic', list: Twinkle.welcome.basicList } );
+
+	form.append( {type:'header', label:'ग्राफ़िक मेन्यू सहित स्वागत' } );
+	form.append( {type:'radio', name: 'graphic', list: Twinkle.welcome.graphicList } );
+	
 	if( Twinkle.getFriendlyPref('customWelcomeList').length ) {
 		form.append( { type:'header', label:'Custom templates' } );
 		form.append( { type: 'radio', name: 'custom', list: Twinkle.getFriendlyPref('customWelcomeList') } );
 	}
 
-	form.append( { type:'header', label:'Welcoming committee templates' } );
-	form.append( { type: 'radio', name: 'welcomingCommittee', list: Twinkle.welcome.welcomingCommitteeList } );
-
 	form.append( { type:'header', label:'Potential problem user templates' } );
 	form.append( { type: 'radio', name: 'problem', list: Twinkle.welcome.problemList } );
 
-	form.append( { type:'header', label:'Anonymous user templates' } );
+	form.append( { type:'header', label:'IP सदस्य स्वागत' } );
 	form.append( { type: 'radio', name: 'anonymous', list: Twinkle.welcome.anonymousList } );
 
 	var result = form.render();
@@ -143,52 +148,40 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	Window.display();
 };
 
-Twinkle.welcome.standardList = [
+Twinkle.welcome.StandardList = [
 	{
-		label: '{{Welcome}}: standard welcome*',
+		label: '{{Welcome}}: मानक स्वागत*',//standard welcome
 		value: 'Welcome'
-	},
+	}
+];	
+
+Twinkle.welcome.shortList = [
 	{ 
-		label: '{{Welcomeshort}}: short welcome',
+		label: '{{Welcomeshort}}: संक्षिप्त स्वागत',//short welcome
 		value: 'Welcomeshort',
 		tooltip: 'Includes section heading.'
 	},
 	{ 
-		label: '{{WelcomeSimple}}: simple welcome',
+		label: '{{W-short}}: concise; won\'t overwhelm',
+		value: 'W-short||',
+		tooltip: 'This template is similar to {{Welcomeshort}} but supports many different options.  Includes a signature.'
+	},
+	{ 
+		label: '{{WelcomeSimple}}: सिम्पल स्वागत',//simple welcome
 		value: 'WelcomeSimple',
 		tooltip: 'Won\'t overwhelm new users.  Includes section heading.'
-	},
+	}
+];
+ 
+Twinkle.welcome.basicList = [
 	{
 		label: '{{Welcome-personal}}: includes a plate of cookies',
 		value: 'Welcome-personal',
 		tooltip: 'A personal welcome with an introduction from you and a plate of cookies.  Includes section heading and signature.'
 	},
 	{ 
-		label: '{{WelcomeMenu}}: welcome with menu of links',
-		value: 'WelcomeMenu',
-		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' 
-	},
-	{ 
-		label: '{{Welcomeg}}: similar to {{WelcomeMenu}}',
-		value: 'Welcomeg',
-		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.'
-	},
-	{ 
-		label: '{{Welcomeh}}: same as {{Welcomeg}} but with a section heading',
-		value: 'Welcomeh',
-		tooltip: 'Contains a section heading, a welcome message and many useful links broken up into different sections.  Includes section heading and signature.'
-	},
-	{ 
 		label: '{{Welcome-belated}}: welcome for users with more substantial contributions',
 		value: 'Welcome-belated'
-	}
-];
-
-Twinkle.welcome.welcomingCommitteeList = [
-	{ 
-		label: '{{Wel}}: similar to {{Welcome}}, but automatically identifies anonymous and registered users*',
-		value: 'Wel',
-		tooltip: 'This template checks whether the username contains any letters. If there are any, {{Welcome-reg}} will be shown. If there are none, {{Welcome-anon}} will be shown.'
 	},
 	{ 
 		label: '{{W-basic}}: standard template, similar to {{Welcome}} with additional options',
@@ -199,16 +192,24 @@ Twinkle.welcome.welcomingCommitteeList = [
 		label: '{{W-shout}}: extroverted message with bold advice',
 		value: 'W-shout',
 		tooltip: 'This template is similar to {{WelcomeShout}} but supports many different options.  Includes a signature.'
+	}
+];
+ 
+Twinkle.welcome.graphicList = [
+	{ 
+		label: '{{WelcomeMenu}}: कड़ियों की सूची के साथ स्वागत',//welcome with menu of links
+		value: 'WelcomeMenu',
+		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' 
 	},
 	{ 
-		label: '{{W-short}}: concise; won\'t overwhelm',
-		value: 'W-short||',
-		tooltip: 'This template is similar to {{Welcomeshort}} but supports many different options.  Includes a signature.'
+		label: '{{Welcomeg}}: {{WelcomeMenu}} जैसा',//similar to {{WelcomeMenu}}
+		value: 'Welcomeg',
+		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.'
 	},
 	{ 
-		label: '{{W-link}}: shortest greeting, links to Welcoming committee\'s greetings page',
-		value: 'W-link',
-		tooltip: 'This template is similar to {{Welcom}} but supports many different options.  Includes a signature.'
+		label: '{{Welcomeh}}: {{Welcomeg}} जैसा, अनुभाग नाम के साथ',//same as {{Welcomeg}} but with a section heading
+		value: 'Welcomeh',
+		tooltip: 'Contains a section heading, a welcome message and many useful links broken up into different sections.  Includes section heading and signature.'
 	},
 	{ 
 		label: '{{W-graphical}}: graphical menu format to ease transition from the graphic-heavy web',
@@ -253,7 +254,7 @@ Twinkle.welcome.problemList = [
 		value: 'Welcomeauto'
 	},
 	{ 
-		label: '{{Welcome-COI}}: for someone who created or edited an article about a subject with which they have a conflict of interest*',
+		label: '{{Welcome-COI}}: for someone who created an article about a subject with which they have a conflict of interest*',
 		value: 'Welcome-COI'
 	}
 ];
@@ -296,11 +297,9 @@ Twinkle.welcome.headingHash = {
 	'Welcomeg': true,
 	'Welcomeh': false,
 	'Welcome-belated': false,
-	'Wel': false,
 	'W-basic': true,
 	'W-shout': true,
 	'W-short||': true,
-	'W-link': true,
 	'W-graphical': true,
 	'W-screen': true,
 	'Welcomelaws': true,
@@ -329,11 +328,9 @@ Twinkle.welcome.signatureHash = {
 	'Welcomeg': true,
 	'Welcomeh': true,
 	'Welcome-belated': true,
-	'Wel': false,
 	'W-basic': true,
 	'W-shout': true,
 	'W-short||': true,
-	'W-link': true,
 	'W-graphical': true,
 	'W-screen': true,
 	'Welcomelaws': false,
@@ -363,11 +360,9 @@ Twinkle.welcome.artHash = {
 	'Welcomeg': false,
 	'Welcomeh': false,
 	'Welcome-belated': false,
-	'Wel': true,
 	'W-basic': false,
 	'W-shout': false,
 	'W-short||': false,
-	'W-link': false,
 	'W-graphical': false,
 	'W-screen': false,
 	'Welcomelaws': false,
@@ -398,11 +393,9 @@ Twinkle.welcome.vandalHash = {
 	'Welcomeg': false,
 	'Welcomeh': false,
 	'Welcome-belated': false,
-	'Wel': false,
 	'W-basic': false,
 	'W-shout': false,
 	'W-short||': false,
-	'W-link': false,
 	'W-graphical': false,
 	'W-screen': false,
 	'Welcomelaws': false,
@@ -433,15 +426,15 @@ Twinkle.welcome.callbacks = {
 		}
 		
 		var text = '';
-		Status.info( 'Info', 'Will add the welcome template to the ' +
-			( Twinkle.getFriendlyPref('topWelcomes') ? 'top' : 'bottom' ) +
-			' of the user\'s talk page.' );
+		Status.info( 'Info', 'स्वागत सन्देश सदस्य के वार्ता पन्ने के सबसे ' +
+			( Twinkle.getFriendlyPref('topWelcomes') ? 'ऊपर' : 'नीचे' ) +
+			' जोड़ा जाएगा।' );/*Will add the welcome template to the top or bottom of the user\'s talk page*/
 		if( !Twinkle.getFriendlyPref('topWelcomes') ) {
 			text += oldText + '\n';
 		}
 		
 		if( Twinkle.welcome.headingHash[ params.value ] && Twinkle.getFriendlyPref('insertHeadings') ) {
-			Status.info( 'Info', 'Will create a new heading for the welcome' );
+			Status.info( 'Info', 'स्वागत सन्देश के लिये नया अनुभाग बनाया जाएगा' );//Will create a new heading for the welcome
 			// strip section header markers from pref, to preserve backwards compatibility
 			text += "== " + Twinkle.getFriendlyPref('welcomeHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + " ==\n";
 		}
@@ -451,33 +444,33 @@ Twinkle.welcome.callbacks = {
 		
 		if( Twinkle.welcome.artHash[ params.value ] ) {
 			if( Twinkle.getFriendlyPref('insertUsername') && params.value.substring(2,0) !== 'W-' ) {
-				Status.info( 'Info', 'Will add your username to the template' );
+				Status.info( 'Info', 'स्वागत सन्देश में आपका सदस्य नाम जोड़ा जाएगा' );//Will add your username to the template
 				text += '|' + mw.config.get('wgUserName');
 			}
 			
 			if( params.article ) {
-				Status.info( 'Info', 'Will add article link to the template' );
+				Status.info( 'Info', 'स्वागत सन्देश में लेख की कड़ी जोड़ी जाएगी' );//Will add article link to the template
 				text += '|art=' + params.article;
 			}
 		} else if( Twinkle.welcome.vandalHash[ params.value ] ) {
 			if( params.article ) {
-				Status.info( 'Info', 'Will add article link to the template' );
+				Status.info( 'Info', 'स्वागत सन्देश में लेख की कड़ी जोड़ी जाएगी' );
 			}
 			text += '|' + params.article;
 			
 			if( Twinkle.getFriendlyPref('insertUsername') ) {
-				Status.info( 'Info', 'Will add your username to the template' );
+				Status.info( 'Info', 'स्वागत सन्देश में आपका सदस्य नाम जोड़ा जाएगा' );
 				text += '|' + mw.config.get('wgUserName');
 			}
 		} else if( Twinkle.getFriendlyPref('insertUsername') ) {
-			Status.info( 'Info', 'Will add your username to the template' );
+			Status.info( 'Info', 'स्वागत सन्देश में आपका सदस्य नाम जोड़ा जाएगा' );
 			text += '|' + mw.config.get('wgUserName');
 		} 
 		
 		text += '}}';
 		
 		if( !Twinkle.welcome.signatureHash[ params.value ] && Twinkle.getFriendlyPref('insertSignature') ) {
-			Status.info( 'Info', 'Will add your signature after the welcome' );
+			Status.info( 'Info', 'सन्देश के बाद आपके हस्ताक्षर जोड़े जाएँगे' );//Will add your signature after the welcome
 			text += ' \n~~~~';
 		}
 		
@@ -485,8 +478,8 @@ Twinkle.welcome.callbacks = {
 			text += '\n\n' + oldText;
 		}
  
-		var summaryText = "Added " + ( Twinkle.getFriendlyPref('maskTemplateInSummary') ? 'welcome' : ( '{{[[Template:' + params.value + '|' + params.value + ']]}}' ) ) +
-			" template to user talk page";
+		var summaryText = "सदस्य के वार्ता पन्ने पर " + ( Twinkle.getFriendlyPref('maskTemplateInSummary') ? 'स्वागत सन्देश' : ( '{{[[साँचा:' + params.value + '|' + params.value + ']]}}' ) ) +
+			" जोड़ा";
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markWelcomesAsMinor'));
@@ -512,7 +505,7 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	Status.init( e.target.form );
 
 	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+	Wikipedia.actionCompleted.notice = "स्वागत संपूर्ण, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
 
 	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);

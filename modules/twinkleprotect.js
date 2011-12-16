@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** twinkleprotect.js: Protect/RPP module
  ****************************************
@@ -802,7 +802,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				Status.init( form );
 				Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 				Wikipedia.actionCompleted.followRedirect = false;
-				Wikipedia.actionCompleted.notice = "Tagging complete";
+				Wikipedia.actionCompleted.notice = "टैगिंग संपूर्ण";
 			}
 
 			if (tagparams.tag === 'noop') {
@@ -918,7 +918,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 
-			rppName = 'Wikipedia:Requests for page protection';
+			rppName = 'विकिपीडिया:पृष्ठ सुरक्षा अनुरोध';
 
 			// Updating data for the action completed event
 			Wikipedia.actionCompleted.redirect = rppName;
@@ -1041,9 +1041,9 @@ Twinkle.protect.callbacks = {
 
 		var reg;
 		if ( params.category === 'unprotect' ) {
-			reg = /(\n==\s*Current requests for unprotection\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*सुरक्षा हटाने हेतु वर्तमान अनुरोध\s*==\s*)/;
 		} else {
-			reg = /(\n==\s*Current requests for protection\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*सुरक्षित करने हेतु वर्तमान अनुरोध\s*==\s*)/;
 		}
 		var originalTextLength = text.length;
 		text = text.replace( reg, "$1" + newtag + "\n");

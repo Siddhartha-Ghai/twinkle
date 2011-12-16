@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** friendlytag.js: Tag module
  ****************************************
@@ -14,22 +14,17 @@ Twinkle.tag = function friendlytag() {
 	// redirect tagging
 	if( Wikipedia.isPageRedirect() ) {
 		Twinkle.tag.mode = 'redirect';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "")).click(Twinkle.tag.callback);
+		$(twAddPortletLink("#", "टैग", "friendly-tag", "पुनर्निर्देश टैग", "")).click(Twinkle.tag.callback);
 	}
 	// file tagging
 	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
 		Twinkle.tag.mode = 'file';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to file", "")).click(Twinkle.tag.callback);
+		$(twAddPortletLink("#", "टैग", "friendly-tag", "फ़ाइल रखरखाव टैग", "")).click(Twinkle.tag.callback);
 	}
 	// article tagging
 	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "")).click(Twinkle.tag.callback);
-	}
-	// tagging of draft articles
-	else if( ((mw.config.get('wgNamespaceNumber') === 2 && mw.config.get('wgPageName').indexOf("/") !== -1) || /^Wikipedia\:Articles[ _]for[ _]creation\//.exec(mw.config.get('wgPageName')) ) && mw.config.get('wgCurRevisionId') ) {
-		Twinkle.tag.mode = 'draft';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add review tags to draft article", "")).click(Twinkle.tag.callback);
+		$(twAddPortletLink("#", "टैग", "friendly-tag", "लेख रखरखाव टैग", "")).click(Twinkle.tag.callback);
 	}
 };
 
@@ -43,16 +38,16 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 	switch( Twinkle.tag.mode ) {
 		case 'article':
-			Window.setTitle( "Article maintenance tagging" );
+			Window.setTitle( "लेख रखरखाव टैगिंग" );
 
 			form.append( {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Group into {{multiple issues}} if possible',
+							label: 'यदि संभव  हो तो {{multiple issues}} में वर्गीकृत करें',
 							value: 'group',
 							name: 'group',
-							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
+							tooltip: 'यदि {{multiple issues}} द्वारा  स्वीकृत 3 से अधिक साँचों का प्रयोग कर रहे हों और ये चैकबौक्स checked हो, तो सभी स्वीकृत साँचे एक {{multiple issues}} साँचे में एकत्रित कर दिए जायेंगे।',
 							checked: Twinkle.getFriendlyPref('groupByDefault')
 						}
 					]
@@ -62,12 +57,12 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			form.append({
 				type: 'select',
 				name: 'sortorder',
-				label: 'View this list:',
+				label: 'यह सूची देखें:',
 				tooltip: 'You can change the default view order in your Twinkle preferences (WP:TWPREFS).',
 				event: Twinkle.tag.updateSortOrder,
 				list: [
-					{ type: 'option', value: 'cat', label: 'By categories', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'cat' },
-					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'alpha' }
+					{ type: 'option', value: 'cat', label: 'वर्ग अनुसार', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'cat' },
+					{ type: 'option', value: 'alpha', label: 'वर्णमाला अनुसार', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'alpha' }
 				]
 			});
 
@@ -80,44 +75,31 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			break;
 
 		case 'file':
-			Window.setTitle( "File maintenance tagging" );
+			Window.setTitle( "फ़ाइल रखरखाव टैगिंग" );
 
 			// TODO: perhaps add custom tags TO list of checkboxes
 
-			form.append({ type: 'header', label: 'License and sourcing problem tags' });
+			form.append({ type: 'header', label: 'लाइसेंस और स्रोत समस्या टैग' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
 
-			form.append({ type: 'header', label: 'Cleanup tags' } );
+			form.append({ type: 'header', label: 'सफ़ाई टैग' } );
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
 
-			form.append({ type: 'header', label: 'Image quality tags' } );
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
-
-			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
+			form.append({ type: 'header', label: 'विकिमीडिया कॉमन्स सम्बन्धी टैग' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
-
-			form.append({ type: 'header', label: 'Replacement tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
 			break;
 
 		case 'redirect':
 			Window.setTitle( "Redirect tagging" );
 
-			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
+			form.append({ type: 'header', label:'गलत एवं अलग वर्तनी, काल और वचन' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
 
-			form.append({ type: 'header', label:'Alternative name templates' });
+			form.append({ type: 'header', label:'अन्य नाम' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
 
-			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
+			form.append({ type: 'header', label:'रखरखाव' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
-			break;
-
-		case 'draft':
-			Window.setTitle( "Article draft tagging" );
-
-			form.append({ type: 'header', label:'Draft article tags' });
-			form.append({ type: 'checkbox', name: 'draftTags', list: Twinkle.tag.draftList });
 			break;
 
 		default:
@@ -156,55 +138,20 @@ Twinkle.tag.updateSortOrder = function(e) {
 		if (Twinkle.tag.checkedTags.indexOf(tag) !== -1) {
 			checkbox.checked = true;
 		}
-		if (tag === "globalize") {
+		if (tag === "वैश्वीकरण") {
 			checkbox.subgroup = {
 				name: 'globalize',
 				type: 'select',
 				list: [
-					{ label: "{{globalize}}: article may not represent a worldwide view of the subject", value: "globalize" },
+					{ label: "{{वैश्वीकरण}}: लेख विषय का विश्वव्यापी दृष्टिकोण नहीं दर्शाता है", value: "वैश्वीकरण" },
 					{
-						label: "Region-specific {{globalize}} subtemplates",
+						label: "क्षेत्र-विशिष्ट {{वैश्वीकरण}} उपसाँचे",
 						list: [
-							{ label: "{{globalize/Australia}}: article deals primarily with the Australian viewpoint", value: "globalize/Australia" },
-							{ label: "{{globalize/Canada}}: article deals primarily with the Canadian viewpoint", value: "globalize/Canada" },
-							{ label: "{{globalize/China}}: article deals primarily with the Chinese viewpoint", value: "globalize/China" },
-							{ label: "{{globalize/Common law}}: article deals primarily with the viewpoint of common law countries", value: "globalize/Common law" },
-							{ label: "{{globalize/Eng}}: article deals primarily with the English-speaking viewpoint", value: "globalize/Eng" },
-							{ label: "{{globalize/Europe}}: article deals primarily with the European viewpoint", value: "globalize/Europe" },
-							{ label: "{{globalize/France}}: article deals primarily with the French viewpoint", value: "globalize/France" },
-							{ label: "{{globalize/Germany}}: article deals primarily with the German viewpoint", value: "globalize/Germany" },
-							{ label: "{{globalize/India}}: article deals primarily with the Indian viewpoint", value: "globalize/India" },
-							{ label: "{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint", value: "globalize/Middle East" },
-							{ label: "{{globalize/North America}}: article deals primarily with the North American viewpoint", value: "globalize/North America" },
-							{ label: "{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint", value: "globalize/Northern" },
-							{ label: "{{globalize/Southern}}: article deals primarily with the southern hemisphere viewpoint", value: "globalize/Southern" },
-							{ label: "{{globalize/South Africa}}: article deals primarily with the South African viewpoint", value: "globalize/South Africa" },
-							{ label: "{{globalize/UK}}: article deals primarily with the British viewpoint", value: "globalize/UK" },
-							{ label: "{{globalize/UK and Canada}}: article deals primarily with the British and Canadian viewpoints", value: "globalize/UK and Canada" },
-							{ label: "{{globalize/US}}: article deals primarily with the USA viewpoint", value: "globalize/US" },
-							{ label: "{{globalize/West}}: article deals primarily with the viewpoint of Western countries", value: "globalize/West" }
+							{ label: "{{वैश्वीकरण/अंग्रेज़ी}}: लेख मुख्य रूप से अंग्रेज़ी वक्ताओं का दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/अंग्रेज़ी" },
+							{ label: "{{वैश्वीकरण/यूरोप}}: लेख मुख्य रूप से यूरोपीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/यूरोप" },
+							{ label: "{{वैश्वीकरण/भारत}}: लेख मुख्य रूप से भारतीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/भारत" },
 						]
 					}
-				]
-			};
-		} else if (tag === "notability") {
-			checkbox.subgroup = {
-				name: 'notability',
-				type: 'select',
-				list: [
-					{ label: "{{notability}}: article\'s subject may not meet the general notability guideline", value: "none" },
-					{ label: "{{notability|Academics}}: notability guideline for academics", value: "Academics" },
-					{ label: "{{notability|Biographies}}: notability guideline for biographies", value: "Biographies" },
-					{ label: "{{notability|Books}}: notability guideline for books", value: "Books" },
-					{ label: "{{notability|Companies}}: notability guidelines for companies and organizations", value: "Companies" },
-					{ label: "{{notability|Events}}: notability guideline for events", value: "Events" },
-					{ label: "{{notability|Films}}: notability guideline for films", value: "Films" },
-					{ label: "{{notability|Music}}: notability guideline for music", value: "Music" },
-					{ label: "{{notability|Neologisms}}: notability guideline for neologisms", value: "Neologisms" },
-					{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
-					{ label: "{{notability|Products}}: notability guideline for products and services", value: "Products" },
-					{ label: "{{notability|Sport}}: notability guideline for sports and athletics", value: "Sport" },
-					{ label: "{{notability|Web}}: notability guideline for web content", value: "Web" }
 				]
 			};
 		}
@@ -277,82 +224,68 @@ Twinkle.tag.article = {};
 // To ensure tags appear in the default "categorized" view, add them to the tagCategories hash below.
 
 Twinkle.tag.article.tags = {
-	"advert": "article is written like an advertisement",
-	"allplot": "article is almost entirely a plot summary",
-	"autobiography": "article is an autobiography and may not be written neutrally",
-	"BLP sources": "BLP article needs additional sources for verification",
-	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
-	"capitalization": "article does not follow Wikipedia's guidelines on the use of capital letters",
-	"cat improve": "article may require additional categories",
-	"citation style": "article has unclear or inconsistent inline citations",
-	"cleanup": "article may require cleanup",
-	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
-	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
-	"COI": "article creator or major contributor may have a conflict of interest",
-	"condense": "article may have too many section headers dividing up its content",
-	"confusing": "article may be confusing or unclear",
-	"context": "article provides insufficient context",
-	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
-	"copypaste": "article appears to have been copied and pasted from a source",
-	"dead end": "article has few or no links to other articles",
-	"disputed": "article has questionable factual accuracy",
-	"essay-like": "article is written like an essay and needs cleanup",
-	"expert-subject": "article needs attention from an expert on the subject",
-	"external links": "article's external links may not follow content policies or guidelines",
-	"fansite": "article resembles a fansite",
-	"fiction": "article fails to distinguish between fact and fiction",
-	"globalize": "article may not represent a worldwide view of the subject",
-	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
-	"hoax": "article may be a complete hoax",
-	"in-universe": "article subject is fictional and needs rewriting from a non-fictional perspective",
-	"incoherent": "article is incoherent or very hard to understand",
-	"in use": "article is undergoing a major edit for a short while",
-	"lead missing": "article has no lead section and one should be written",
-	"lead rewrite": "article lead section needs to be rewritten to comply with guidelines",
-	"lead too long": "article lead section is too long and should be shortened",
-	"lead too short": "article lead section is too short and should be expanded",
-	"linkrot": "article uses bare URLs for references, which are prone to link rot",
-	"merge": "article should be merged with another given article",
-	"merge from": "another given article should be merged into this one",
-	"merge to": "article should be merged into another given article",
-	"metricate": "article exclusively uses non-SI units of measurement",
-	"more footnotes": "article has some references, but insufficient in-text citations",
-	"new unreviewed article": "mark article for later review",
-	"no footnotes": "article has references, but no in-text citations",
-	"non-free": "article may contain excessive or improper use of copyrighted materials",
-	"NOT": "article contains unencyclopedic material which contravenes WP:NOT",
-	"notability": "article's subject may not meet the notability guideline",
-	"not English": "article is written in a language other than English and needs translation",
-	"one source": "article relies largely or entirely upon a single source",
-	"original research": "article has original research or unverified claims",
-	"orphan": "article is linked to from few or no other articles",
-	"out of date": "article needs out-of-date information removed or updated",
-	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
-	"overlinked": "article may have too many duplicate and/or irrelevant links",
-	"over detailed": "article contains an excessive amount of intricate detail",
-	"peacock": "article may contain peacock terms that promote the subject without adding information",
-	"plot": "plot summary in article is too long",
-	"POV": "article does not maintain a neutral point of view",
-	"primary sources": "article relies too heavily on first-hand sources, and needs third-party sources",
-	"prose": "article is in a list format that may be better presented using prose",
-	"puffery": "article may contain wording that promotes the subject through exaggeration",
-	"recentism": "article is slanted towards recent events",
-	"ref improve": "article needs additional references or sources for verification",
-	"rough translation": "article is poorly translated and needs cleanup",
-	"sections": "article needs to be broken into sections",
-	"self-published": "article may contain improper references to self-published sources",
-	"technical": "article may be too technical for the uninitiated reader",
-	"tense": "article is written in an incorrect tense",
-	"tone": "tone of article is not appropriate",
-	"too few opinions": "article may not include all significant viewpoints",
-	"uncategorized": "article is uncategorized",
-	"under construction": "article is currently in the middle of an expansion or major revamping",
-	"unreferenced": "article has no references at all",
-	"unreliable sources": "article's references may not be reliable sources",
-	"update": "article needs additional up-to-date information added",
-	"very long": "article is too long",
-	"weasel": "article neutrality is compromised by the use of weasel words",
-	"wikify": "article needs to be wikified"
+	"अत्यधिक विवरण": "लेख में अनावश्यक अत्यधिक विवरण है",
+	"अद्यतन": "लेख में नई जानकारी जोड़ने की आवश्यकता है",
+	"अस्पष्ट": "लेख भ्रामक अथवा अस्पष्ट है",
+	"अतिरंजित": "लेख में अतिरंजित शब्दावली का प्रयोग है जो सत्यापित जानकारी जोड़े बिना विषयवस्तु का प्रचार करती है",
+	"अविश्वसनीय स्रोत": "लेख में दिये गए सन्दर्भों के विश्वसनीय न होने की आशंका है",
+	"आत्मकथा": "लेख आत्मकथा है एवं ग़ैर तटस्थ दृष्टिकोण का हों सकता है",
+	"उद्धरण कम": "लेख में संदर्भ हैं परन्तु उद्धरण अपर्याप्त हैं",
+	"उद्धरण शैली": "लेख में अस्पष्ट अथवा परस्पर-विरोधी शैली के उद्धरण हैं",
+	"उद्धरणहीन": "लेख में संदर्भ हैं परन्तु उद्धरण नहीं हैं",
+	"उल्लेखनीयता": "लेख की विषयवस्तु उल्लेखनीयता दिशानिर्देशों पर खरी नहीं उतरती",
+	"एक स्रोत": "लेख मुख्य रूप से अथवा पूर्णतया एक स्रोत पर निर्भर करता है",
+	"एकाकी": "लेख से बहुत कम अथवा कोई भी लेख नहीं जुड़ते",
+	"कम दृष्टिकोण": "लेख सभी महत्वपूर्ण दृष्टिकोण नहीं दर्शाता, केवल कुछ को दर्शाता है",
+	"कहानी": "लेख में कहानी का सारांश बहुत लम्बा है",
+	"काम जारी": "लेख पर इस समय काम चल रहा है और लेख में काफ़ी विस्तार अथवा सुधार किया जा रहा है",
+	"को विलय": "इस लेख का एक और लेख में विलय कर देना चाहिए",
+	"काल्पनिक परिप्रेक्ष्य": "लेख का विषय कल्पना पर आधारित है और लेख को वास्तविकता के परिप्रेक्ष्य से लिखने की आवश्यकता है",
+	"कॉपी पेस्ट": "लेख किसी स्रोत से कॉपी-पेस्ट किया गया है",
+	"खराब अनुवाद": "लेख किसी और भाषा से खराब तरीके से अनूदित किया गया है",
+	"गद्य": "लेख सूची आरूप में है जिसे गद्य का प्रयोग करके बेहतर दर्शाया जा सकता है",
+	"ग़ैर मुक्त": "लेख में ग़ैर मुक्त सामग्री का अत्यधिक अथवा अनुचित उपयोग है",
+	"छोटी भूमिका": "लेख की भूमिका बहुत छोटी है और विस्तारित की जानी चाहिए",
+	"जीवनी स्रोत कम": "जीवित व्यक्ति की जीवनी में सत्यापन हेतु अतिरिक्त स्रोतों की आवश्यकता है",
+	"जीवनी स्रोतहीन": "जीवित व्यक्ति की जीवनी जिसमें कोई संदर्भ नहीं हैं",
+	"दृष्टिकोण जाँच": "लेख को तटस्थता जाँच के लिए नामित करें",
+	"धोखा": "लेख सम्पूर्णतया धोखा हो सकता है",
+	"नया असमीक्षित लेख": "लेख को बाद में जाँचने के लिये चिन्हित करें",
+	"निबंध": "लेख निबंध की तरह लिखा है और ठीक करने की आवश्यकता है",
+	"पुराना": "लेख में पुरानी जानकारी है जिसे अद्यतन की आवश्यकता है",
+	"प्रसंग": "लेख का प्रसंग अपर्याप्त है",
+	"प्रतिलिपि सम्पादन": "लेख को व्याकरण, शैली, सामंजस्य, लहजे अथवा वर्तनी के लिए प्रतिलिपि सम्पादन की आवश्यकता है",
+	"प्रशंसक दृष्टिकोण": "लेख प्रशंसक के दृष्टिकोण से लिखा है",
+	"प्राथमिक स्रोत": "लेख प्राथमिक स्रोतों पर अत्यधिक रूप से निर्भर है। लेख में तृतीय पक्ष के स्रोतों की आवश्यकता है।",
+	"बाहरी कड़ियाँ": "लेख कि बाहरी कड़ियाँ विकी नीतियों एवं दिशानिर्देशों के उल्लंघन में हैं",
+	"बन्द सिरा": "लेख में दूसरे लेखों की कड़ियाँ बहुत कम हैं अथवा नहीं हैं",
+	"बड़े सम्पादन": "लेख में कुछ समय के लिये बड़े सम्पादन किये जा रहे हैं",
+	"भाग": "लेख को भागों में विभाजित करने की आवश्यकता है",
+	"भूमिका नहीं": "लेख में भूमिका नहीं है, लिखी जानी चाहिए",
+	"भूमिका फिर लिखें": "लेख की भूमिका को दिशानिर्देशों के अनुसार पुनर्लेखन की आवश्यकता है",
+	"भ्रामक": "भ्रामक शब्दों के प्रयोग से लेख में पक्षपात उत्पन्न हो रहा है",
+	"में विलय": "एक और लेख का इस लेख में विलय कर देना चाहिए",
+	"मूल शोध": "लेख में मूल शोध अथवा असत्यापित दावे हैं",
+	"लम्बा": "लेख बहुत लम्बा है",
+	"लम्बी भूमिका": "लेख की भूमिका बहुत लम्बी है, छोटी की जानी चाहिए",
+	"लहजा": "लेख का लहजा ठीक नहीं हैं",
+	"विकिफ़ाइ": "लेख को विकिफिकेशन की आवश्यकता है",
+	"विलय": "लेख का एक और लेख से विलय कर देना चाहिए",
+	"विवादित": "लेख की तथ्यात्मक सटीकता संदिग्ध है",
+	"विशेषज्ञ": "लेख को विषय के विशेषज्ञ से ध्यान की आवश्यकता है",
+	"विज्ञापन": "लेख विज्ञापन की तरह लिखा है",
+	"वैश्वीकरण": "लेख विषय का विश्वव्यापी दृष्टिकोण नहीं दर्शाता है",
+	"संदर्भ सिर्फ़ कड़ी": "स्रोतों के लिए सिर्फ़ यूआरएल का प्रयोग हुआ है, जिनके टूटने की संभावना है",
+	"सफ़ाई": "लेख को  ठीक करने की आवश्यकता है",
+	"सिर्फ़ कहानी": "लेख लगभग सम्पूर्णतः कहानी का सारांश है",
+	"स्रोत कम": "लेख को सत्यापन के लिए अतिरिक्त संदर्भ एवं स्रोतों की आवश्यकता है",
+	"स्रोतहीन": "लेख स्रोतहीन है",
+	"स्वयं प्रकाशित स्रोत": "लेख में स्वप्रकाशित स्रोतों का अनुचित प्रयोग है",
+	"हालही झुकाव": "लेख हाल की घटनाओं की ओर झुका हुआ है",
+	"हिन्दी नहीं": "लेख हिन्दी के स्थान पर किसी और भाषा में लिखा है एवं अनूदित करने की आवश्यकता है",
+	"ज्ञानकोषीय नहीं": "लेख में ज्ञानकोष के लिये अनुपयुक्त जानकारी है जो वि:नहीं के विरुद्ध है",
+	"श्रेणी कम": "लेख को अतिरिक्त श्रेणियों की आवश्यकता है",
+	"श्रेणीहीन": "लेख श्रेणीहीन है"
 };
 
 // A list of tags in order of category
@@ -360,121 +293,103 @@ Twinkle.tag.article.tags = {
 // Add new categories with discretion - the list is long enough as is!
 
 Twinkle.tag.article.tagCategories = {
-	"Cleanup and maintenance tags": {
-		"General cleanup": [
-			"cleanup",
-			"copy edit",
-			"wikify"
+	"सफ़ाई एवं रखरखाव": {
+		"सामान्य सफ़ाई": [
+			"सफ़ाई",
+			"प्रतिलिपि सम्पादन",
+			"विकिफ़ाइ"
 		],
-		"Potentially unwanted content": [
-			"close paraphrasing",
-			"copypaste",
-			"external links",
-			"non-free",
-			"NOT"
+		"अवांछित सामग्री": [
+			"कॉपी पेस्ट",
+			"बाहरी कड़ियाँ",
+			"ग़ैर मुक्त",
+			"ज्ञानकोषीय नहीं"
 		],
-		"Structure, formatting, and lead section": [
-			"capitalization",
-			"cleanup-reorganize",
-			"condense",
-			"lead missing",
-			"lead rewrite",
-			"lead too long",
-			"lead too short",
-			"sections",
-			"very long"
+		"संरचना, रूप, एवं भूमिका": [
+			"भूमिका नहीं",
+			"भूमिका फिर लिखें",
+			"लम्बी भूमिका",
+			"छोटी भूमिका",
+			"भाग",
+			"लम्बा"
 		],
-		"Fiction-related cleanup": [
-			"allplot",
-			"fiction",
-			"in-universe",
-			"plot"
+		"काल्पनिक विषयवस्तु संबंधी सफ़ाई": [
+			"सिर्फ़ कहानी",
+			"काल्पनिक परिप्रेक्ष्य",
+			"कहानी"
 		]
 	},
-	"General content issues": {
-		"Importance and notability": [
-			"notability"  // has subcategories and special-cased code
+	"सामग्री संबंधी आम मुद्दे": {
+		"उल्लेखनीयता": [
+			"उल्लेखनीयता"  // has subcategories and special-cased code
 		],
-		"Style of writing": [
-			"advert",
-			"essay-like",
-			"fansite",
-			"prose",
-			"technical",
-			"tense",
-			"tone"
+		"लेखन शैली": [
+			"विज्ञापन",
+			"निबंध",
+			"गद्य",
+			"अस्पष्ट",
+			"लहजा"
 		],
-		"Sense (or lack thereof)": [
-			"confusing",
-			"incoherent"
+		"जानकारी एवं विवरण": [
+			"प्रसंग",
+			"विशेषज्ञ",
+			"अत्यधिक विवरण",
+			"पुराना",
+			"अद्यतन"
 		],
-		"Information and detail": [
-			"context",
-			"expert-subject",
-			"metricate",
-			"over detailed"
+		"तटस्थता, पक्षपात एवं तथ्यात्मक सटीकता": [
+			"आत्मकथा",
+			"विवादित",
+			"धोखा",
+			"वैश्वीकरण",  // has subcategories and special-cased code
+			"दृष्टिकोण",
+			"दृष्टिकोण जाँच",
+			"प्रशंसक दृष्टिकोण",
+			"कम दृष्टिकोण",
+			"हालही झुकाव",
+			"अतिरंजित",
+			"भ्रामक"
 		],
-		"Timeliness": [
-			"out of date",
-			"update"
-		],
-		"Neutrality, bias, and factual accuracy": [
-			"autobiography",
-			"COI",
-			"disputed",
-			"hoax",
-			"globalize",  // has subcategories and special-cased code
-			"peacock",
-			"POV",
-			"puffery",
-			"recentism",
-			"too few opinions",
-			"weasel"
-		],
-		"Verifiability and sources": [
-			"BLP sources",
-			"BLP unsourced",
-			"one source",
-			"original research",
-			"primary sources",
-			"ref improve",
-			"self-published",
-			"unreferenced",
-			"unreliable sources"
+		"सत्यापन एवं स्रोत": [
+			"जीवनी स्रोत कम",
+			"जीवनी स्रोतहीन",
+			"मूल शोध",
+			"प्राथमिक स्रोत",
+			"स्रोत कम",
+			"स्वयं प्रकाशित स्रोत",
+			"स्रोतहीन",
+			"अविश्वसनीय स्रोत"
 		]
 	},
-	"Specific content issues": {
-		"Language": [
-			"not English",
-			"rough translation"
+	"सामग्री संबंधी विशिष्ट मुद्दे": {
+		"भाषा": [
+			"हिन्दी नहीं",
+			"खराब अनुवाद"
 		],
-		"Links": [
-			"dead end",
-			"orphan",
-			"overlinked",
-			"wikify"  // this tag is listed twice because it used to focus mainly on links, but now it's a more general cleanup tag
+		"कड़ियाँ": [
+			"बन्द सिरा",
+			"एकाकी"
 		],
-		"Referencing technique": [
-			"citation style",
-			"linkrot",
-			"more footnotes",
-			"no footnotes"
+		"संदर्भ शैली": [
+			"उद्धरण शैली",
+			"संदर्भ सिर्फ़ कड़ी",
+			"उद्धरण कम",
+			"उद्धरणहीन"
 		],
-		"Categories": [
-			"cat improve",
-			"uncategorized"
+		"श्रेणियाँ": [
+			"श्रेणीहीन",
+			"श्रेणी कम"
 		]
 	},
-	"Merging": [
-		"merge",
-		"merge from",
-		"merge to"
+	"विलय": [
+		"विलय",
+		"को विलय",
+		"में विलय"
 	],
-	"Informational": [
-		"GOCEinuse",
-		"in use",
-		"new unreviewed article",
-		"under construction"
+	"सूचनात्मक": [
+		"बड़े सम्पादन",
+		"नया असमीक्षित लेख",
+		"काम जारी"
 	]
 };
 
@@ -482,80 +397,77 @@ Twinkle.tag.article.tagCategories = {
 
 Twinkle.tag.spellingList = [
 	{
-		label: '{{R from abbreviation}}: redirect from a title with an abbreviation',
+		label: '{{R from abbreviation}}: संक्षिप्त नाम से पुनर्निर्देशन',
 		value: 'R from abbreviation' 
 	},
 	{
-		label: '{{R to list entry}}: redirect to a \"list of minor entities\"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
+		label: '{{R to list entry}}: \"छोटी चीज़ों कि सूची\" प्रकार के लेख को पुनर्निर्देशन(ऐसे विषयों के लिये जो अपने-आप में सम्पूर्ण लेख जितने उल्लेखनीय नहीं हैं)',
 		value: 'R to list entry' 
 	},
 	{
-		label: '{{R to section}}: similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe.',
+		label: '{{R to section}}: {{R to list entry}} जैसा, परंतु तब प्रयोग करें जब सूची अनुभाजित हो और पुनर्निर्देशन किसी अनुभाग को किया जा रहा हो',
 		value: 'R to section' 
 	},
 	{
-		label: '{{R from misspelling}}: redirect from a misspelling or typographical error',
+		label: '{{R from misspelling}}: गलत वर्तनी अथवा टंकन में गलती से पुनर्निर्देशन',
 		value: 'R from misspelling' 
 	},
 	{
-		label: '{{R from alternative spelling}}: redirect from a title with a different spelling',
+		label: '{{R from alternative spelling}}: अलग वर्तनी से पुनर्निर्देशन',
 		value: 'R from alternative spelling' 
 	},
 	{
-		label: '{{R from plural}}: redirect from a plural word to the singular equivalent',
+		label: '{{R from plural}}: बहुवचन से एकवचन को पुनर्निर्देशन',
 		value: 'R from plural' 
 	},
 	{
-		label: '{{R from related word}}: redirect from a related word',
+		label: '{{R from related word}}: सम्बंधित शब्द से पुनर्निर्देशन',
 		value: 'R from related word' 
 	},
-	{
+	/*{
 		label: '{{R with possibilities}}: redirect from a more specific title to a more general, less detailed article, hence something which can and should be expanded',
 		value: 'R with possibilities' 
-	},
+	},*/
 	{
-		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team that he or she belongs to',
+		label: '{{R from member}}: किसी समूह के सदस्य से उस समूह, संगठन अथवा टीम इत्यादि को पुनर्निर्देशन',
 		value: 'R from member' 
-	},
-	{
-		label: '{{R from other capitalisation}}: redirect from a title with another method of capitalisation',
-		value: 'R from other capitalisation'
 	}
 ];
 
 Twinkle.tag.alternativeList = [
 	{
-		label: '{{R from alternative name}}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym',
+		label: '{{R from alternative name}}: किसी और नाम, तख़ल्लुस, निकनेम, अथवा पर्यायवाची से पुनर्निर्देशन',
 		value: 'R from alternative name' 
 	},
 	{
-		label: '{{R from full name}}: redirect from a title that is a complete or more complete name',
+		label: '{{R from full name}}: पूरे नाम से पुनर्निर्देशन',
 		value: 'R from full name' 
 	},
 	{
-		label: '{{R from surname}}: redirect from a title that is a surname',
+		label: '{{R from surname}}: उपनाम से पुनर्निर्देशन',
 		value: 'R from surname' 
 	},
 	{
-		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
-		value: 'R from historic name' 
+		label: '{{R from historic name}}: किसी ऐसे नाम से पुनर्निर्देशन जो ऐतिहासिक रूप से जगह से जुड़ा हुआ है',
+		value: 'R from historic name',
+		tooltip: 'उदहारण: उत्तरांचल से उत्तराखण्ड, मद्रास से चेन्नई'
 	},
 	{
-		label: '{{R from scientific name}}: redirect from the scientific name to the common name',
+		label: '{{R from scientific name}}: वैज्ञानिक नाम से आम नाम को पुनर्निर्देशन',
 		value: 'R from scientific name' 
 	},
 	{
-		label: '{{R to scientific name}}: redirect from the common name to the scientific name',
+		label: '{{R to scientific name}}: आम नाम से वैज्ञानिक नाम को पुनर्निर्देशन',
 		value: 'R to scientific name' 
 	},
 	{
-		label: '{{R from name and country}}: redirect from the specific name to the briefer name',
+		label: '{{R from name and country}}: देश सहित नाम से सिर्फ़ जगह के नाम को पुनर्निर्देशन',
 		value: 'R from name and country' 
 	},
 	{
-		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
+		label: '{{R from alternative language}}: किसी दूसरी भाषा के नाम से हिन्दी भाषा को पुनर्निर्देशन',
 		value: 'R from alternative language' 
-	},
+	}/*,
 	{
 		label: '{{R from ASCII}}: redirect from a title in basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.)',
 		value: 'R from ASCII' 
@@ -563,42 +475,39 @@ Twinkle.tag.alternativeList = [
 	{
 		label: '{{R from title without diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
 		value: 'R from title without diacritics'
-	}
+	}*/
 ];
 
 Twinkle.tag.administrativeList = [
 	{
-		label: '{{R from merge}}: redirect from a merged page in order to preserve its edit history',
-		value: 'R from merge' 
+		label: '{{R from merge}}: विलय किये गए पन्ने से पुनर्निर्देशन(सम्पादन इतिहास संरक्षित करने के लिये)',
+		value: 'R from merge',
+		tooltip: 'इसका प्रयोग तब करें जब दो सम्बन्धित विषयों के लेखों का विलय किया गया हो। एक ही विषय पर बने दो लेखों के लिये {{R from duplicated article}} का प्रयोग करें।'
 	},
 	{
-		label: '{{R to disambiguation page}}: redirect to a disambiguation page',
+		label: '{{R to disambiguation page}}: बहुविकल्पी पन्ने को पुनर्निर्देशन',
 		value: 'R to disambiguation page' 
 	},
 	{
-		label: '{{R from duplicated article}}: redirect to a similar article in order to preserve its edit history',
+		label: '{{R from duplicated article}}: इसी विषय पर बने दूसरे लेख को पुनर्निर्देशन',
 		value: 'R from duplicated article' 
 	},
 	{
-		label: '{{R to decade}}: redirect from a year to the decade article',
+		label: '{{R to decade}}: वर्ष से दशक को पुनर्निर्देशन',
 		value: 'R to decade' 
 	},
 	{
-		label: '{{R from shortcut}}: redirect from a Wikipedia shortcut',
+		label: '{{R from shortcut}}: विकिपीडिया शॉर्टकट से पुनर्निर्देशन',
 		value: 'R from shortcut' 
-	},
-	{
-		label: '{{R from CamelCase}}: redirect from a CamelCase title',
-		value: 'R from CamelCase' 
 	},
 	{
 		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the \"metadata\" section on some image description pages)',
 		value: 'R from EXIF' 
-	},
+	}/*,
 	{
 		label: '{{R from school}}: redirect from a school article that had very little information',
 		value: 'R from school'
-	}
+	}*/
 ];
 
 // maintenance tags for FILES start here
@@ -612,22 +521,7 @@ Twinkle.tag.file.licenseList = [
 ];
 
 Twinkle.tag.file.cleanupList = [
-	{ label: '{{Artifacts}}: PNG contains residual compression artifacts', value: 'Artifacts' },
-	{ label: '{{Bad font}}: SVG uses fonts not available on the thumbnail server', value: 'Bad font' },
-	{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
-	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
-	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
-	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
-	{ label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image' },
-	{ label: '{{Cleanup SVG}}: SVG needing code and/or appearance cleanup', value: 'Cleanup SVG' },
-	{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
-	{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
-	{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
-	{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
-	{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
-	{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
-	{ label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]', value: 'Rename media' },
-	{ label: '{{Should be PNG}}: GIF or JPEG should be lossless', value: 'Should be PNG' },
+	{ label: '{{BadJPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
 	{
 		label: '{{Should be SVG}}: PNG, GIF or JPEG should be vector graphics', value: 'Should be SVG',
 		subgroup: {
@@ -652,45 +546,19 @@ Twinkle.tag.file.cleanupList = [
 			]
 		}
 	},
-	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
-];
-
-Twinkle.tag.file.qualityList = [
-	{ label: '{{Image-blownout}}', value: 'Image-blownout' },
-	{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
-	{ label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality' },
-	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
-	{ label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem' }
 ];
 
 Twinkle.tag.file.commonsList = [
-	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
-	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
-	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
-	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
-	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' },
-	{ label: '{{Shadows Commons}}: a different file is present on Commons under the same filename', value: 'Shadows Commons' }
+	{ label: '{{Move to Commons}}: मुक्त मीडिया जिसे कॉमन्स पर होना चाहिये', value: 'Move to Commons' },
+	{ label: '{{Do not move to Commons}} (सार्वजनिक क्षेत्र समस्या): फ़ाइल संयुक्त राष्ट्र अमेरिका में सार्वजनिक क्षेत्र में है परंतु स्रोत देश में नहीं', value: 'Do not move to Commons' },
+	{ label: '{{Do not move to Commons}} (अन्य कारण)', value: 'Do not move to Commons_reason' },
+	{ label: '{{NowCommons}}: फ़ाइल कॉमन्स पर उपलब्ध है', value: 'subst:ncd' },
 ];
-
-Twinkle.tag.file.replacementList = [
-	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
-	{ label: '{{Redundant}}: exact duplicate of another file, but not yet orphaned', value: 'Redundant' },
-	{ label: '{{PNG version available}}', value: 'PNG version available' },
-	{ label: '{{SVG version available}}', value: 'SVG version available' }
-];
-
-
-// Tags for DRAFT ARTICLES start here
-
-Twinkle.tag.draftList = [
-	{ label: '{{New unreviewed article}}: mark article for later review', value: 'new unreviewed article' }
-];
-
 
 // Contains those article tags that can be grouped into {{multiple issues}}.
 // This list includes synonyms.
 Twinkle.tag.groupHash = [
-	'advert',
+/*	'advert',
 	'autobiography',
 	'BLP IMDb-only refimprove',
 	'BLP IMDB-only refimprove',
@@ -744,7 +612,7 @@ Twinkle.tag.groupHash = [
 	'fiction',
 	'game guide',
 	'gameguide',
-	'globalize',
+	'वैश्वीकरण',
 	'histinfo',
 	'hoax',
 	'howto',
@@ -767,7 +635,6 @@ Twinkle.tag.groupHash = [
 	'no footnotes',
 	'notability',
 	'notable',
-	'one source',
 	'onesource',
 	'original research',
 	'orphan',
@@ -795,7 +662,6 @@ Twinkle.tag.groupHash = [
 	'self-published',
 	'story',
 	'synthesis',
-	'technical',
 	'jargon',
 	'tone',
 	'inappropriate tone',
@@ -814,6 +680,7 @@ Twinkle.tag.groupHash = [
 	'long',
 	'weasel',
 	'wikify'
+*/
 ];
 
 Twinkle.tag.callbacks = {
@@ -823,7 +690,7 @@ Twinkle.tag.callbacks = {
 		var tags = [], groupableTags = [];
 
 		// Remove tags that become superfluous with this action
-		var pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
+		var pageText = pageobj.getPageText().replace(/\{\{\s*(नया असमीक्षित लेख|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
 		var i;
 		if( Twinkle.tag.mode !== 'redirect' ) {
@@ -832,9 +699,8 @@ Twinkle.tag.callbacks = {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
 				if( !tagRe.exec( pageText ) ) {
 					if( Twinkle.tag.groupHash.indexOf(params.tags[i]) !== -1 && 
-							(params.tags[i] !== 'globalize' || params.globalizeSubcategory === 'globalize' ) &&
-							(params.tags[i] !== 'notability' || params.notabilitySubcategory === 'none' )) {
-						// don't add to multipleissues for globalize/notability subcats
+							(params.tags[i] !== 'वैश्वीकरण' || params.globalizeSubcategory === 'वैश्वीकरण' )) {
+						// don't add to multipleissues for globalize subcats
 						groupableTags = groupableTags.concat( params.tags[i] );
 					} else {
 						tags = tags.concat( params.tags[i] );
@@ -882,59 +748,55 @@ Twinkle.tag.callbacks = {
 		tags.sort();
 		for( i = 0; i < tags.length; i++ ) {
 			var currentTag = "";
-			if( tags[i] === 'uncategorized' || tags[i] === 'cat improve' ) {
+			if( tags[i] === 'श्रेणीहीन' || tags[i] === 'श्रेणी कम' ) {
 				pageText += '\n\n{{' + tags[i] +
 					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
-				if( tags[i] === 'globalize' ) {
+				if( tags[i] === 'वैश्वीकरण' ) {
 					currentTag += '{{' + params.globalizeSubcategory;
 				} else {
 					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tags[i];
 				}
 
-				if( tags[i] === 'notability' && params.notabilitySubcategory !== 'none' ) {
-					currentTag += '|' + params.notabilitySubcategory;
-				}
-
 				// prompt for other parameters, based on the tag
 				switch( tags[i] ) {
-					case 'cleanup':
-						var reason = prompt('You can optionally enter a more specific reason why the article requires cleanup.  \n' +
-							"Just click OK if you don't wish to enter this.  To skip the {{cleanup}} tag, click Cancel.", "");
+					case 'सफ़ाई':
+						var reason = prompt('आप वैकल्पिक रूप से इस लेख में सफ़ाई की आवश्यकता का कारण दे सकते हैं।\n' +
+							" कोई भी कारण न देने के लिये OK पर क्लिक करें। {{सफ़ाई}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
 						if (reason === null) {
 							continue;
 						} else if (reason !== "") {
 							currentTag += '|reason=' + reason;
 						}
 						break;
-					case 'copypaste':
-						var url = prompt('Please enter the URL which is believed to be the source of the copy-paste.  \n' +
-							"Just click OK if you don't know.  To skip the {{copypaste}} tag, click Cancel.", "");
+					case 'कॉपी पेस्ट':
+						var url = prompt('कृपया स्रोत यू॰आर॰एल(URL) दें जहाँ से आपको लगता है इसे कॉपी पेस्ट किया गया है।\n' +
+							"यदि आपको नहीं पता तो OK पर क्लिक करें। {{कॉपी पेस्ट}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
 						if (url === null) {
 							continue;
 						} else if (url !== "") {
 							currentTag += '|url=' + url;
 						}
 						break;
-					case 'not English':
-						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
-							"Just click OK if you don't know.  To skip the {{not English}} tag, click Cancel.", "");
+					case 'हिन्दी नहीं':
+						var langname = prompt('कृपया उस भाषा का नाम बताएँ जिसमें आपके विचार से यह लेख लिखा हुआ है।\n' +
+							"यदि आप नहीं जानते तो OK पर क्लिक करें। {{हिन्दी नहीं}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
 						if (langname === null) {
 							continue;
 						} else if (langname !== "") {
 							currentTag += '|1=' + langname;
 						}
 						break;
-					case 'rough translation':
-						var roughlang = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
-							"Just click OK if you don't know.  To skip the {{rough translation}} tag, click Cancel.", "");
+					case 'खराब अनुवाद':
+						var roughlang = prompt('कृपया स्रोत भाषा का नाम दें जिससे यह लेख अनूदित किया गया है।  \n' +
+							"यदि आप नहीं जानते तो OK पर क्लिक करें। {{खराब अनुवाद}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
 						if (roughlang === null) {
 							continue;
 						} else if (roughlang !== "") {
 							currentTag += '|1=' + roughlang;
 						}
 						break;
-					case 'expert-subject':
+					case 'विशेषज्ञ':
 						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
 							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
 						if (wikiproject === null) {
@@ -943,21 +805,12 @@ Twinkle.tag.callbacks = {
 							currentTag += '|1=' + wikiproject;
 						}
 						break;
-					case 'wikify':
-						var wreason = prompt('You can optionally enter a more specific reason why the article needs to be wikified.  \n' +
-							"Just click OK if you don't wish to enter this.  To skip the {{wikify}} tag, click Cancel.", "");
-						if (wreason === null) {
-							continue;
-						} else if (wreason !== "") {
-							currentTag += '|reason=' + wreason;
-						}
-						break;
-					case 'merge':
-					case 'merge to':
-					case 'merge from':
-						var param = prompt('Please enter the name of the other article(s) involved in the merge.  \n' +
-							"To specify multiple articles, separate them with a vertical pipe (|) character.  \n" +
-							"This information is required.  Click OK when done, or click Cancel to skip the merge tag.", "");
+					case 'विलय':
+					case 'को विलय':
+					case 'में विलय':
+						var param = prompt('कृपया विलय में शामिल अन्य लेखों के नाम बताएँ।  \n' +
+							"एक से अधिक लेखों के नाम डालने के लिये उनके बीच में वर्टिकल पाइप (|) का प्रयोग करें।  \n" +
+							"यह जानकारी आवश्यक है। नाम डालने के बाद OK दबाएँ, विलय टैग छोड़ने के लिये Cancel दबाएँ।", "");
 						if (param === null) {
 							continue;
 						} else if (param !== "") {
@@ -981,7 +834,7 @@ Twinkle.tag.callbacks = {
 			}
 
 			summaryText += ' {{[[Template:';
-			if( tags[i] === 'globalize' ) {
+			if( tags[i] === 'वैश्वीकरण' ) {
 				summaryText += params.globalizeSubcategory + '|' + params.globalizeSubcategory;
 			} else {
 				summaryText += tags[i] + '|' + tags[i];
@@ -1028,68 +881,12 @@ Twinkle.tag.callbacks = {
 				var input;
 				switch (tag) {
 					case "subst:ncd":
-						/* falls through */
-					case "Keep local":
 						input = prompt( "{{" + (tag === "subst:ncd" ? "Now Commons" : tag) +
 							"}} - Enter the name of the image on Commons (if different from local name), excluding the File: prefix:", "" );
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
 							currentTag += '|1=' + input;
-						}
-						break;
-					case "Rename media":
-						input = prompt( "{{Rename media}} - Enter the new name for the image (optional):", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
-						input = prompt( "{{Rename media}} - Enter the reason for the rename (optional):", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|2=" + input;
-						}
-						break;
-					case "Cleanup image":
-						/* falls through */
-					case "Cleanup SVG":
-						input = prompt( "{{" + tag + "}} - Enter the reason for cleanup (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
-						break;
-					case "Image-Poor-Quality":
-						input = prompt( "{{Image-Poor-Quality}} - Enter the reason why this image is so bad (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
-						break;
-					case "Low quality chem":
-						input = prompt( "{{Low quality chem}} - Enter the reason why the diagram is disputed (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
-						break;
-					case "PNG version available":
-						/* falls through */
-					case "SVG version available":
-						/* falls through */
-					case "Obsolete":
-						/* falls through */
-					case "Redundant":
-						input = prompt( "{{" + tag + "}} - Enter the name of the file which replaces this one (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
 						}
 						break;
 					case "Do not move to Commons_reason":
@@ -1148,8 +945,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		case 'article':
 			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
-			params.globalizeSubcategory = form["articleTags.globalize"] ? form["articleTags.globalize"].value : null;
-			params.notabilitySubcategory = form["articleTags.notability"] ? form["articleTags.notability"].value : null;
+			params.globalizeSubcategory = form["articleTags.वैश्वीकरण"] ? form["articleTags.वैश्वीकरण"].value : null;
 			break;
 		case 'file':
 			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
@@ -1157,10 +953,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 		case 'redirect':
 			params.tags = form.getChecked( 'redirectTags' );
-			break;
-		case 'draft':
-			params.tags = form.getChecked( 'draftTags' );
-			Twinkle.tag.mode = 'article';
 			break;
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
@@ -1176,7 +968,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	Status.init( form );
 
 	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
+	Wikipedia.actionCompleted.notice = "टैगिंग संपूर्ण, पन्ना कुछ ही क्षणों में रीलोड होगा";
 	if (Twinkle.tag.mode === 'redirect') {
 		Wikipedia.actionCompleted.followRedirect = false;
 	}
