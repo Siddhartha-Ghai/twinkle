@@ -913,6 +913,8 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
+			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+
 			pageobj.setPageText("{{ffd|log=" + params.date + "}}\n" + text);
 			pageobj.setEditSummary("Nominated for deletion at [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
@@ -962,6 +964,8 @@ Twinkle.xfd.callbacks = {
 		taggingImage: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
+
+			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
 
 			pageobj.setPageText("{{puf|help=off|log=" + params.date + "}}\n" + text);
 			pageobj.setEditSummary("Listed at [[WP:PUF|possibly unfree files]]: [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -1152,7 +1156,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("{{subst:cfr-speedy|1=" + params.target + "}}\n" + text);
-			pageobj.setEditSummary("Nominated for speedy renaming; see [[WP:CFDS|categories for discussion/Speedy]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Nominated for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1266,7 +1270,7 @@ Twinkle.xfd.callbacks = {
 			var statelem = pageobj.getStatusElement();
 
 			var text = old_text.replace( /(<\!-- Add new entries directly below this line -->)/, "$1\n{{subst:rfd2|redirect="+ mw.config.get('wgPageName') + "|target=" +
-				params.target + "|text=" + params.reason.toUpperCaseFirstChar() +"}} ~~~~\n" );
+				params.target + "|text=" + Morebits.string.toUpperCaseFirstChar(params.reason) + "}} ~~~~\n" );
 			if( text === old_text ) {
 				statelem.error( 'failed to find target spot for the discussion' );
 				return;

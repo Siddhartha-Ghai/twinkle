@@ -242,7 +242,7 @@ Twinkle.welcome.problemList = [
 		value: 'Welcomenpov'
 	},
 	{ 
-		label: '{{Welcomespam}}: welcome with additional discussion of anti-spamming polices*',
+		label: '{{Welcomespam}}: welcome with additional discussion of anti-spamming policies*',
 		value: 'Welcomespam'
 	},
 	{ 
@@ -482,7 +482,7 @@ Twinkle.welcome.callbacks = {
 			" जोड़ा";
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markWelcomesAsMinor'));
+		pageobj.setMinorEdit(false);
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchWelcomes'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();

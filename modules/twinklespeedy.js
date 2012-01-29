@@ -397,13 +397,11 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 		value: 'a9',
 		tooltip: 'An article about a musical recording which does not indicate why its subject is important or significant, and where the artist\'s article has never existed or has been deleted'
 	});
-	if (!multiple) {
-		result.push({
-			label: 'A10: Recently created article that duplicates an existing topic',
-			value: 'a10',
-			tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
-		});
-	}
+	result.push({
+		label: 'A10: Recently created article that duplicates an existing topic',
+		value: 'a10',
+		tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
+	});
 	return result;
 };
 
@@ -889,7 +887,7 @@ Twinkle.speedy.callbacks = {
 
 			Wikipedia.addCheckpoint();
 
-			var params = clone( apiobj.params );
+			var params = $.extend( {}, apiobj.params );
 			params.current = 0;
 			params.total = total;
 			params.obj = statusIndicator;
@@ -1032,6 +1030,10 @@ Twinkle.speedy.callbacks = {
 
 			// Remove tags that become superfluous with this action
 			text = text.replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
+			if (mw.config.get('wgNamespaceNumber') === 6) {
+				// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
+				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+			}
 
 			// Generate edit summary for edit
 			var editsummary;
@@ -1196,7 +1198,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			if (deldisc !== "" && (deldisc.substring(0, 9) !== "Wikipedia" || deldisc.substring(0, 3) !== "WP:"))
+			if (deldisc !== "" && deldisc.substring(0, 9) !== "Wikipedia" && deldisc.substring(0, 3) !== "WP:")
 			{
 				statelem.error( 'The deletion discussion page name, if provided, must start with "Wikipedia:".  Cannot proceed.' );
 				return null;
@@ -1305,7 +1307,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				}
 			}
 			break;
-		case 'f9':
 		case 'g12':
 			var url = prompt( 'Please enter the URL if available, including the "http://":', "" );
 			if (url === null)
@@ -1314,6 +1315,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				return null;
 			}
 			parameters.url = url;
+			break;
+		case 'f9':
+			var f9url = prompt( 'Please enter the URL of the copyvio, including the "http://".  \nIf you cannot provide a URL, please do not use CSD F9.  (Exception: for copyvios of non-Internet sources, leave the box blank.)', "" );
+			if (f9url === null)
+			{
+				statelem.error( 'Aborted by user.' );
+				return null;
+			}
+			parameters.url = f9url;
 			break;
 		case 'a2':
 			var source = prompt('Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):', "");

@@ -68,7 +68,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		if(QueryString.exists( 'from' ) )
 		{
 			gapnamespace = QueryString.get( 'namespace' );
-			gapprefix = QueryString.get( 'from' ).toUpperCaseFirstChar();
+			gapprefix = Morebits.string.toUpperCaseFirstChar( QueryString.get( 'from' ) );
 		}
 		else
 		{
@@ -78,7 +78,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			}
 			var titleSplit = pathSplit[3].split(':');
 			gapnamespace = Namespace[titleSplit[0].toUpperCase()];
-			if ( titleSplit.length < 2 || typeof(gapnamespace) === 'undefined' )
+			if ( titleSplit.length < 2 || typeof gapnamespace === 'undefined' )
 			{
 				gapnamespace = Namespace.MAIN;
 				gapprefix = pathSplit.splice(3).join('/');
@@ -186,7 +186,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			}
 		}
 	}
-	var work = pages.chunk( Twinkle.getPref('batchdeleteChunks') );
+	var work = Morebits.array.chunk( pages, Twinkle.getPref('batchdeleteChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchdelete.currentdeletor = window.setInterval( toCall, 1000, work );
 };
@@ -282,7 +282,7 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var params = clone( self.params );
+		var params = $.extend({}, self.params);
 		params.current = 0;
 		params.total = total;
 		params.obj = statusIndicator;
@@ -336,7 +336,7 @@ Twinkle.batchdelete.callbacks = {
 		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
 			var title = snapshot.snapshotItem(i).value;
 			var wikipedia_page = new Wikipedia.page( title, "Unlinking on " + title );
-			var params = clone( self.params );
+			var params = $.extend( {}, self.params );
 			params.title = title;
 			params.onsuccess = onsuccess;
 			wikipedia_page.setCallbackParameters(params);

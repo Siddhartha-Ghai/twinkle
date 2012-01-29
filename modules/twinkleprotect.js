@@ -115,7 +115,7 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 	$(xml).find('pr').each(function(index, pr) {
 		var $pr = $(pr);
 		var boldnode = document.createElement('b');
-		boldnode.textContent = $pr.attr('type').toUpperCaseFirstChar() + ": " + $pr.attr('level');
+		boldnode.textContent = Morebits.string.toUpperCaseFirstChar($pr.attr('type')) + ": " + $pr.attr('level');
 		result.push(boldnode);
 		if ($pr.attr('expiry') === 'infinity') {
 			result.push(" (indefinite) ");
@@ -755,7 +755,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		break;
 	}
 
-	if( actiontype === 'tag' || actiontype === 'protect' ) {
+	if( actiontype === 'tag' || (actiontype === 'protect' && mw.config.get('wgArticleId')) ) {
 		tagparams = {
 			tag: form.tagtype.value,
 			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason) ? form.protectReason.value : null,
@@ -951,7 +951,7 @@ Twinkle.protect.callbacks = {
 				tag += '|reason=' + params.reason;
 			}
 			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-				tag += '|expiry={{subst:#time:F j, Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
+				tag += '|expiry={{subst:#time:j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
 			}
 			if( params.small ) {
 				tag += '|small=yes';
@@ -1037,7 +1037,7 @@ Twinkle.protect.callbacks = {
 
 		words += params.typename;
 
-		newtag += "'''" + words.toUpperCaseFirstChar() + ( params.reason !== '' ? ":''' " + params.reason : ".'''" ) + " ~~~~";
+		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ":''' " + params.reason : ".'''" ) + " ~~~~";
 
 		var reg;
 		if ( params.category === 'unprotect' ) {

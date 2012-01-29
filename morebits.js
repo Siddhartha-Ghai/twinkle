@@ -30,6 +30,8 @@
  */
 
 
+var Morebits = {};
+
 /**
  * **************** userIsInGroup(), userIsAnon() ****************
  * Simple helper functions to see what groups a user might belong
@@ -43,63 +45,25 @@ function userIsAnon() {
 }
 
 
+
 /**
- * **************** Cookies ****************
+ * **************** isIPAddress() ****************
+ * Helper function: Returns true if given string contains a valid IPv4 or
+ * IPv6 address
+ *
+ * This is copied from mediaWiki.util; sometimes util is loaded after twinkle (?!)
  */
 
-var Cookies = {
-	/*
-	 * Creates an cookie with the name and value pair. expiry is optional or null and defaults
-	 * to browser standard (in seconds), path is optional and defaults to "/"
-	 * throws error if the cookie already exists.
-	 */
-	create: function( name, value, max_age, path ) {
-		if( Cookies.exists( name ) ) {
-			throw new Error( "cookie " + name + " already exists" );
-		}
-		Cookies.set( name, value, max_age, path );
-	},
-	/*
-	 * Sets an cookie with the name and value pair, overwrites any previous cookie of that name.
-	 * expiry is optional or null and defaults to browser standard (in seconds),
-	 * path is optional and defaults to /
-	 */
-	set: function( name, value, max_age, path ) {
-		var cookie = name + "=" + encodeURIComponent( value );
-		if( max_age ) {
-			cookie += "; max-age=" + max_age;
-		}
-		cookie += "; path=" + path || "/";
-		document.cookie = cookie;
-	},
-	/*
-	 * Retuns the cookie with the name "name", return null if no cookie found.
-	 */
-	read: function( name ) {
-		var cookies = document.cookie.split(";");
-		for( var i = 0; i < cookies.length; ++i ) {
-			var current = cookies[i];
-			current = current.trim();
-			if( current.indexOf( name + "=" ) === 0 ) {
-				return decodeURIComponent( current.substring( name.length + 1 ) );
-			}
-		}
-		return null;
-	},
-	/*
-	 * Returns true if a cookie exists, false otherwise
-	 */
-	exists: function( name ) {
-		var re = new RegExp( ";\\s*" + name + "=" );
-		return re.test( document.cookie );
-	},
-	/*
-	 * Deletes the cookie named "name"
-	 */
-	remove: function( name ) {
-		Cookies.set( name, '', -1 );
-	}
-};
+Morebits.RE_IP_ADD = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])$/;
+Morebits.RE_IPV6_ADD = /^(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})$/;
+Morebits.RE_IPV6_ADD2 = /^[0-9A-Fa-f]{1,4}(?:::?[0-9A-Fa-f]{1,4}){1,6}$/;
+
+function isIPAddress( address ) {
+	return address.search( Morebits.RE_IP_ADD ) !== -1 ||  // IPv4
+		address.search( Morebits.RE_IPV6_ADD ) !== -1 ||  // IPv6
+		(address.search( Morebits.RE_IPV6_ADD2 ) !== -1	&& address.search( /::/ ) !== -1 && address.search( /::.*::/ ) === -1);
+}
+
 
 
 /**
@@ -340,7 +304,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 							e.target.parentNode.appendChild( e.target.subgroup );
 							if( e.target.type === 'radio' ) {
 								var name = e.target.name;
-								if( typeof( e.target.form.names[name] ) !== 'undefined' ) {
+								if( typeof e.target.form.names[name] !== 'undefined' ) {
 									e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 								}
 								e.target.form.names[name] = e.target;
@@ -357,7 +321,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					event = function(e) {
 						if( e.target.checked ) {
 							var name = e.target.name;
-							if( typeof( e.target.form.names[name] ) !== 'undefined' ) {
+							if( typeof e.target.form.names[name] !== 'undefined' ) {
 								e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 							}
 							delete e.target.form.names[name];
@@ -522,7 +486,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			var result = document.createElement( 'span' );
 			result.className = 'quickformDescription';
 			for( i = 0; i < data.label.length; ++i ) {
-				if( typeof(data.label[i]) === 'string' ) {
+				if( typeof data.label[i] === 'string' ) {
 					result.appendChild( document.createTextNode( data.label[i] ) );
 				} else if( data.label[i] instanceof Element ) {
 					result.appendChild( data.label[i] );
@@ -701,13 +665,13 @@ RegExp.escape = function( text, space_fix ) {
  */
 
 var Bytes = function( value ) {
-	if( typeof(value) === 'string' ) {
+	if( typeof value === 'string' ) {
 		var res = /(\d+) ?(\w?)(i?)B?/.exec( value );
 		var number = res[1];
 		var mag = res[2];
 		var si = res[3];
 
-		if( ! number ) {
+		if( !number ) {
 			this.number = 0;
 			return;
 		}
@@ -781,128 +745,146 @@ Bytes.prototype.toString = function( magnitude ) {
 
 
 /**
- * **************** String ****************
+ * **************** String; Morebits.string ****************
  */
 
-String.prototype.ltrim = function stringPrototypeLtrim( chars ) {
-	chars = chars || "\\s";
-	return this.replace( new RegExp("^[" + chars + "]+", "g"), "" );
-};
+if (!String.prototype.trimLeft) {
+	String.prototype.trimLeft = function stringPrototypeLtrim( chars ) {
+		chars = chars || "\\s";
+		return this.replace( new RegExp("^[" + chars + "]+", "g"), "" );
+	};
+}
 
-String.prototype.rtrim = function stringPrototypeRtrim( chars ) {
-	chars = chars || "\\s";
-	return this.replace( new RegExp("[" + chars + "]+$", "g"), "" );
-};
+if (!String.prototype.trimRight) {
+	String.prototype.trimRight = function stringPrototypeRtrim( chars ) {
+		chars = chars || "\\s";
+		return this.replace( new RegExp("[" + chars + "]+$", "g"), "" );
+	};
+}
 
-String.prototype.trim = function stringPrototypeTrim( chars ) {
-	return this.rtrim(chars).ltrim(chars);
-};
-
-String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKeys( start, end, skip ) {
-	if( start.length !== end.length ) {
-		throw new Error( 'start marker and end marker must be of the same length' );
-	}
-	var level = 0;
-	var initial = null;
-	var result = [];
-	if( !( skip instanceof Array ) ) {
-		if( typeof( skip ) === 'undefined' ) {
-			skip = [];
-		} else if( typeof( skip ) === 'string' ) {
-			skip = [ skip ];
-		} else {
-			throw new Error( "non-applicable skip parameter" );
-		}
-	}
-	for( var i  = 0; i < this.length; ++i ) {
-		for( var j = 0; j < skip.length; ++j ) {
-			if( this.substr( i, skip[j].length ) === skip[j] ) {
-				i += skip[j].length - 1;
-				continue;
-			}
-		}
-		if( this.substr( i, start.length ) === start ) {
-			if( initial === null ) {
-				initial = i;
-			}
-			++level;
-			i += start.length - 1;
-		} else if( this.substr( i, end.length ) === end ) {
-			--level;
-			i += end.length - 1;
-		}
-		if( !level && initial ) {
-			result.push( this.substring( initial, i + 1 ) );
-			initial = null;
-		}
-	}
-
-	return result;
-};
+if (!String.prototype.trim) {
+	String.prototype.trim = function stringPrototypeTrim( chars ) {
+		return this.trimRight(chars).trimLeft(chars);
+	};
+}
 
 // Helper functions to change case of a string
-String.prototype.toUpperCaseFirstChar = function() {
-	return this.substr( 0, 1 ).toUpperCase() + this.substr( 1 );
-};
+Morebits.string = {
+	toUpperCaseFirstChar: function(str) {
+		str = str.toString();
+		return str.substr( 0, 1 ).toUpperCase() + str.substr( 1 );
+	},
+	toLowerCaseFirstChar: function(str) {
+		str = str.toString();
+		return str.substr( 0, 1 ).toLowerCase() + str.substr( 1 );
+	},
+	splitWeightedByKeys: function( str, start, end, skip ) {
+		if( start.length !== end.length ) {
+			throw new Error( 'start marker and end marker must be of the same length' );
+		}
+		var level = 0;
+		var initial = null;
+		var result = [];
+		if( !( skip instanceof Array ) ) {
+			if( typeof skip === 'undefined' ) {
+				skip = [];
+			} else if( typeof skip === 'string' ) {
+				skip = [ skip ];
+			} else {
+				throw new Error( "non-applicable skip parameter" );
+			}
+		}
+		for( var i  = 0; i < str.length; ++i ) {
+			for( var j = 0; j < skip.length; ++j ) {
+				if( str.substr( i, skip[j].length ) === skip[j] ) {
+					i += skip[j].length - 1;
+					continue;
+				}
+			}
+			if( str.substr( i, start.length ) === start ) {
+				if( initial === null ) {
+					initial = i;
+				}
+				++level;
+				i += start.length - 1;
+			} else if( str.substr( i, end.length ) === end ) {
+				--level;
+				i += end.length - 1;
+			}
+			if( !level && initial ) {
+				result.push( str.substring( initial, i + 1 ) );
+				initial = null;
+			}
+		}
 
-String.prototype.toLowerCaseFirstChar = function() {
-	return this.substr( 0, 1 ).toLowerCase() + this.substr( 1 );
-};
-
-String.prototype.toUpperCaseEachWord = function( delim ) {
-	delim = delim ? delim : ' ';
-	return this.split( delim ).map( function(v) { return v.toUpperCaseFirstChar(); } ).join( delim );
-};
-
-String.prototype.toLowerCaseEachWord = function( delim ) {
-	delim = delim ? delim : ' ';
-	return this.split( delim ).map( function(v) { return v.toLowerCaseFirstChar(); } ).join( delim );
+		return result;
+	}
 };
 
 
 /**
- * **************** Array ****************
+ * **************** Morebits.array ****************
+ *
+ * uniq(arr): returns a copy of the array with duplicates removed
+ *
+ * dups(arr): returns a copy of the array with the first instance of each value
+ *            removed; subsequent instances of those values (duplicates) remain
+ *
+ * chunk(arr, size): breaks up |arr| into smaller arrays of length |size|, and
+ *                   returns an array of these "chunked" arrays
  */
 
-Array.prototype.uniq = function arrayPrototypeUniq() {
-	var result = [];
-	for( var i = 0; i < this.length; ++i ) {
-		var current = this[i];
-		if( result.indexOf( current ) === -1 ) {
-			result.push( current );
+Morebits.array = {
+	uniq: function(arr) {
+		if (!($.isArray(arr))) {
+			throw "A non-array object passed to Morebits.array.uniq";
+			return;
 		}
-	}
-	return result;
-};
-
-Array.prototype.dups = function arrayPrototypeUniq() {
-	var uniques = [];
-	var result = [];
-	for( var i = 0; i < this.length; ++i ) {
-		var current = this[i];
-		if( uniques.indexOf( current ) === -1 ) {
-			uniques.push( current );
-		} else {
-			result.push( current );
+		var result = [];
+		for( var i = 0; i < arr.length; ++i ) {
+			var current = arr[i];
+			if( result.indexOf( current ) === -1 ) {
+				result.push( current );
+			}
 		}
-	}
-	return result;
-};
-
-Array.prototype.chunk = function arrayChunk( size ) {
-	if( typeof( size ) !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
-		return [ this ]; // we return an array consisting of this array.
-	}
-	var result = [];
-	var current;
-	for(var i = 0; i < this.length; ++i ) {
-		if( i % size === 0 ) { // when 'i' is 0, this is always true, so we start by creating one.
-			current = [];
-			result.push( current );
+		return result;
+	},
+	dups: function(arr) {
+		if (!($.isArray(arr))) {
+			throw "A non-array object passed to Morebits.array.dups";
+			return;
 		}
-		current.push( this[i] );
+		var uniques = [];
+		var result = [];
+		for( var i = 0; i < arr.length; ++i ) {
+			var current = arr[i];
+			if( uniques.indexOf( current ) === -1 ) {
+				uniques.push( current );
+			} else {
+				result.push( current );
+			}
+		}
+		return result;
+	},
+	chunk: function( arr, size ) {
+		if (!($.isArray(arr))) {
+			throw "A non-array object passed to Morebits.array.chunk";
+			return;
+		}
+		if( typeof size !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
+			return [ arr ]; // we return an array consisting of this array.
+		}
+		var result = [];
+		var current;
+		for(var i = 0; i < arr.length; ++i ) {
+			if( i % size === 0 ) { // when 'i' is 0, this is always true, so we start by creating one.
+				current = [];
+				result.push( current );
+			}
+			current.push( arr[i] );
+		}
+		return result;
 	}
-	return result;
 };
 
 
@@ -912,7 +894,7 @@ Array.prototype.chunk = function arrayChunk( size ) {
  */
 
 function Unbinder( string ) {
-	if( typeof( string ) !== 'string' ) {
+	if( typeof string !== 'string' ) {
 		throw new Error( "not a string" );
 	}
 	this.content = string;
@@ -953,26 +935,6 @@ Unbinder.getCallback = function UnbinderGetCallback(self) {
 	};
 };
 
-
-/**
- * **************** clone() ****************
- * REMOVEME - global namespace pollution -> move to better name, or
- * rework the few usages using jQuery.extend
- */
-
-function clone( obj, deep ) {
-	var objectClone = new obj.constructor();
-	for ( var property in obj ) {
-		if ( !deep ) {
-			objectClone[property] = obj[property];
-		} else if ( typeof obj[property] === 'object' ) {
-			objectClone[property] = clone( obj[property], deep );
-		} else {
-			objectClone[property] = obj[property];
-		}
-	}
-	return objectClone;
-}
 
 
 /**
@@ -1016,6 +978,9 @@ var Namespace = {
 /**
  * **************** Date ****************
  * Helper functions to get the month as a string instead of a number
+ *
+ * Normally it is poor form to play with prototypes of primitive types, but it
+ * is fairly unlikely that anyone will iterate over a Date object.
  */
 
 Date.monthNames = [
@@ -1182,8 +1147,8 @@ Wikipedia.actionCompleted.event = function() {
 		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect; }, Wikipedia.actionCompleted.timeOut );
 	}
 };
-var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) === 'undefined' ? 5000 : wpActionCompletedTimeOut;
-var wpMaxLag = typeof(wpMaxLag) === 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
+var wpActionCompletedTimeOut = ( typeof wpActionCompletedTimeOut === 'undefined' ? 5000 : wpActionCompletedTimeOut );
+var wpMaxLag = ( typeof wpMaxLag === 'undefined' ? 10 : wpMaxLag ); // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
 
 // editCount - REMOVEME when Wikipedia.wiki is gone
 Wikipedia.editCount = 10;
@@ -1259,7 +1224,7 @@ Wikipedia.api.prototype = {
 				this.errorCode = $(xml).find('error').attr('code');
 				this.errorText = $(xml).find('error').attr('info');
 
-				if (typeof(this.errorCode) === "string") {
+				if (typeof this.errorCode === "string") {
 
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
 					this.returnError();
@@ -1730,7 +1695,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		if (ctx.followRedirect) {
 			ctx.loadQuery.redirects = '';  // follow all redirects
 		}
-		if (typeof(ctx.pageSection) === 'number') {
+		if (typeof ctx.pageSection === 'number') {
 			ctx.loadQuery.rvsection = ctx.pageSection;
 		}
 		if (userIsInGroup('sysop')) {
@@ -1754,9 +1719,9 @@ Wikipedia.page = function(pageName, currentAction) {
 			return;
 		}
 
-		if (ctx.fullyProtected && !confirm('An automated edit to the fully protected page "' + ctx.pageName + 
-			(ctx.fullyProtected === 'indefinite' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
-			' is about to be made.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
+		if (ctx.fullyProtected && !confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
+			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
+			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
 			ctx.statusElement.error("Edit to fully protected page was aborted.");
 			return;
 		}
@@ -1773,7 +1738,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			watchlist: ctx.watchlistOption
 		};
 
-		if (typeof(ctx.pageSection) === 'number') {
+		if (typeof ctx.pageSection === 'number') {
 			query.section = ctx.pageSection;
 		}
 
@@ -2218,7 +2183,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		if (userIsInGroup('sysop')) {
 			var editprot = $(xml).find('pr[type="edit"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !confirm('You are about to move the fully protected page "' + ctx.pageName + 
-				(editprot.attr('expiry') === 'indefinite' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
 				ctx.statusElement.error("Move of fully protected page was aborted.");
 				return;
@@ -2267,7 +2232,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		// extract protection info
 		var editprot = $(xml).find('pr[type="edit"]');
 		if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !confirm('You are about to delete the fully protected page "' + ctx.pageName + 
-			(editprot.attr('expiry') === 'indefinite' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+			(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 			'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
 			ctx.statusElement.error("Deletion of fully protected page was aborted.");
 			return;
@@ -2297,8 +2262,13 @@ Wikipedia.page = function(pageName, currentAction) {
 	var fnProcessProtect = function() {
 		var xml = ctx.protectApi.getXML();
 
-		if ($(xml).find('page').attr('missing') === "") {
+		var missing = ($(xml).find('page').attr('missing') === "");
+		if (((ctx.protectEdit || ctx.protectMove) && missing)) {
 			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			return;
+		}
+		if (ctx.protectCreate && !missing) {
+			ctx.statusElement.error("Cannot create protect the page, because it already exists");
 			return;
 		}
 
@@ -2369,7 +2339,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 /**
  * **************** Wikipedia.wiki ****************
- * REMOVEME - but *only* after Twinkle no longer uses it
+ * REMOVEME - but *only* after Twinkle no longer uses it - viz. batchundelete :(
  */
 
 /*
@@ -2524,19 +2494,6 @@ Wikipedia.wiki.prototype = {
 
 
 /**
- * **************** Number ****************
- * REMOVEME - unused?
- */
-
-Number.prototype.zeroFill = function( length ) {
-	var str = this.toFixed();
-	if( !length ) { return str; }
-	while( str.length < length ) { str = '0' + str; }
-	return str;
-};
-
-
-/**
  * **************** MediaWiki ****************
  * Wikitext manipulation
  */
@@ -2665,7 +2622,7 @@ Mediawiki.Page.prototype = {
 		 * Will eat the whole link
 		 */
 		var links_re = new RegExp( "\\[\\[(?:[Ii]mage|[Ff]ile):\\s*" + image_re_string );
-		var allLinks = unbinder.content.splitWeightedByKeys( '[[', ']]' ).uniq();
+		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( unbinder.content, '[[', ']]' ));
 		for( var i = 0; i < allLinks.length; ++i ) {
 			if( links_re.test( allLinks[i] ) ) {
 				var replacement = '<!-- ' + reason + allLinks[i] + ' -->';
@@ -2698,7 +2655,7 @@ Mediawiki.Page.prototype = {
 		var first_char = image.substr( 0, 1 );
 		var image_re_string = "(?:[Ii]mage|[Ff]ile):\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( image.substr( 1 ), true ); 
 		var links_re = new RegExp( "\\[\\[" + image_re_string );
-		var allLinks = this.text.splitWeightedByKeys( '[[', ']]' ).uniq();
+		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( this.text, '[[', ']]' ));
 		for( var i = 0; i < allLinks.length; ++i ) {
 			if( links_re.test( allLinks[i] ) ) {
 				var replacement = allLinks[i];
@@ -2715,7 +2672,7 @@ Mediawiki.Page.prototype = {
 		var first_char = template.substr( 0, 1 );
 		var template_re_string = "(?:[Tt]emplate:)?\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( template.substr( 1 ), true ); 
 		var links_re = new RegExp( "\\{\\{" + template_re_string );
-		var allTemplates = this.text.splitWeightedByKeys( '{{', '}}', [ '{{{', '}}}' ] ).uniq();
+		var allTemplates = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( this.text, '{{', '}}', [ '{{{', '}}}' ] ));
 		for( var i = 0; i < allTemplates.length; ++i ) {
 			if( links_re.test( allTemplates[i] ) ) {
 				this.text = this.text.replace( allTemplates[i], '', 'g' );
@@ -2726,30 +2683,6 @@ Mediawiki.Page.prototype = {
 		return this.text;
 	}
 };
-
-
-/**
- * **************** isInNetwork(), isIPAddress() ****************
- */
-
-// ipadress is in the format 1.2.3.4 and network is in the format 1.2.3.4/5
-function isInNetwork( ipaddress, network ) {
-	var iparr = ipaddress.split('.');
-	var ip = (parseInt(iparr[0], 10) << 24) + (parseInt(iparr[1], 10) << 16) + (parseInt(iparr[2], 10) << 8) + (parseInt(iparr[3], 10));
-
-	var netmask = 0xffffffff << network.split('/')[1];
-
-	var netarr = network.split('/')[0].split('.');
-	var net = (parseInt(netarr[0], 10) << 24) + (parseInt(netarr[1], 10) << 16) + (parseInt(netarr[2], 10) << 8) + (parseInt(netarr[3], 10));
-
-	return (ip & netmask) === net;
-}
-
-// Returns true if given string contains a valid IP-address, that is, from 0.0.0.0 to 255.255.255.255
-function isIPAddress( string ){
-	var res = /(\d{1,4})\.(\d{1,3})\.(\d{1,3})\.(\d{1,4})/.exec( string );
-	return res && res.slice( 1, 5 ).every( function( e ) { return e < 256; } );
-}
 
 
 /**
@@ -2873,21 +2806,6 @@ QueryString.create = function( arr ) {
 	return resarr.join('&');
 };
 QueryString.prototype.create = QueryString.create;
-
-/**
- * **************** Exception ****************
- * Simple exception handling
- * REMOVEME - unused?
- */
-
-var Exception = function( message ) {
-	this.message = message || '';
-	this.name = "Exception";
-};
-
-Exception.prototype.what = function() {
-	return this.message;
-};
 
 
 /**

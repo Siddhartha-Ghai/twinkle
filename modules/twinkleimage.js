@@ -226,7 +226,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			throw new Error( "Twinkle.image.callback.evaluate: unknown criterion" );
 	}
 
-	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit) === -1;
+	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
 
 	var params = {
 		'type': type,
@@ -269,6 +269,9 @@ Twinkle.image.callbacks = {
 	taggingImage: function(pageobj) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
+
+		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
+		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
 
 		var tag = "{{di-" + params.type + "|date={{subst:#time:j F Y}}";
 		switch( params.type ) {
