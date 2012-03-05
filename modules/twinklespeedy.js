@@ -658,7 +658,7 @@ Twinkle.speedy.callbacks = {
 			else {
 				code = "{{शीह-" 
 				if (params.value === 'talk') {
-					code+= 'कारण';
+					code+= "कारण|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 				}
 				else {
 				code+= params.value;
@@ -745,17 +745,17 @@ Twinkle.speedy.callbacks = {
 			var usertalkpage = new Wikipedia.page('सदस्य वार्ता:' + Twinkle.speedy.initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + Twinkle.speedy.initialContrib + ")");
 			var notifytext = "\n\n{{subst:शीह सूचना-";
 
-			// specialcase "db" and "db-multiple"
-			switch (params.normalized)
+			// specialcase "db" and "talk"
+			switch (params.value)
 			{
-				case 'शीह':
-					notifytext += "कारण|1=" + mw.config.get('wgPageName') + "|2=" + params.input.dbreason;
+				case 'कारण':
+					notifytext += "कारण|" + mw.config.get('wgPageName');
 					break;
 				case 'talk':
-					notifytext += "कारण|1=हटाए गए पृष्ठ का वार्ता पृष्ठ";
+					notifytext += "कारण|" + mw.config.get('wgPageName') + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 					break;
 				default:
-					notifytext += params.normalized + "|1=" + mw.config.get('wgPageName');
+					notifytext += params.normalized + "|" + mw.config.get('wgPageName');
 					break;
 			}
 			if (params.normalized!== 'अनेक') {
