@@ -1,4 +1,4 @@
-// <nowiki>
+﻿// <nowiki>
 /**
  * morebits.js
  * ===========
@@ -984,33 +984,33 @@ var Namespace = {
  */
 
 Date.monthNames = [
-	'January',
-	'February',
-	'March',
-	'April',
-	'May',
-	'June',
-	'July',
-	'August',
-	'September',
-	'October',
-	'November',
-	'December'
+	'जनवरी',
+	'फ़रवरी',
+	'मार्च',
+	'अप्रैल',
+	'मई',
+	'जून',
+	'जुलाई',
+	'अगस्त',
+	'सितंबर',
+	'अक्टूबर',
+	'नवम्बर',
+	'दिसम्बर'
 ];
 
 Date.monthNamesAbbrev = [
-	'Jan',
-	'Feb',
-	'Mar',
-	'Apr',
-	'May',
-	'Jun',
-	'Jul',
-	'Aug',
-	'Sep',
-	'Oct',
-	'Nov',
-	'Dec'
+	'जन॰',
+	'फ़र॰',
+	'मार्च',
+	'अप्रै॰',
+	'मई',
+	'जून',
+	'जुला॰',
+	'अग॰',
+	'सित॰',
+	'अक्टू॰',
+	'नव॰',
+	'दिस॰'
 ];
 
 Date.prototype.getMonthName = function() {

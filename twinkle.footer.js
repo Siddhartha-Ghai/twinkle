@@ -75,7 +75,7 @@ Twinkle.load = function(){
 	Twinkle.speedy();
 	Twinkle.prod();
 	Twinkle.xfd();
-	Twinkle.image();
+	//Twinkle.image();
 	// maintenance
 	Twinkle.protect();
 	Twinkle.tag();
