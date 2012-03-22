@@ -709,7 +709,7 @@ Twinkle.tag.groupHash = [
 Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
 		var params = pageobj.getCallbackParameters();
-		var tagRe, tagText = '', summaryText = 'Added';
+		var tagRe, tagText = '', summaryText = '';
 		var tags = [], groupableTags = [];
 
 		// Remove tags that become superfluous with this action
@@ -745,7 +745,7 @@ Twinkle.tag.callbacks = {
 						'={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}';
 
 					if( i === (groupableTags.length - 1) ) {
-						summaryText += ' and';
+						summaryText += ' और';
 					} else if ( i < (groupableTags.length - 1) && i > 0 ) {
 						summaryText += ',';
 					}
@@ -850,7 +850,7 @@ Twinkle.tag.callbacks = {
 
 			if ( i > 0 || groupableTags.length > 3 ) {
 				if( i === (tags.length - 1) ) {
-					summaryText += ' and';
+					summaryText += ' और';
 				} else if ( i < (tags.length - 1) ) {
 					summaryText += ',';
 				}
@@ -860,9 +860,9 @@ Twinkle.tag.callbacks = {
 			if( tags[i] === 'वैश्वीकरण' ) {
 				summaryText += "साँचा:" + params.globalizeSubcategory + '|' + params.globalizeSubcategory;
 			} else {
-				summaryText += (tags[i].indexOf(":") !== -1 ? tags[i] : ("Template:" + tags[i] + "|" + tags[i]));
+				summaryText += (tags[i].indexOf(":") !== -1 ? tags[i] : ("साँचा:" + tags[i] + "|" + tags[i]));
 			}
-			summaryText += ']]}}';
+			summaryText += ']]}} जोड़े';
 		}
 
 		if( Twinkle.tag.mode === 'redirect' ) {
