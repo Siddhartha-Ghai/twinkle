@@ -210,18 +210,18 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{{सन्देश|';
 		text += tbPageName;
 
-		if( section ) {
-			text += '|' + section;
+			if( section ) {
+				text += '|' + section;
+			}
+	
+			text += '|ts=~~~~~}}';
+	
+			if( message ) {
+				text += '\n' + message + '  ~~~~';
+			} else if( Twinkle.getFriendlyPref('insertTalkbackSignature') ) {
+				text += '\n~~~~';
 		}
-
-		text += '|ts=~~~~~}}';
-
-		if( message ) {
-			text += '\n' + message + '  ~~~~';
-		} else if( Twinkle.getFriendlyPref('insertTalkbackSignature') ) {
-			text += '\n~~~~';
-		}
-
+	
 		talkpage.setEditSummary("सन्देश [[" + (tbtarget === 'other' ? '' : 'सदस्य वार्ता:') + tbPageName +
 			(section ? ('#' + section) : '') + "]] पर" + Twinkle.getPref('summaryAd'));
 	}

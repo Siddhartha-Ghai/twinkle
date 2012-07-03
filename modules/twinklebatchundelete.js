@@ -7,19 +7,21 @@
  * Config directives in:   TwinkleConfig
  */
 
+// XXX TODO this module needs to be overhauled to use Morebits.wiki.page
+
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if( wgNamespaceNumber != Namespace.USER ) {
+	if( mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user ) {
 		return;
 	}
-	if( userIsInGroup( 'sysop' ) ) {
-		$(twAddPortletLink("#", "Und-batch", "tw-batch-undel", "Undelete 'em all", "")).click(Twinkle.batchundelete.callback);
+	if( Morebits.userIsInGroup( 'sysop' ) ) {
+		twAddPortletLink( Twinkle.batchundelete.callback, "Und-batch", "tw-batch-undel", "Undelete 'em all" );
 	}
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
-	var Window = new SimpleWindow( 800, 400 );
-	var form = new QuickForm( Twinkle.batchundelete.callback.evaluate );
+	var Window = new Morebits.simpleWindow( 800, 400 );
+	var form = new Morebits.quickForm( Twinkle.batchundelete.callback.evaluate );
 	form.append( {
 			type: 'textarea',
 			name: 'reason',
@@ -29,10 +31,10 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var query = {
 		'action': 'query',
 		'generator': 'links',
-		'titles': wgPageName,
+		'titles': mw.config.get("wgPageName"),
 		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
-	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
+	var wikipedia_api = new Morebits.wiki.api( 'Grabbing pages', query, function( self ) {
 			var xmlDoc = self.responseXML;
 			var snapshot = xmlDoc.evaluate('//page[@missing]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 			var list = [];
@@ -57,39 +59,39 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	wikipedia_api.params = { form:form, Window:Window };
 	wikipedia_api.post();
 	var root = document.createElement( 'div' );
-	Status.init( root );
+	Morebits.status.init( root );
 	Window.setContent( root );
 	Window.display();
 };
 Twinkle.batchundelete.currentUndeleteCounter = 0;
 Twinkle.batchundelete.currentundeletor = 0;
 Twinkle.batchundelete.callback.evaluate = function( event ) {
-	Wikipedia.actionCompleted.notice = 'Status';
-	Wikipedia.actionCompleted.postfix = 'batch undeletion is now completed';
+	Morebits.wiki.actionCompleted.notice = 'Status';
+	Morebits.wiki.actionCompleted.postfix = 'batch undeletion is now completed';
 
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
 	if( ! reason ) {
 		return;
 	}
-	Status.init( event.target );
+	Morebits.status.init( event.target );
 
 	if( !pages ) {
-		Status.error( 'Error', 'nothing to undelete, aborting' );
+		Morebits.status.error( 'Error', 'nothing to undelete, aborting' );
 		return;
 	}
 
 	var work = Morebits.array.chunk( pages, Twinkle.getPref('batchUndeleteChunks') );
-	Wikipedia.addCheckpoint();
+	Morebits.wiki.addCheckpoint();
 	Twinkle.batchundelete.currentundeletor = window.setInterval( Twinkle.batchundelete.callbacks.main, 1000, work, reason );
 };
 
 Twinkle.batchundelete.callbacks = {
 	main: function( work, reason ) {
 		if( work.length === 0 && Twinkle.batchundelete.currentUndeleteCounter <= 0 ) {
-			Status.info( 'work done' );
+			Morebits.status.info( 'work done' );
 			window.clearInterval( Twinkle.batchundelete.currentundeletor );
-			Wikipedia.removeCheckpoint();
+			Morebits.wiki.removeCheckpoint();
 			return;
 		} else if( work.length !== 0 && Twinkle.batchundelete.currentUndeleteCounter <= Twinkle.getPref('batchUndeleteMinCutOff') ) {
 			var pages = work.shift();
@@ -101,7 +103,7 @@ Twinkle.batchundelete.callbacks = {
 					'target': title,
 					'action': 'submit'
 				};
-				var wikipedia_wiki = new Wikipedia.wiki( "Undeleting " + title, query, Twinkle.batchundelete.callbacks.undeletePage, function( self ) { 
+				var wikipedia_wiki = new Morebits.wiki.legacyWiki( "Undeleting " + title, query, Twinkle.batchundelete.callbacks.undeletePage, function( self ) { 
 						--Twinkle.batchundelete.currentUndeleteCounter;
 						var link = document.createElement( 'a' );
 						link.setAttribute( 'href', mw.util.wikiGetlink(self.params.title) );

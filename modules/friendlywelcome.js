@@ -8,8 +8,8 @@
  */
 
 Twinkle.welcome = function friendlywelcome() {
-	if( QueryString.exists( 'friendlywelcome' ) ) {
-		if( QueryString.get( 'friendlywelcome' ) === 'auto' ) {
+	if( Morebits.queryString.exists( 'friendlywelcome' ) ) {
+		if( Morebits.queryString.get( 'friendlywelcome' ) === 'auto' ) {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -20,7 +20,7 @@ Twinkle.welcome = function friendlywelcome() {
 };
 
 Twinkle.welcome.auto = function() {
-	if( QueryString.get( 'action' ) !== 'edit' ) {
+	if( Morebits.queryString.get( 'action' ) !== 'edit' ) {
 		// userpage not empty, aborting auto-welcome
 		return;
 	}
@@ -33,10 +33,10 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
-	if( QueryString.exists( 'diff' ) ) {
+	if( Morebits.queryString.exists( 'diff' ) ) {
 		// check whether the contributors' talk pages exist yet
-		var $oList = $("div#mw-diff-otitle2 span.mw-usertoollinks a.new:contains(talk)").first();
-		var $nList = $("div#mw-diff-ntitle2 span.mw-usertoollinks a.new:contains(talk)").first();
+		var $oList = $("#mw-diff-otitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
+		var $nList = $("#mw-diff-ntitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
 
 		if( $oList.length > 0 || $nList.length > 0 ) {
 			var spanTag = function( color, content ) {
@@ -57,7 +57,7 @@ Twinkle.welcome.normal = function() {
 				var oHref = $oList.attr("href");
 
 				var oWelcomeNode = welcomeNode.cloneNode( true );
-				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
+				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + Morebits.queryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + Morebits.queryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$oList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$oList[0].parentNode.parentNode.appendChild( oWelcomeNode );
 			}
@@ -66,7 +66,7 @@ Twinkle.welcome.normal = function() {
 				var nHref = $nList.attr("href");
 
 				var nWelcomeNode = welcomeNode.cloneNode( true );
-				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
+				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + Morebits.queryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + Morebits.queryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$nList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$nList[0].parentNode.parentNode.appendChild( nWelcomeNode );
 			}
@@ -74,23 +74,23 @@ Twinkle.welcome.normal = function() {
 	}
 	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
 		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		$(twAddPortletLink("#", "स्वागत", "friendly-welcome", "सदस्य स्वागत", "")).click(function() { Twinkle.welcome.callback(username); });
+		twAddPortletLink( function(){ Twinkle.welcome.callback(username); }, "स्वागत", "friendly-welcome", "सदस्य स्वागत" );
 	}
 };
 
 Twinkle.welcome.welcomeUser = function welcomeUser() {
-	Status.init( document.getElementById('bodyContent') );
+	Morebits.status.init( document.getElementById('bodyContent') );
 
 	var params = {
 		value: Twinkle.getFriendlyPref('quickWelcomeTemplate'),
-		article: QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '',
+		article: Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '',
 		mode: 'auto'
 	};
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice =  "स्वागत संपूर्ण, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "स्वागत संपूर्ण, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
@@ -101,7 +101,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 		alert( 'आपका बहुत बहुत स्वागत है!' );
 		return;
 	}	
-	var Window = new SimpleWindow( 600, 400 );
+	var Window = new Morebits.simpleWindow( 600, 400 );
 	Window.setTitle( "सदस्य स्वागत" );
 	Window.setScriptName( "Twinkle" );
 	//Window.addFooterLink( "Welcoming Committee", "WP:WC" );
@@ -146,6 +146,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
+
 };
 
 Twinkle.welcome.StandardList = [
@@ -417,11 +418,11 @@ Twinkle.welcome.callbacks = {
 	main: function( pageobj ) {
 		var params = pageobj.getCallbackParameters();
 		var oldText = pageobj.getPageText();
-		
+
 		// abort if mode is auto and form is not empty
 		if( pageobj.exists() && params.mode === 'auto' ) {
-			Status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
-			Wikipedia.actionCompleted.event();
+			Morebits.status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
+			Morebits.wiki.actionCompleted.event();
 			return;
 		}
 		
@@ -482,7 +483,6 @@ Twinkle.welcome.callbacks = {
 			" जोड़ा";
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-		pageobj.setMinorEdit(false);
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchWelcomes'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
@@ -494,20 +494,20 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	if( e.target.name === 'article' ) {
 		return;
 	}
-	
+
 	var params = {
 		value: e.target.values,
 		article: e.target.form.article.value,
 		mode: 'manual'
 	};
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( e.target.form );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( e.target.form );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "स्वागत संपूर्ण, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "स्वागत संपूर्ण, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
