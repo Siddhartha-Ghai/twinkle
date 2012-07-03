@@ -13,16 +13,10 @@ Twinkle.xfd = function twinklexfd() {
 	// * non-existent pages
 	// * files on Commons, whether there is a local page or not (unneeded local pages of files on Commons are eligible for CSD F2)
 	// * file pages without actual files (these are eligible for CSD G8)
-	if ( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !Wikipedia.isPageRedirect()))) ) {
+	if ( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !Morebits.wiki.isPageRedirect()))) ) {
 		return;
 	}
-	if (twinkleUserAuthorized) {
-		$(twAddPortletLink("#", "XFD", "tw-xfd", "Nominate for deletion", "")).click(Twinkle.xfd.callback);
-	} else {
-		$(twAddPortletLink("#", 'XFD', 'tw-xfd', 'Nominate for deletion', '')).click(function() {
-			alert("Your account is too new to use Twinkle.");
-		});
-	}
+	twAddPortletLink( Twinkle.xfd.callback, "XFD", "tw-xfd", "Nominate for deletion" );
 };
 
 Twinkle.xfd.num2order = function twinklexfdNum2order( num ) {
@@ -36,7 +30,7 @@ Twinkle.xfd.num2order = function twinklexfdNum2order( num ) {
 
 Twinkle.xfd.currentRationale = null;
 
-// error callback on Status object
+// error callback on Morebits.status.object
 Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 	if (Twinkle.xfd.currentRationale) {
 		var p = document.createElement("p");
@@ -46,20 +40,25 @@ Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 		pre.style.marginTop = "0";
 		pre.textContent = Twinkle.xfd.currentRationale;
 		p.appendChild(pre);
-		Status.root.appendChild(p);
+		Morebits.status.root.appendChild(p);
 		// only need to print the rationale once
 		Twinkle.xfd.currentRationale = null;
 	}
 };
 
 Twinkle.xfd.callback = function twinklexfdCallback() {
-	var Window = new SimpleWindow( 600, 350 );
+	if (!twinkleUserAuthorized) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
+
+	var Window = new Morebits.simpleWindow( 600, 350 );
 	Window.setTitle( "Nominate for deletion (XfD)" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "About deletion discussions", "WP:XFD" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#xfd" );
 
-	var form = new QuickForm( Twinkle.xfd.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.xfd.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
 			name: 'category',
@@ -70,25 +69,25 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'AfD (Articles for deletion)',
-			selected: mw.config.get('wgNamespaceNumber') === Namespace.MAIN,
+			selected: mw.config.get('wgNamespaceNumber') === 0,  // Main namespace
 			value: 'afd'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'TfD (Templates for discussion)',
-			selected: mw.config.get('wgNamespaceNumber') === Namespace.TEMPLATE,
+			selected: mw.config.get('wgNamespaceNumber') === 10,  // Template namespace
 			value: 'tfd'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'FfD (Files for deletion)/PUF (Possibly unfree files)',
-			selected: mw.config.get('wgNamespaceNumber') === Namespace.IMAGE,
+			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
 			value: 'ffd'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'CfD (Categories for discussion)',
-			selected: mw.config.get('wgNamespaceNumber') === Namespace.CATEGORY,
+			selected: mw.config.get('wgNamespaceNumber') === 14,  // Category namespace
 			value: 'cfd'
 		} );
   categories.append( {
@@ -99,13 +98,13 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'MfD (Miscellany for deletion)',
-			selected: [ Namespace.IMAGE, Namespace.MAIN, Namespace.TEMPLATE, Namespace.CATEGORY ].indexOf( mw.config.get('wgNamespaceNumber') ) === -1 ,
+			selected: [ 0, 6, 10, 14 ].indexOf( mw.config.get('wgNamespaceNumber') ) === -1,
 			value: 'mfd'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'RfD (Redirects for discussion)',
-			selected: Wikipedia.isPageRedirect(),
+			selected: Morebits.wiki.isPageRedirect(),
 			value: 'rfd'
 		} );
 	//categories.append( {
@@ -149,16 +148,7 @@ Twinkle.xfd.previousNotify = true;
 Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var form = e.target.form;
-	var old_area;
-	var childNodes = form.childNodes;
-	for( var i = 0; i < childNodes.length; ++i ) {
-		var node = childNodes[i];
-		if (node instanceof Element &&
-		    node.getAttribute( 'name' ) === 'work_area') {
-			old_area = node;
-			break;
-		}
-	}
+	var old_area = Morebits.quickForm.getElements(e.target.form, "work_area")[0];
 	var work_area = null;
 
 	var oldreasontextbox = form.getElementsByTagName('textarea')[0];
@@ -166,7 +156,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 	switch( value ) {
 	case 'afd':
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Articles for deletion',
 				name: 'work_area'
@@ -211,7 +201,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'tfd':
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Templates for discussion',
 				name: 'work_area'
@@ -232,6 +222,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							name: 'tfdinline',
 							tooltip: 'Use {{tfd|type=inline}} to tag the page instead of {{tfd}}. Good for inline templates (those that appear amongst the words of text).',
 							checked: false
+						},
+						{
+							label: 'Wrap deletion tag with <noinclude> (for substituted templates only)',
+							value: 'noinclude',
+							name: 'noinclude',
+							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.'
 						}
 					]
 		} );
@@ -245,7 +241,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'mfd':
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Miscellany for deletion',
 				name: 'work_area'
@@ -261,7 +257,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						}
 					]
 		} );
-		if (mw.config.get('wgNamespaceNumber') === Namespace.USER || mw.config.get('wgNamespaceNumber') === Namespace.USER_TALK) {
+		if (mw.config.get('wgNamespaceNumber') === 2 /* User: */ || mw.config.get('wgNamespaceNumber') === 3 /* User talk: */) {
 			work_area.append( {
 				type: 'checkbox',
 				list: [
@@ -285,7 +281,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'ffd':
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Files for deletion',
 				name: 'work_area'
@@ -311,7 +307,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'cfd':
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Categories for discussion',
 				name: 'work_area'
@@ -323,16 +319,35 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				event: function(e) {
 					var value = e.target.value;
 					var target = e.target.form.xfdtarget;
+					// update enabled status
 					if( value === 'cfd' ) {
 						target.disabled = true;
 					} else {
 						target.disabled = false;
+					}
+					// update label
+					if( value === 'cfs' ) {
+						target.previousSibling.textContent = "Target categories: ";
+					} else if( value === 'cfc' ) {
+						target.previousSibling.textContent = "Target article: ";
+					} else {
+						target.previousSibling.textContent = "Target category: ";
+					}
+					// add/remove extra input box
+					if( value === 'cfs' && $(target.parentNode).find("input[name='xfdtarget2']").length === 0 ) {
+						var xfdtarget2 = document.createElement("input");
+						xfdtarget2.setAttribute("name", "xfdtarget2");
+						xfdtarget2.setAttribute("type", "text");
+						target.parentNode.appendChild(xfdtarget2);
+					} else {
+						$(target.parentNode).find("input[name='xfdtarget2']").remove();
 					}
 				}
 			} );
 		cfd_category.append( { type: 'option', label: 'Deletion', value: 'cfd', selected: true } );
 		cfd_category.append( { type: 'option', label: 'Merge', value: 'cfm' } );
 		cfd_category.append( { type: 'option', label: 'Renaming', value: 'cfr' } );
+		cfd_category.append( { type: 'option', label: 'Split', value: 'cfs' } );
 		cfd_category.append( { type: 'option', label: 'Convert into article', value: 'cfc' } );
 
 		work_area.append( {
@@ -352,7 +367,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'cfds':
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Categories for speedy renaming',
 				name: 'work_area'
@@ -393,7 +408,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'rfd':
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Redirects for discussion',
 				name: 'work_area'
@@ -408,7 +423,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	default:
-		work_area = new QuickForm.element( {
+		work_area = new Morebits.quickForm.element( {
 				type: 'field',
 				label: 'Nothing for anything',
 				name: 'work_area'
@@ -467,14 +482,14 @@ Twinkle.xfd.callbacks = {
 			}
 			apiobj.params.discussionpage = 'Wikipedia:Articles for deletion/' + mw.config.get('wgPageName') + apiobj.params.numbering;
 
-			Status.info( "Next discussion page", "[[" + apiobj.params.discussionpage + "]]" );
+			Morebits.status.info( "Next discussion page", "[[" + apiobj.params.discussionpage + "]]" );
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = apiobj.params.discussionpage;
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+			Morebits.wiki.actionCompleted.redirect = apiobj.params.discussionpage;
+			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
 			// Tagging article
-			var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Adding deletion tag to article");
+			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Adding deletion tag to article");
 			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.taggingArticle);
@@ -500,13 +515,13 @@ Twinkle.xfd.callbacks = {
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
 			// Starting discussion page
-			var wikipedia_page = new Wikipedia.page(params.discussionpage, "Creating article deletion discussion page");
+			var wikipedia_page = new Morebits.wiki.page(params.discussionpage, "Creating article deletion discussion page");
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
 
 			// Today's list
 			var date = new Date();
-			wikipedia_page = new Wikipedia.page('Wikipedia:Articles for deletion/Log/' + date.getUTCFullYear() + ' ' +
+			wikipedia_page = new Morebits.wiki.page('Wikipedia:Articles for deletion/Log/' + date.getUTCFullYear() + ' ' +
 				date.getUTCMonthName() + ' ' + date.getUTCDate(), "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
@@ -514,7 +529,7 @@ Twinkle.xfd.callbacks = {
 
 			// Notification to first contributor
 			if (params.usertalk) {
-				var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
+				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreator(Twinkle.xfd.callbacks.afd.userNotification);
 			}
@@ -548,7 +563,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{subst:afd2|pg=" + mw.config.get('wgPageName') + "|cat=" + params.xfdcat + "|text=" + params.reason + " ~~~~}}\n");
+			pageobj.setPageText("{{subst:afd2|text=" + params.reason + " ~~~~|pg=" + mw.config.get('wgPageName') + "|cat=" + params.xfdcat + "}}\n");
 			pageobj.setEditSummary("Creating deletion discussion page for [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -594,7 +609,7 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 			var initialContrib = pageobj.getCreator();
-			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:AFDWarning|1=" + mw.config.get('wgPageName') + ( params.numbering !== '' ? '|order=&#32;' + params.numbering : '' ) + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:AFD|articles for deletion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -621,7 +636,8 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{tfd" + (params.tfdinline ? "|type=inline" : "") + "|" + mw.config.get('wgTitle') + "}}\n" + text);
+			pageobj.setPageText((params.noinclude ? "<noinclude>{{tfd|" : "{{tfd|") + (params.tfdinline ? "type=inline|" : "") + 
+				mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -642,7 +658,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var text = old_text.replace( '-->', "-->\n{{subst:tfd2|" + mw.config.get('wgTitle') + "|text=" + params.reason + " ~~~~}}");
+			var text = old_text.replace( '-->', "-->\n{{subst:tfd2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "}}");
 			if( text === old_text ) {
 				statelem.error( 'failed to find target spot for the discussion' );
 				return;
@@ -666,7 +682,7 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
-			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:tfdnotice|1=" + mw.config.get('wgTitle') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: nomination at [[WP:TFD|templates for discussion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -729,22 +745,22 @@ Twinkle.xfd.callbacks = {
 			apiobj.statelem.info( "next in order is [[" + apiobj.params.discussionpage + ']]');
 
 			// Tagging page
-			var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging page with deletion tag");
+			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page with deletion tag");
 			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = apiobj.params.discussionpage;
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+			Morebits.wiki.actionCompleted.redirect = apiobj.params.discussionpage;
+			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
 			// Discussion page
-			wikipedia_page = new Wikipedia.page(apiobj.params.discussionpage, "Creating deletion discussion page");
+			wikipedia_page = new Morebits.wiki.page(apiobj.params.discussionpage, "Creating deletion discussion page");
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.discussionPage);
 
 			// Today's list
-			wikipedia_page = new Wikipedia.page("Wikipedia:Miscellany for deletion", "Adding discussion to today's list");
+			wikipedia_page = new Morebits.wiki.page("Wikipedia:Miscellany for deletion", "Adding discussion to today's list");
 			//wikipedia_page.setPageSection(2);
 				// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
 				// it can be turned on again once the problem is fixed, to save bandwidth
@@ -754,7 +770,7 @@ Twinkle.xfd.callbacks = {
 
 			// Notification to first contributor, and notification to owner of userspace (if applicable and required)
 			if (apiobj.params.usertalk) {
-				var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
+				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(apiobj.params);
 				thispage.lookupCreator(Twinkle.xfd.callbacks.mfd.userNotification);
 			}
@@ -784,7 +800,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{subst:mfd2|pg=" + mw.config.get('wgPageName') + "|text=" + params.reason + " ~~~~}}\n");
+			pageobj.setPageText("{{subst:mfd2|text=" + params.reason + " ~~~~|pg=" + mw.config.get('wgPageName') + "}}\n");
 			pageobj.setEditSummary("Creating deletion discussion page for [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -852,7 +868,7 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotificationMain: function(params, initialContrib, actionName)
 		{
-			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, actionName + " (" + initialContrib + ")");
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, actionName + " (" + initialContrib + ")");
 			var notifytext = "\n{{subst:MFDWarning|1=" + mw.config.get('wgPageName') + ( params.numbering !== '' ? '|order=&#32;' + params.numbering : '' ) + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:MFD|miscellany for deletion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -882,14 +898,14 @@ Twinkle.xfd.callbacks = {
 			params.uploader = initialContrib;
 
 			// Adding discussion
-			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's list");
+			wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.ffd.todaysList);
 
 			// Notification to first contributor
 			if(params.usertalk) {
-				var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+				var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 				var notifytext = "\n{{subst:idw|1=" + mw.config.get('wgTitle') + "}}";
 				usertalkpage.setAppendText(notifytext);
 				usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -913,10 +929,10 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
 			pageobj.setPageText("{{ffd|log=" + params.date + "}}\n" + text);
-			pageobj.setEditSummary("Nominated for deletion at [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -940,7 +956,7 @@ Twinkle.xfd.callbacks = {
 				text = "{{subst:Ffd log}}";
 			}
 
-			pageobj.setPageText(text + "\n{{subst:ffd2|1=" + mw.config.get('wgTitle') + "|Uploader=" + params.uploader + "|Reason=" + params.reason + "}} ~~~~");
+			pageobj.setPageText(text + "\n{{subst:ffd2|Reason=" + params.reason + "|Uploader=" + params.uploader + "|1=" + mw.config.get('wgTitle') + "}} ~~~~");
 			pageobj.setEditSummary("Adding [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -965,7 +981,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
 			pageobj.setPageText("{{puf|help=off|log=" + params.date + "}}\n" + text);
 			pageobj.setEditSummary("Listed at [[WP:PUF|possibly unfree files]]: [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -987,7 +1003,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + "\n{{subst:puf2|image=" + mw.config.get('wgTitle') + "|reason=" + params.reason + "}} ~~~~");
+			pageobj.setPageText(text + "\n{{subst:puf2|reason=" + params.reason + "|image=" + mw.config.get('wgTitle') + "}} ~~~~");
 			pageobj.setEditSummary("Adding [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -1006,7 +1022,7 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
-			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:idw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -1038,19 +1054,23 @@ Twinkle.xfd.callbacks = {
 			switch( params.xfdcat ) {
 			case 'cfd':
 				added_data = "{{subst:cfd}}";
-				editsummary = "Category being considered for deletion; see [[WP:CFD|categories for discussion]].";
+				editsummary = "Category being considered for deletion; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfm':
-				added_data = "{{subst:cfm|" + params.target.replace('Category:','') + "}}";
-				editsummary = "Category being considered for merging; see [[WP:CFD|categories for discussion]].";
+				added_data = "{{subst:cfm|" + params.target + "}}";
+				editsummary = "Category being considered for merging; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfr':
-				added_data = "{{subst:cfr|" + params.target.replace('Category:','') + "}}";
-				editsummary = "Category being considered for renaming; see [[WP:CFD|categories for discussion]].";
+				added_data = "{{subst:cfr|" + params.target + "}}";
+				editsummary = "Category being considered for renaming; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
+				break;
+			case 'cfs':
+				added_data = "{{subst:cfs|" + params.target + "|" + params.target2 + "}}";
+				editsummary = "Category being considered for splitting; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfc':
 				added_data = "{{subst:cfc|" + params.target + "}}";
-				editsummary = "Category being considered for conversion to an article; see [[WP:CFD|categories for discussion]].";
+				editsummary = "Category being considered for conversion to an article; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			default:
 				alert("twinklexfd in taggingCategory(): unknown CFD action");
@@ -1082,19 +1102,23 @@ Twinkle.xfd.callbacks = {
 			var editsummary = "";
 			switch( params.xfdcat ) {
 			case 'cfd':
-				added_data = "{{subst:cfd2|1=" + mw.config.get('wgTitle') + "|text=" + params.reason + " ~~~~}}";
+				added_data = "{{subst:cfd2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "}}";
 				editsummary = "Added delete nomination of [[:" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfm':
-				added_data = "{{subst:cfm2|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "|text=" + params.reason + " ~~~~}}";
+				added_data = "{{subst:cfm2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
 				editsummary = "Added merge nomination of [[:" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfr':
-				added_data = "{{subst:cfr2|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "|text=" + params.reason + " ~~~~}}";
+				added_data = "{{subst:cfr2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
 				editsummary = "Added rename nomination of [[:" + mw.config.get('wgPageName') + "]].";
 				break;
+			case 'cfs':
+				added_data = "{{subst:cfs2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "|3=" + params.target2 + "}}";
+				editsummary = "Added split nomination of [[:" + mw.config.get('wgPageName') + "]].";
+				break;
 			case 'cfc':
-				added_data = "{{subst:cfc2|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "|text=" + params.reason + " ~~~~}}";
+				added_data = "{{subst:cfc2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
 				editsummary = "Added convert nomination of [[:" + mw.config.get('wgPageName') + "]].";
 				break;
 			default:
@@ -1128,7 +1152,7 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
-			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:CFDNote|1=" + mw.config.get('wgPageName') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -1222,24 +1246,24 @@ Twinkle.xfd.callbacks = {
 			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
 			// Tagging redirect
-			var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Adding deletion tag to redirect");
+			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Adding deletion tag to redirect");
 			wikipedia_page.setFollowRedirect(false);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.rfd.taggingRedirect);
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = params.logpage;
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
+			Morebits.wiki.actionCompleted.redirect = params.logpage;
+			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
 			// Adding discussion
-			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's log");
+			wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's log");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.rfd.todaysList);
 
 			// Notifying initial contributor
 			if (params.usertalk) {
-				var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
+				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreator(Twinkle.xfd.callbacks.rfd.userNotification);
 			}
@@ -1248,7 +1272,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{rfd}}\n" + text);
+			pageobj.setPageText("{{subst:rfd}}\n" + text);
 			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -1269,8 +1293,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var text = old_text.replace( /(<\!-- Add new entries directly below this line -->)/, "$1\n{{subst:rfd2|redirect="+ mw.config.get('wgPageName') + "|target=" +
-				params.target + "|text=" + Morebits.string.toUpperCaseFirstChar(params.reason) + "}} ~~~~\n" );
+			var text = old_text.replace( /(<\!-- Add new entries directly below this line -->)/, "$1\n{{subst:rfd2|text=" + Morebits.string.toUpperCaseFirstChar(params.reason) + "|redirect="+ mw.config.get('wgPageName') + "|target=" +
+				params.target + "}} ~~~~\n" );
 			if( text === old_text ) {
 				statelem.error( 'failed to find target spot for the discussion' );
 				return;
@@ -1295,7 +1319,7 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
-			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:RFDNote|1=" + mw.config.get('wgPageName') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:RFD|redirects for discussion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -1325,17 +1349,20 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type =  e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
-	var xfdcat, xfdtarget, puf, noinclude, tfdinline, notifyuserspace;
+	var xfdcat, xfdtarget, xfdtarget2, puf, noinclude, tfdinline, notifyuserspace;
 	if( type === "afd" || type === "cfd" || type === "cfds" ) {
 		xfdcat = e.target.xfdcat.value;
 	}
 	if( type === "cfd" || type === "cfds" ) {
 		xfdtarget = e.target.xfdtarget.value;
+		if (e.target.xfdtarget2) {
+			xfdtarget2 = e.target.xfdtarget2.value;
+		}
 	}
 	if( type === 'ffd' ) {
 		puf = e.target.puf.checked;
 	}
-	if( type === "afd" || type === "mfd" ) {
+	if( type === "afd" || type === "mfd" || type === "tfd" ) {
 		noinclude = e.target.noinclude.checked;
 	}
 	if( type === 'tfd' ) {
@@ -1345,14 +1372,14 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
 	}
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( e.target );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( e.target );
 
 	Twinkle.xfd.currentRationale = reason;
-	Status.onError(Twinkle.xfd.printRationale);
+	Morebits.status.onError(Twinkle.xfd.printRationale);
 
 	if( !type ) {
-		Status.error( 'Error', 'no action given' );
+		Morebits.status.error( 'Error', 'no action given' );
 		return;
 	}
 
@@ -1367,41 +1394,41 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			'apprefix': 'Articles for deletion/' + mw.config.get('wgPageName'),
 			'apnamespace': 4,
 			'apfilterredir': 'nonredirects',
-			'aplimit': userIsInGroup( 'sysop' ) ? 5000 : 500
+			'aplimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500
 		};
-		wikipedia_api = new Wikipedia.api( 'Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main );
+		wikipedia_api = new Morebits.wiki.api( 'Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main );
 		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude, xfdcat:xfdcat };
 		wikipedia_api.post();
 		break;
 
 	case 'tfd': // TFD
-		Wikipedia.addCheckpoint();
+		Morebits.wiki.addCheckpoint();
 
 		logpage = 'Wikipedia:Templates for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
 		// Tagging template
-		wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging template with deletion tag");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging template with deletion tag");
 		wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
-		wikipedia_page.setCallbackParameters({ tfdinline: tfdinline, logpage: logpage });
+		wikipedia_page.setCallbackParameters({ tfdinline: tfdinline, logpage: logpage, noinclude: noinclude });
 		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplate);
 
 		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = logpage;
-		Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
+		Morebits.wiki.actionCompleted.redirect = logpage;
+		Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
 		// Adding discussion
-		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to today's log");
+		wikipedia_page = new Morebits.wiki.page(logpage, "Adding discussion to today's log");
 		wikipedia_page.setFollowRedirect(true);
 		wikipedia_page.setCallbackParameters({ reason: reason });
 		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.todaysList);
 
 		// Notification to first contributor
 		if (usertalk) {
-			var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
+			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			thispage.lookupCreator(Twinkle.xfd.callbacks.tfd.userNotification);
 		}
 
-		Wikipedia.removeCheckpoint();
+		Morebits.wiki.removeCheckpoint();
 		break;
 
 	case 'mfd': // MFD
@@ -1411,9 +1438,9 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			'apprefix': 'Miscellany for deletion/' + mw.config.get('wgPageName'),
 			'apnamespace': 4,
 			'apfilterredir': 'nonredirects',
-			'aplimit': userIsInGroup( 'sysop' ) ? 5000 : 500
+			'aplimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500
 		};
-		wikipedia_api = new Wikipedia.api( "Looking for prior nominations of this page", query, Twinkle.xfd.callbacks.mfd.main );
+		wikipedia_api = new Morebits.wiki.api( "Looking for prior nominations of this page", query, Twinkle.xfd.callbacks.mfd.main );
 		wikipedia_api.params = { usertalk: usertalk, notifyuserspace: notifyuserspace, reason: reason, noinclude: noinclude, xfdcat: xfdcat };
 		wikipedia_api.post();
 		break;
@@ -1423,78 +1450,82 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		logpage = 'Wikipedia:Files for deletion/' + dateString;
 		params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 
-		Wikipedia.addCheckpoint();
+		Morebits.wiki.addCheckpoint();
 		if( puf ) {
 			params.logpage = logpage = 'Wikipedia:Possibly unfree files/' + dateString;
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = logpage;
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's list";
+			Morebits.wiki.actionCompleted.redirect = logpage;
+			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's list";
 
 			// Tagging file
-			wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging file with PUF tag");
+			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging file with PUF tag");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.puf.taggingImage);
 
 			// Adding discussion
-			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's list");
+			wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.puf.todaysList);
 
 			// Notification to first contributor
 			if (usertalk) {
-				wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'));
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				wikipedia_page.setCallbackParameters(params);
 				wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.puf.userNotification);
 			}
 
-			Wikipedia.removeCheckpoint();
+			Morebits.wiki.removeCheckpoint();
 
 		} else {
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = logpage;
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+			Morebits.wiki.actionCompleted.redirect = logpage;
+			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
 			// Tagging file
-			wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Adding deletion tag to file page");
+			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Adding deletion tag to file page");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.ffd.taggingImage);
 
 			// Contributor specific edits
-			wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'));
+			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.ffd.main);
 		}
-		Wikipedia.removeCheckpoint();
+		Morebits.wiki.removeCheckpoint();
 		break;
 
 	case 'cfd':
-		Wikipedia.addCheckpoint();
+		Morebits.wiki.addCheckpoint();
 
 		if( xfdtarget ) {
-			xfdtarget = xfdtarget.replace( /^\:?Category\:/, '' );
+			xfdtarget = xfdtarget.replace( /^\:?Category\:/i, '' );
 		} else {
 			xfdtarget = '';
 		}
 
+		if( xfdtarget2 ) {
+			xfdtarget2 = xfdtarget2.replace( /^\:?Category\:/i, '' );
+		}
+
 		logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
-		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, logpage: logpage };
+		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, target2: xfdtarget2, logpage: logpage };
 
 		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = logpage;
-		Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
+		Morebits.wiki.actionCompleted.redirect = logpage;
+		Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
 		// Tagging category
-		wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging category with deletion tag");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging category with deletion tag");
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.cfd.taggingCategory);
 
 		// Adding discussion to list
-		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to today's list");
+		wikipedia_page = new Morebits.wiki.page(logpage, "Adding discussion to today's list");
 		//wikipedia_page.setPageSection(2);
 			// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
 			// it can be turned on again once the problem is fixed, to save bandwidth
@@ -1504,12 +1535,12 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		// Notification to first contributor
 		if (usertalk) {
-			wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'));
+			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.cfd.userNotification);
 		}
 
-		Wikipedia.removeCheckpoint();
+		Morebits.wiki.removeCheckpoint();
 		break;
 
 	case 'cfds':
@@ -1519,16 +1550,16 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget };
 
 		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = logpage;
-		Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+		Morebits.wiki.actionCompleted.redirect = logpage;
+		Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
 		// Tagging category
-		wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging category with rename tag");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging category with rename tag");
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.cfds.taggingCategory);
 
 		// Adding discussion to list
-		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to the list");
+		wikipedia_page = new Morebits.wiki.page(logpage, "Adding discussion to the list");
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.cfds.addToList);
 
@@ -1547,7 +1578,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				'titles': mw.config.get('wgPageName'),
 				'redirects': true
 			};
-			wikipedia_api = new Wikipedia.api( "Finding target of redirect", query, Twinkle.xfd.callbacks.rfd.findTargetCallback );
+			wikipedia_api = new Morebits.wiki.api( "Finding target of redirect", query, Twinkle.xfd.callbacks.rfd.findTargetCallback );
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 		}

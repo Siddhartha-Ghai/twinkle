@@ -8,7 +8,7 @@
  * The latest development source is available at [https://github.com/azatoth/twinkle/blob/master/morebits.css].
  */
 
-/* Status */
+/* Morebits.status */
 
 .tw_status_status {
 	color: #4682B4;
@@ -27,7 +27,7 @@
 	font-weight: bold;
 }
 
-/* Quickform */
+/* Morebits.quickForm */
 
 form.quickform
 {
@@ -105,6 +105,56 @@ form.quickform .tooltipButton
 }
 
 
+/* Scrollbox styles, for use within Morebits.quickForm */
+
+div.quickform-scrollbox
+{
+	background: white;
+	border: 1px solid gray;
+	margin-bottom: .6em;
+	margin-top: .6em;
+	max-height: 20em;
+	overflow: auto;
+	padding: 6px 6px 0;
+}
+
+div.quickform-scrollbox h5:first-child
+{
+	border: none;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+div.quickform-scrollbox :last-child
+{
+	margin-bottom: 6px;
+}
+
+
+/* Previewbox */
+
+div.morebits-previewbox
+{
+	background: white;
+	color: black;
+	border: 2px inset;
+	margin: .4em auto .2em;
+	padding: .2em .4em;
+}
+
+div.morebits-previewbox *:not(img)
+{
+	vertical-align: baseline;
+}
+
+div.morebits-previewbox span.editsection
+{
+	display: none;
+}
+
+
+
+
 /* Portlet */
 
 .skin-vector div div.extraMenu h5 span {
@@ -165,7 +215,7 @@ form.quickform .tooltipButton
 }
 
 
-/* SimpleWindow */
+/* Morebits.simpleWindow */
 
 .morebits-dialog {
 	border: 1px #666 solid;

@@ -9,19 +9,14 @@
 
 Twinkle.warn = function twinklewarn() {
 	if( mw.config.get('wgNamespaceNumber') === 3 ) {
-		if(twinkleUserAuthorized) {
-			$(twAddPortletLink("#", "Warn", "tw-warn", "Warn/notify user", "")).click(Twinkle.warn.callback);
-		} else {
-			$(twAddPortletLink("#", "Warn", "tw-warn", "Warn/notify user", "")).click(function() {
-				alert("Your account is too new to use Twinkle.");
-			});
-		}
+			twAddPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
 	}
 
 	// modify URL of talk page on rollback success pages
 	if( mw.config.get('wgAction') === 'rollback' ) {
-		var $vandalTalkLink = $("#mw-rollback-success .mw-usertoollinks a").first();
+		var $vandalTalkLink = $("#mw-rollback-success").find(".mw-usertoollinks a").first();
 		$vandalTalkLink.css("font-weight", "bold");
+		$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
 
 		var extraParam = "vanarticle=" + mw.util.rawurlencode(mw.config.get("wgPageName").replace(/_/g, " "));
 		var href = $vandalTalkLink.attr("href");
@@ -34,18 +29,22 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\"") === mw.config.get('wgUserName') ){
-		alert( 'Fine, you\'ve been warned!' );
+	if ( !twinkleUserAuthorized ) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
+	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
+			!confirm( 'Warning yourself can be seen as a sign of mental instability! Are you sure you want to proceed?' ) ) {
 		return;
 	}
 	
-	var Window = new SimpleWindow( 600, 440 );
+	var Window = new Morebits.simpleWindow( 600, 440 );
 	Window.setTitle( "Warn/notify user" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Choosing a warning level", "WP:UWUL#Levels" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#warn" );
 
-	var form = new QuickForm( Twinkle.warn.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.warn.callback.evaluate );
 	var main_select = form.append( {
 			type:'field',
 			label:'Choose type of warning/notice to issue',
@@ -59,14 +58,14 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		} );
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
-	main_group.append( { type:'option', label:'General note (1)', value:'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
+	main_group.append( { type:'option', label:'General note (1)', value:'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( Morebits.userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
 	main_group.append( { type:'option', label:'Caution (2)', value:'level2', selected: ( defaultGroup === 2 ) } );
 	main_group.append( { type:'option', label:'Warning (3)', value:'level3', selected: ( defaultGroup === 3 ) } );
 	main_group.append( { type:'option', label:'Final warning (4)', value:'level4', selected: ( defaultGroup === 4 ) } );
 	main_group.append( { type:'option', label:'Only warning (4im)', value:'level4im', selected: ( defaultGroup === 5 ) } );
 	main_group.append( { type:'option', label:'Single issue notices', value:'singlenotice', selected: ( defaultGroup === 6 ) } );
 	main_group.append( { type:'option', label:'Single issue warnings', value:'singlewarn', selected: ( defaultGroup === 7 ) } );
-	if( userIsInGroup( 'sysop' ) ) {
+	if( Morebits.userIsInGroup( 'sysop' ) ) {
 		main_group.append( { type:'option', label:'Blocking', value:'block', selected: ( defaultGroup === 8 ) } );
 	}
 
@@ -76,7 +75,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			type:'input',
 			name:'article',
 			label:'Linked article',
-			value:( QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '' ),
+			value:( Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '' ),
 			tooltip:'An article can be linked within the notice, perhaps because it was a revert to said article that dispatched this notice. Leave empty for no article to be linked.'
 		} );
 
@@ -89,7 +88,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	});
 	previewlink.style.cursor = "pointer";
 	previewlink.textContent = 'Preview';
-	more.append( { type: 'div', name: 'warningpreview', label: [ previewlink ] } );
+	more.append( { type: 'div', id: 'warningpreview', label: [ previewlink ] } );
+	more.append( { type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' } );
 
 	more.append( { type:'submit', label:'Submit' } );
 
@@ -97,6 +97,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	Window.setContent( result );
 	Window.display();
 	result.main_group.root = result;
+	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
 
 	// We must init the first choice (General Note);
 	var evt = document.createEvent( "Event" );
@@ -184,8 +185,8 @@ Twinkle.warn.messages = {
 			summary:"General note: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam1": { 
-			label:"Defamation not specifically directed", 
-			summary:"General note: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"General note: Addition of defamatory content" 
 		},
 		"uw-uncen1": { 
 			label:"Censorship of material", 
@@ -314,8 +315,8 @@ Twinkle.warn.messages = {
 			summary:"Caution: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam2": { 
-			label:"Defamation not specifically directed", 
-			summary:"Caution: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Caution: Addition of defamatory content" 
 		},
 		"uw-uncen2": { 
 			label:"Censorship of material", 
@@ -444,8 +445,8 @@ Twinkle.warn.messages = {
 			summary:"Warning: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam3": { 
-			label:"Defamation not specifically directed", 
-			summary:"Warning: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Warning: Addition of defamatory content" 
 		},
 		"uw-uncen3": { 
 			label:"Censorship of material", 
@@ -571,8 +572,8 @@ Twinkle.warn.messages = {
 			summary:"Final warning: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam4": { 
-			label:"Defamation not specifically directed", 
-			summary:"Final warning: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Final warning: Addition of defamatory content" 
 		},
 		"uw-uncen4": { 
 			label:"Censorship of material", 
@@ -654,8 +655,8 @@ Twinkle.warn.messages = {
 			summary:"Only warning: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam4im": { 
-			label:"Defamation not specifically directed", 
-			summary:"Only warning: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Only warning: Addition of defamatory content" 
 		},
 		"uw-move4im": { 
 			label:"Page moves against naming conventions or consensus", 
@@ -852,7 +853,7 @@ Twinkle.warn.messages = {
 			summary:"Notice: You can be bold and fix things yourself" 
 		},
 		"uw-spoiler": {
-			label:"Adding spoiler alerts or removing supposed spoilers from appropriate sections",
+			label:"Adding spoiler alerts or removing spoilers from appropriate sections",
 			summary:"Notice: Don't delete or flag potential 'spoilers' in Wikipedia articles"
 		},
 		"uw-subst": { 
@@ -967,7 +968,8 @@ Twinkle.warn.messages = {
 		},
 		"uw-username": { 
 			label:"Username is against policy", 
-			summary:"Warning: Your username might be against policy"
+			summary:"Warning: Your username might be against policy",
+			suppressArticleInSummary: true  // not relevant for this template
 		},
 		"uw-coi-username": { 
 			label:"Username is against policy, and conflict of interest", 
@@ -1196,14 +1198,14 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		if( old_subvalue && old_subvalue_re.test( i ) ) {
 			selected = true;
 		}
-		var elem = new QuickForm.element( { type:'option', label:"{{" + i + "}}: " + messages[i].label, value:i, selected: selected } );
+		var elem = new Morebits.quickForm.element( { type:'option', label:"{{" + i + "}}: " + messages[i].label, value:i, selected: selected } );
 		
 		sub_group.appendChild( elem.render() );
 	}
 
 	if( value === 'block' ) {
 		// create the block-related fields
-		var more = new QuickForm.element( { type: 'div', id: 'block_fields' } );
+		var more = new Morebits.quickForm.element( { type: 'div', id: 'block_fields' } );
 		more.append( {
 			type: 'input',
 			name: 'block_timer',
@@ -1233,7 +1235,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		e.target.root.article.disabled = false;
 
 		$(e.target.root.reason).parent().hide();
-		$("div#twinklewarn-previewbox:visible").last().remove();
+		e.target.root.previewer.closePreview();
 	} else if( e.target.root.block_timer ) {
 		// hide the block-related fields
 		if(!e.target.root.block_timer.disabled && Twinkle.warn.prev_block_timer === null) {
@@ -1251,8 +1253,12 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		e.target.root.article.disabled = false;
 
 		$(e.target.root.reason).parent().show();
-		$("div#twinklewarn-previewbox:visible").last().remove();
+		e.target.root.previewer.closePreview();
 	}
+
+	// clear overridden label on article textbox
+	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
+	Morebits.quickForm.resetElementLabel(e.target.root.article);
 };
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
@@ -1260,18 +1266,18 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	var value = e.target.form.sub_group.value;
 
 	if( main_group === 'singlewarn' ) {
-		if( value === 'uw-username' ) {
+		if( value === 'uw-username') {
 			if(Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
-			e.target.form.article.disabled = true;
+			e.target.form.article.notArticle = true;
 			e.target.form.article.value = '';
-		} else if( e.target.form.article.disabled ) {
+		} else if( e.target.form.article.notArticle ) {
 			if(Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
 			}
-			e.target.form.article.disabled = false;
+			e.target.form.article.notArticle = false;
 		}
 	} else if( main_group === 'block' ) {
 		if( Twinkle.warn.messages.block[value].indefinite ) {
@@ -1317,43 +1323,22 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		}
 	}
 
-	var $article = $(e.target.form.article);
-	if (main_group === "singlewarn" && value === "uw-socksuspect") {
-		$article.prev().hide();
-		$article.before('<span id="tw-spi-article-username">Username of sock master, if known (without User:) </span>');
+	// change form labels according to the warning selected
+	if (value === "uw-socksuspect") {
+		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
+		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username of sock master, if known (without User:) ");
+	} else if (value === "uw-username") {
+		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
+		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username violates policy because... ");
 	} else {
-		$("span#tw-spi-article-username").remove();
-		$article.prev().show();
+		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, true);
+		Morebits.quickForm.resetElementLabel(e.target.form.article);
 	}
 };
 
 Twinkle.warn.callbacks = {
 	preview: function(form) {
 		var templatename = form.sub_group.value;
-
-		var previewdiv = $(form).find('div[name="warningpreview"]').last();
-		if (!previewdiv.length) {
-			return;  // just give up
-		}
-		previewdiv = previewdiv[0];
-
-		var previewbox = $(form).find('div#twinklewarn-previewbox').last();
-		if (!previewbox.length) {
-			previewbox = document.createElement('div');
-			previewbox.style.background = "white";
-			previewbox.style.border = "2px inset";
-			previewbox.style.marginTop = "0.4em";
-			previewbox.style.padding = "0.2em 0.4em";
-			previewbox.setAttribute('id', 'twinklewarn-previewbox');
-			previewdiv.parentNode.appendChild(previewbox);
-		} else {
-			previewbox.show();
-			previewbox = previewbox[0];
-		}
-
-		var statusspan = document.createElement('span');
-		previewbox.appendChild(statusspan);
-		Status.init(statusspan);
 		
 		var templatetext = '{{subst:' + templatename;
 		var linkedarticle = form.article.value;
@@ -1391,28 +1376,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		var query = {
-			action: 'parse',
-			prop: 'text',
-			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
-			text: templatetext,
-			title: mw.config.get('wgPageName')
-		};
-		var wikipedia_api = new Wikipedia.api("loading...", query, Twinkle.warn.callbacks.previewRender, new Status("Preview"));
-		wikipedia_api.params = { previewbox: previewbox };
-		wikipedia_api.post();
-	},
-	previewRender: function( apiobj ) {
-		var params = apiobj.params;
-		var xml = apiobj.getXML();
-		var html = $(xml).find('text').text();
-		if (!html) {
-			apiobj.statelem.error("failed to retrieve preview, or warning template was blanked");
-			return;
-		}
-		params.previewbox.innerHTML = html;
-		// fix vertical alignment
-		$(params.previewbox).find(':not(img)').css('vertical-align', 'baseline');
+		form.previewer.beginRender(templatetext);
 	},
 	main: function( pageobj ) {
 		var text = pageobj.getPageText();
@@ -1469,10 +1433,10 @@ Twinkle.warn.callbacks = {
 			var article = '', reason = '', time = null;
 			
 			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( Twinkle.warn.messages.block[params.sub_group].indefinite || (/indef|\*|max/).exec( params.block_timer ) ) ) {
-				Status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
+				Morebits.status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
-				Status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
+				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 			
@@ -1495,22 +1459,14 @@ Twinkle.warn.callbacks = {
 			text += "{{subst:" + params.sub_group + article + time + reason + "|sig=true|subst=subst:}}";
 		} else {
 			if( !headerRe.exec( text ) ) {
-				Status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
+				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
-
-			switch( params.sub_group ) {
-				case 'uw-username':
-					text += "{{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:}} ~~~~";
-					break;
-				default:
-					text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
-					break;
-			}
+			text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
 		}
 		
-		if ( Twinkle.getPref('showSharedIPNotice') && isIPAddress( mw.config.get('wgTitle') ) ) {
-			Status.info( 'Info', 'Adding a shared IP notice' );
+		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
+			Morebits.status.info( 'Info', 'Adding a shared IP notice' );
 			text +=  "\n{{subst:SharedIPAdvice}}";
 		}
 
@@ -1535,7 +1491,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 	
-	if(e.target.sub_group.value === 'uw-username' && e.target.reason.value.trim() === '') {
+	if(e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
 		alert("You must supply a reason for the {{uw-username}} template.");
 		return;
 	}
@@ -1550,13 +1506,13 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 		block_timer: e.target.block_timer ? e.target.block_timer.value : null
 	};
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( e.target );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( e.target );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page( mw.config.get('wgPageName'), 'User talk page modification' );
+	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'User talk page modification' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );

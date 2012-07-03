@@ -12,29 +12,29 @@
 
 Twinkle.tag = function friendlytag() {
 	// redirect tagging
-	if( Wikipedia.isPageRedirect() ) {
+	if( Morebits.wiki.isPageRedirect() ) {
 		Twinkle.tag.mode = 'redirect';
-		$(twAddPortletLink("#", "टैग", "friendly-tag", "पुनर्निर्देश टैग", "")).click(Twinkle.tag.callback);
+		twAddPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "पुनर्निर्देश टैग" );
 	}
 	// file tagging
 	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
 		Twinkle.tag.mode = 'file';
-		$(twAddPortletLink("#", "टैग", "friendly-tag", "फ़ाइल रखरखाव टैग", "")).click(Twinkle.tag.callback);
+		twAddPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "फ़ाइल रखरखाव टैग" );
 	}
 	// article tagging
 	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
-		$(twAddPortletLink("#", "टैग", "friendly-tag", "लेख रखरखाव टैग", "")).click(Twinkle.tag.callback);
+		twAddPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "लेख रखरखाव टैग" );
 	}
 };
 
 Twinkle.tag.callback = function friendlytagCallback( uid ) {
-	var Window = new SimpleWindow( 630, (Twinkle.tag.mode === "article") ? 450 : 400 );
+	var Window = new Morebits.simpleWindow( 630, (Twinkle.tag.mode === "article") ? 450 : 400 );
 	Window.setScriptName( "Twinkle" );
 	// anyone got a good policy/guideline/info page/instructional page link??
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag" );
 
-	var form = new QuickForm( Twinkle.tag.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.tag.callback.evaluate );
 
 	switch( Twinkle.tag.mode ) {
 		case 'article':
@@ -160,7 +160,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 	// categorical sort order
 	if (sortorder === "cat") {
-		var div = new QuickForm.element({
+		var div = new Morebits.quickForm.element({
 			type: "div",
 			id: "tagWorkArea"
 		});
@@ -188,7 +188,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 				doCategoryCheckboxes(subdiv, content);
 			} else {
 				$.each(content, function(subtitle, subcontent) {
-					subdiv.append({ type: "div", label: [ htmlNode("b", subtitle) ] });
+					subdiv.append({ type: "div", label: [ Morebits.htmlNode("b", subtitle) ] });
 					doCategoryCheckboxes(subdiv, subcontent);
 				});
 			}
@@ -206,7 +206,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		$.each(Twinkle.tag.article.tags, function(tag, description) {
 			checkboxes.push(makeCheckbox(tag, description));
 		});
-		var tags = new QuickForm.element({
+		var tags = new Morebits.quickForm.element({
 			type: "checkbox",
 			name: "articleTags",
 			list: checkboxes
@@ -708,14 +708,15 @@ Twinkle.tag.groupHash = [
 
 Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
-		var params = pageobj.getCallbackParameters();
-		var tagRe, tagText = '', summaryText = '';
-		var tags = [], groupableTags = [];
+		var params = pageobj.getCallbackParameters(),
+		    tagRe, tagText = '', summaryText = '',
+		    tags = [], groupableTags = [],
 
 		// Remove tags that become superfluous with this action
 		var pageText = pageobj.getPageText().replace(/\{\{\s*(नया असमीक्षित लेख|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
-		var i;
+		    i;
+		
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {
@@ -729,13 +730,13 @@ Twinkle.tag.callbacks = {
 						tags = tags.concat( params.tags[i] );
 					}
 				} else {
-					Status.info( 'Info', 'Found {{' + params.tags[i] +
+					Morebits.status.info( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the article already...excluding' );
 				}
 			}
 
 			if( params.group && groupableTags.length >= 3 ) {
-				Status.info( 'Info', 'स्वीकृत टैग {{अनेक समस्याएँ}} द्वारा वर्गीकृत किये जा रहे हैं' );
+				Morebits.status.info( 'Info', 'स्वीकृत टैग {{अनेक समस्याएँ}} द्वारा वर्गीकृत किये जा रहे हैं' );
 
 				groupableTags.sort();
 				tagText += '{{अनेक समस्याएँ';
@@ -762,7 +763,7 @@ Twinkle.tag.callbacks = {
 				if( !tagRe.exec( pageText ) ) {
 					tags = tags.concat( params.tags[i] );
 				} else {
-					Status.info( 'Info', 'Found {{' + params.tags[i] +
+					Morebits.status.info( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the redirect already...excluding' );
 				}
 			}
@@ -902,7 +903,7 @@ Twinkle.tag.callbacks = {
 				// when other commons-related tags are placed, remove "move to Commons" tag
 				if (["subst:ncd", "Do not move to Commons_reason", "Do not move to Commons",
 					"Now Commons"].indexOf(tag) !== -1) {
-					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 				}
 
 				currentTag = "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
@@ -995,16 +996,16 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		return;
 	}
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( form );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( form );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "टैगिंग संपूर्ण, पन्ना कुछ ही क्षणों में रीलोड होगा";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "टैगिंग संपूर्ण, पन्ना कुछ ही क्षणों में रीलोड होगा";
 	if (Twinkle.tag.mode === 'redirect') {
-		Wikipedia.actionCompleted.followRedirect = false;
+		Morebits.wiki.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging " + Twinkle.tag.mode);
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging " + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
 	switch (Twinkle.tag.mode) {
 		case 'article':
