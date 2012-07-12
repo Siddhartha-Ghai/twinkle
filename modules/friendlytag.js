@@ -149,7 +149,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						list: [
 							{ label: "{{वैश्वीकरण/अंग्रेज़ी}}: लेख मुख्य रूप से अंग्रेज़ी वक्ताओं का दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/अंग्रेज़ी" },
 							{ label: "{{वैश्वीकरण/यूरोप}}: लेख मुख्य रूप से यूरोपीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/यूरोप" },
-							{ label: "{{वैश्वीकरण/भारत}}: लेख मुख्य रूप से भारतीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/भारत" },
+							{ label: "{{वैश्वीकरण/भारत}}: लेख मुख्य रूप से भारतीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/भारत" }
 						]
 					}
 				]
@@ -546,14 +546,14 @@ Twinkle.tag.file.cleanupList = [
 				{ label: '{{Should be SVG|symbol}}: miscellaneous symbols, icons, etc.', value: 'symbol' }
 			]
 		}
-	},
+	}
 ];
 
 Twinkle.tag.file.commonsList = [
 	{ label: '{{Move to Commons}}: मुक्त मीडिया जिसे कॉमन्स पर होना चाहिये', value: 'Move to Commons' },
 	{ label: '{{Do not move to Commons}} (सार्वजनिक क्षेत्र समस्या): फ़ाइल संयुक्त राष्ट्र अमेरिका में सार्वजनिक क्षेत्र में है परंतु स्रोत देश में नहीं', value: 'Do not move to Commons' },
 	{ label: '{{Do not move to Commons}} (अन्य कारण)', value: 'Do not move to Commons_reason' },
-	{ label: '{{NowCommons}}: फ़ाइल कॉमन्स पर उपलब्ध है', value: 'subst:ncd' },
+	{ label: '{{NowCommons}}: फ़ाइल कॉमन्स पर उपलब्ध है', value: 'subst:ncd' }
 ];
 
 // Contains those article tags that can be grouped into {{multiple issues}}.
@@ -713,7 +713,7 @@ Twinkle.tag.callbacks = {
 		    tags = [], groupableTags = [],
 
 		// Remove tags that become superfluous with this action
-		var pageText = pageobj.getPageText().replace(/\{\{\s*(नया असमीक्षित लेख|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
+			pageText = pageobj.getPageText().replace(/\{\{\s*(नया असमीक्षित लेख|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, ""),
 
 		    i;
 		

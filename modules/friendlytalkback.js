@@ -20,13 +20,13 @@ Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
 		return;
 	}
 
-	var Window = new SimpleWindow( 600, 350 );
+	var Window = new Morebits.simpleWindow( 600, 350 );
 	Window.setTitle( "सन्देश" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "{{सन्देश}} पर जानकारी", "साँचा:सन्देश" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#talkback" );
 
-	var form = new QuickForm( Twinkle.talkback.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.talkback.callback.evaluate );
 
 	form.append( { type: 'radio', name: 'tbtarget',
 				list: [ {
@@ -89,7 +89,7 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 			break;
 		}
 	}
-	var work_area = new QuickForm.element( { 
+	var work_area = new Morebits.quickForm.element( { 
 			type: 'field',
 			label: 'सन्देश जानकारी',
 			name: 'work_area'
@@ -190,13 +190,13 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		message = e.target.message.value;
 	}
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( e.target );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( e.target );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "सन्देश दे दिया, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "सन्देश दे दिया, वार्ता पन्ना कुछ ही क्षणों में रीलोड होगा";
 
-	var talkpage = new Wikipedia.page(mw.config.get('wgPageName'), "सन्देश जोड़ा जा रहा है");
+	var talkpage = new Morebits.wiki.page(mw.config.get('wgPageName'), "सन्देश जोड़ा जा रहा है");
 	var tbPageName = (tbtarget === 'mytalk') ? mw.config.get('wgUserName') : page;
 
 	var text;

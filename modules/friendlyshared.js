@@ -99,7 +99,7 @@ Twinkle.shared.standardList = [
 ];
 
 Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
-	if( e.target.value === 'Shared IP edu' ) {
+	if( e.target.value === 'shared IP edu' ) {
 		e.target.form.contact.disabled = false;
 	} else {
 		e.target.form.contact.disabled = true;
