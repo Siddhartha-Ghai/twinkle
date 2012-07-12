@@ -114,7 +114,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Notify page creator if possible',
+							label: 'यदि संभव हो तो पृष्ठ निर्माता को सूचित करें',
 							value: 'notify',
 							name: 'notify',
 							tooltip: 'Creator of article has to be notified.',
