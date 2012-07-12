@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** twinklexfd.js: XFD module
  ****************************************
@@ -117,7 +117,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Notify page creator if possible',
+					label: 'यदि संभव हो तो पृष्ठ निर्माता को सूचित करें',
 					value: 'notify',
 					name: 'notify',
 					tooltip: "A notification template will be placed on the creator's talk page if this is true.",

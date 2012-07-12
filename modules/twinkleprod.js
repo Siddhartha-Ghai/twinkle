@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** twinkleprod.js: PROD module
  ****************************************
@@ -87,7 +87,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Notify page creator if possible',
+							label: 'यदि संभव हो तो पृष्ठ निर्माता को सूचित करें',
 							value: 'notify',
 							name: 'notify',
 							tooltip: "A notification template will be placed on the creator's talk page if this is true.",
@@ -317,7 +317,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	}
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.notice = "टैगिंग संपूर्ण";
 
 	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD

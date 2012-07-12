@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** twinkleimage.js: Image CSD module
  ****************************************
@@ -240,7 +240,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	Morebits.status.init( event.target );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.notice = "टैगिंग संपूर्ण";
 
 	// Tagging image
 	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
