@@ -201,13 +201,13 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 
 	var text;
 	if ( tbtarget === "an" ) {
-		text = "\n{{subst:ANI-notice|thread=";
+		text = "\n\n{{subst:ANI-notice|thread=";
 		text += section + "|noticeboard=" + tbPageName + "}} --~~~~";
 
 		talkpage.setEditSummary("प्रबंधक सूचनापट पर चर्चा का नोटिस" + Twinkle.getPref('summaryAd'));
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{{सन्देश|';
+		text = '\n\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n\n{{सन्देश|';
 		text += tbPageName;
 
 			if( section ) {
