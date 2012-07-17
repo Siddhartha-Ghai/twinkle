@@ -1595,7 +1595,7 @@ Morebits.wiki.api.prototype = {
 Morebits.wiki.page = function(pageName, currentAction) {
 
 	if (!currentAction) {
-		currentAction = 'Opening page "' + pageName + '"';
+		currentAction = 'पृष्ठ खोला जा रहा है "' + pageName + '"';
 	}
 
 	/**
@@ -1836,7 +1836,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.loadQuery.inprop = 'protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api("Retrieving page...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
+		ctx.loadApi = new Morebits.wiki.api("पृष्ठ संपादन हेतु खोला जा रहा है...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
 	};
@@ -1911,7 +1911,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query[ctx.createOption] = '';
 		}
 
-		ctx.saveApi = new Morebits.wiki.api( "Saving page...", query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.api( "पृष्ठ सहेजा जा रहा है...", query, fnSaveSuccess, ctx.statusElement, fnSaveError);
 		ctx.saveApi.setParent(this);
 		ctx.saveApi.post();
 	};
@@ -1950,7 +1950,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 		
-		ctx.lookupCreatorApi = new Morebits.wiki.api("Retrieving page creator information", query, fnLookupCreatorSuccess, ctx.statusElement);
+		ctx.lookupCreatorApi = new Morebits.wiki.api("पृष्ठ निर्माता का नाम खोजा जा रहा है", query, fnLookupCreatorSuccess, ctx.statusElement);
 		ctx.lookupCreatorApi.setParent(this);
 		ctx.lookupCreatorApi.post();
 	};
@@ -1966,9 +1966,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var patrollinkmatch = /token=(.+)%2B%5C$/.exec($(".patrollink a").attr("href"));
 		if (patrollinkmatch) {
 			var patroltoken = patrollinkmatch[1] + "+\\";
-			var patrolstat = new Morebits.status("Marking page as patrolled");
+			var patrolstat = new Morebits.status("पृष्ठ को जाँचा हुआ चिन्हित किया जा रहा है");
 
-			var wikipedia_api = new Morebits.wiki.api("doing...", {
+			var wikipedia_api = new Morebits.wiki.api("कार्य प्रगति में है...", {
 				title: ctx.pageName,
 				action: 'markpatrolled',
 				rcid: rcid,
@@ -2128,13 +2128,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.editToken = $(xml).find('page').attr('edittoken');
 		if (!ctx.editToken)
 		{
-			ctx.statusElement.error("Failed to retrieve edit token.");
+			ctx.statusElement.error("ए॰पी॰आई से संपादन टोकन लेने में असफल");
 			return;
 		}
 		ctx.loadTime = $(xml).find('page').attr('starttimestamp');
 		if (!ctx.loadTime)
 		{
-			ctx.statusElement.error("Failed to retrieve start timestamp.");
+			ctx.statusElement.error("ए॰पी॰आई से शुरुआत टाइमस्टैम्प लेने में असफल");
 			return;
 		}
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
@@ -2142,7 +2142,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (ctx.editMode === 'revert') {
 			ctx.revertCurID = $(xml).find('rev').attr('revid');
 			if (!ctx.revertCurID) {
-				ctx.statusElement.error("Failed to retrieve current revision ID.");
+				ctx.statusElement.error("ए॰पी॰आई से वर्तमान अवतरण संख्या लेने में असफल");
 				return;
 			}
 			ctx.revertUser = $(xml).find('rev').attr('user');
@@ -2179,7 +2179,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			
 			// only notify user for redirects, not normalization
 			if ( $(xml).find('redirects').length > 0 ) {
-				Morebits.status.info("Info", "Redirected from " + ctx.pageName + " to " + resolvedName );
+				Morebits.status.info("सूचना", ctx.pageName + " से " + resolvedName + 'को पुनर्निर्देषित');
 			}
 			ctx.pageName = resolvedName;  // always update in case of normalization
 		}
@@ -2207,7 +2207,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var link = document.createElement('a');
 			link.setAttribute('href', mw.util.wikiGetlink(ctx.pageName) );
 			link.appendChild(document.createTextNode(ctx.pageName));
-			ctx.statusElement.info(['completed (', link, ')']);
+			ctx.statusElement.info(['कार्य सम्पूर्ण (', link, ')']);
 			if (ctx.onSaveSuccess) {
 				ctx.onSaveSuccess(this);  // invoke callback
 			}
@@ -2228,7 +2228,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.error("Could not save the page because the wiki server wanted you to fill out a CAPTCHA.");
 		}
 		else {
-			ctx.statusElement.error("Unknown error received from API while saving page");
+			ctx.statusElement.error("पृष्ठ सहेजते समय ए॰पी॰आई से अज्ञात त्रुटि मिली");
 		}
 		
 		// force error to stay on the screen
@@ -2298,7 +2298,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		ctx.creator = $(xml).find('rev').attr('user');
 		if (!ctx.creator) {
-			ctx.statusElement.error("Could not find name of page creator");
+			ctx.statusElement.error("पृष्ठ निर्माता का नाम नहीं मिला।");
 			return;
 		}
 		ctx.onLookupCreatorSuccess(this);
