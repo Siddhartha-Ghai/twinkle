@@ -632,7 +632,7 @@ Twinkle.speedy.callbacks = {
 			statelem.status( 'Checking for tags on the page...' );
 			
 			// check for existing deletion tags
-			var tag = /(\{\{(शीह|हटाएँ)-[a-zA-Z0-9\\u0900-\\u097F]*\}\})/.exec( text );
+			var tag = /(\{\{(शीह|हटाएँ)-[a-zA-Z0-9\u0900-\u097F]*\}\})/.exec( text );
 			if( tag ) {
 				statelem.error( [ Morebits.htmlNode( 'strong', tag[1] ) , " पहले से पृष्ठ पर है।" ] );
 				return;
@@ -739,7 +739,7 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var usertalkpage = new Wikipedia.page('सदस्य वार्ता:' + Twinkle.speedy.initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + Twinkle.speedy.initialContrib + ")");
+			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + Twinkle.speedy.initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + Twinkle.speedy.initialContrib + ")");
 			var notifytext = "\n\n{{subst:शीह सूचना-";
 
 			// specialcase "db" and "talk"
@@ -893,7 +893,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'ल4':
 			var article = prompt( 'कृपया मूल लेख का नाम बताएँ', "");
-			var oarticle = new Wikipedia.page(article);
+			var oarticle = new Morebits.wiki.page(article);
 			if (article === "")
 			{
 				statelem.error( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
