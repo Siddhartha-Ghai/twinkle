@@ -233,7 +233,12 @@ Twinkle.config.sections = [
 {
 	title: "शीघ्र हटाना (शीह)",
 	preferences: [
-		
+		{
+			name: "speedySelectionStyle",
+			label: "When to go ahead and tag/delete the page",
+			type: "enum",
+			enumValues: { "buttonClick": 'When I click "Submit"', "radioClick": "As soon as I click an option" }
+		},
 		// TwinkleConfig.watchSpeedyPages (array)
 		// Whether to add speedy tagged pages to watchlist
 		{
