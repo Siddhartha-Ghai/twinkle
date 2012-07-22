@@ -325,7 +325,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + "\n\n{{subst:हहेच लेख नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgPageName') + "}}~~~~\n");
+			pageobj.setPageText(text + "\n\n{{subst:हहेच लेख नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}~~~~\n");
 			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] लेख को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -346,7 +346,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
-			var notifytext = "\n{{subst:हहेच लेख सूचना|पृष्ठ=" + mw.config.get('wgPageName') + "|कारण=" + params.reason + "}}~~~~";
+			var notifytext = "\n{{subst:हहेच लेख सूचना|पृष्ठ=" + mw.config.get('wgTitle') + "|कारण=" + params.reason + "}}~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -415,7 +415,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var editsummary = "[[" + mw.config.get('wgPageName') + "]] श्रेणी पृष्ठ को";
 			
-			var newtext = text + "\n\n{{subst:हहेच श्रेणी नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgPageName') + "|प्रकार=" + params.type;
+			var newtext = text + "\n\n{{subst:हहेच श्रेणी नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "|प्रकार=" + params.type;
 
 			switch (params.type) {
 				case 'विलय':
@@ -456,7 +456,7 @@ Twinkle.xfd.callbacks = {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
-			var notifytext = "\n{{subst:हहेच श्रेणी सूचना|पृष्ठ=" + mw.config.get('wgPageName') + "|प्रकार=" + params.type + '|कारण=' + params.reason;
+			var notifytext = "\n{{subst:हहेच श्रेणी सूचना|पृष्ठ=" + mw.config.get('wgTitle') + "|प्रकार=" + params.type + '|कारण=' + params.reason;
 			switch (params.type) {
 				case 'विलय':
 					notifytext += '|दूसरी श्रेणी=' + params.target;
@@ -519,7 +519,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + "\n\n{{subst:हहेच साँचा नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgPageName') + "}}\n");
+			pageobj.setPageText(text + "\n\n{{subst:हहेच साँचा नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
 			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] साँचे को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -540,7 +540,7 @@ Twinkle.xfd.callbacks = {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
-			var notifytext = "\n{{subst:हहेच साँचा सूचना|पृष्ठ=" + mw.config.get('wgPageName') + '|कारण=' + params.reason + "}}~~~~";
+			var notifytext = "\n{{subst:हहेच साँचा सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
@@ -589,7 +589,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + "\n\n{{subst:हहेच फ़ाइल नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgPageName') + "}}\n");
+			pageobj.setPageText(text + "\n\n{{subst:हहेच फ़ाइल नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
 			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] फ़ाइल को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -610,7 +610,7 @@ Twinkle.xfd.callbacks = {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
-			var notifytext = "\n{{subst:हहेच फ़ाइल सूचना|पृष्ठ=" + mw.config.get('wgPageName') + '|कारण=' + params.reason + "}}~~~~";
+			var notifytext = "\n{{subst:हहेच फ़ाइल सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
