@@ -33,27 +33,20 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 	Twinkle.speedy.initDialog(Morebits.userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 };
 
-Twinkle.speedy.dialog = null;
+Twinkle.speedy.dialog = null;  // used by unlink feature
+
 // Prepares the speedy deletion dialog and displays it
-// Parameters:
-//  - callbackfunc: the function to call when the dialog box is submitted
-//  - firstTime: is this the first time? (false during a db-multiple run, true otherwise)
-//  - oldDialog: (optional) the Morebits.simpleWindow which is currently visible
-Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstTime, oldDialog) {
+Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	var dialog;
-	if (oldDialog) {
-		dialog = oldDialog;
-	} else {
-		Twinkle.speedy.dialog = new Morebits.simpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
-		dialog = Twinkle.speedy.dialog;
-		dialog.setTitle( "शीघ्र हटाने के लिये मापदंड चुनें" );
-		dialog.setScriptName( "Twinkle" );
-		dialog.addFooterLink( "पृष्ठ हटाने की नीति", "वि:हटाना" );
-		dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#speedy" );
-	}
+	Twinkle.speedy.dialog = new Morebits.simpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
+	dialog = Twinkle.speedy.dialog;
+	dialog.setTitle( "शीघ्र हटाने के लिये मापदंड चुनें" );
+	dialog.setScriptName( "Twinkle" );
+	dialog.addFooterLink( "पृष्ठ हटाने की नीति", "वि:हटाना" );
+	dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#speedy" );
 
 	var form = new Morebits.quickForm( callbackfunc, (Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null) );
-	if( firstTime && Morebits.userIsInGroup( 'sysop' ) ) {
+	if( Morebits.userIsInGroup( 'sysop' ) ) {
 		form.append( {
 				type: 'checkbox',
 				list: [
@@ -64,19 +57,26 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 						tooltip: 'यदि आप पृष्ठ को हटाने के बजाए सिर्फ़ टैग करना चाहते हैं',
 						checked : Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
-							// enable/disable notify checkbox
-							event.target.form.notify.disabled = !event.target.checked;
-							event.target.form.notify.checked = event.target.checked;
+							var cForm = event.target.form;
+							var cChecked = event.target.checked;
 							// enable/disable talk page checkbox
-							if (event.target.form.talkpage) {
-								event.target.form.talkpage.disabled = event.target.checked;
-								event.target.form.talkpage.checked = !event.target.checked && Twinkle.getPref('deleteTalkPageOnDelete');
+							if (cForm.talkpage) {
+								cForm.talkpage.disabled = cChecked;
+								cForm.talkpage.checked = !cChecked && Twinkle.getPref('deleteTalkPageOnDelete');
 							}
 							// enable/disable redirects checkbox
-							event.target.form.redirects.disabled = event.target.checked;
-							event.target.form.redirects.checked = !event.target.checked;
+							cForm.redirects.disabled = cChecked;
+							cForm.redirects.checked = !cChecked;
+
+							// enable/disable notify checkbox
+							cForm.notify.disabled = !cChecked;
+							cForm.notify.checked = cChecked;
 							// enable/disable multiple
-							$(event.target.form).find('input[name="csd"][value="अनेक"]')[0].disabled = !event.target.checked;
+							cForm.multiple.disabled = !cChecked;
+							cForm.multiple.checked = false;
+
+							Twinkle.speedy.callback.dbMultipleChanged(cForm, false);
+
 							event.stopPropagation();
 						}
 					}
@@ -120,101 +120,123 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 		form.append( { type: 'header', label: 'टैग संबंधी विकल्प' } );
 	}
 
-	// don't show this notification checkbox for db-multiple, as the value is ignored
-	// XXX currently not possible to turn off notification when using db-multiple
-	if (firstTime) {
-		form.append( {
-				type: 'checkbox',
-				list: [
-					{
-						label: 'यदि संभव हो तो पृष्ठ निर्माता को सूचित करें',
-						value: 'notify',
-						name: 'notify',
-						tooltip: "यदि यह विकल्प सक्षम है, और आपके Twinkle Preferences में सूचना देना सक्षम है, तो पृष्ठ निर्माता के वार्ता पृष्ठ पर एक सूचना साँचा जोड़ दिया जाएगा। " +
+	form.append( {
+			type: 'checkbox',
+			list: [
+				{
+					label: 'यदि संभव हो तो पृष्ठ निर्माता को सूचित करें',
+					value: 'notify',
+					name: 'notify',
+					tooltip: "यदि यह विकल्प सक्षम है, और आपके Twinkle Preferences में सूचना देना सक्षम है, तो पृष्ठ निर्माता के वार्ता पृष्ठ पर एक सूचना साँचा जोड़ दिया जाएगा। " +
 							"यदि आपके Twinkle Preferences में आपके द्वारा चुने मापदंड के लिये स्वागत सक्षम है, तो सदस्य का स्वागत भी किया जाएगा।",
-						checked: !Morebits.userIsInGroup( 'sysop' ) || Twinkle.getPref('deleteSysopDefaultToTag'),
-						disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
-						event: function( event ) {
-							event.stopPropagation();
-						}
+					checked: !Morebits.userIsInGroup( 'sysop' ) || Twinkle.getPref('deleteSysopDefaultToTag'),
+					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
+					event: function( event ) {
+						event.stopPropagation();
 					}
-				]
-			}
-		);
-	} else {
-		form.append( { type:'header', label: '{{शीह-अनेक}} के साथ टैगिंग' } );
-	}
-
-	if (firstTime) {
-		form.append( { type: 'radio', name: 'csd',
+				}
+			]
+		} );
+	form.append( {
+			type: 'checkbox',
 			list: [
 				{
 					label: 'अनेक मापदंडों के साथ टैग करें',
 					value: 'अनेक',
-					tooltip: 'Twinkle की विंडो की एक श्रृंखला को खोलता है, जिससे आप उन मापदंडों को निर्दिष्ट कर सकते हैं जिनसे आप इस पृष्ठ को टैग करना चाहते हैं।',
-					disabled: Morebits.userIsInGroup('sysop') && !Twinkle.getPref('deleteSysopDefaultToTag')
+					name: 'multiple',
+					tooltip: "इसे चुन के आप पृष्ठ पर लागू होने वाले अनेक मापदंड निर्दिष्ट कर सकते हैं।",
+					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
+					event: function( event ) {
+						Twinkle.speedy.callback.dbMultipleChanged( event.target.form, event.target.checked );
+						event.stopPropagation();
+					}
 				}
 			]
 		} );
-	} else if (Twinkle.speedy.dbmultipleparams.length > 0) {
-		form.append( { type: 'radio', name: 'csd',
-			list: [
-				{
-					label: 'कोई और मापदंड लागू नहीं होते - टैगिंग समाप्त करें',
-					value: 'multiple-finish'
-				}
-			]
+
+	form.append( {
+			type: 'div',
+			name: 'work_area',
+			label: 'Failed to initialize the CSD module. Please try again, or tell the Twinkle developers about the issue.'
 		} );
+
+	if( Twinkle.getPref( 'speedySelectionStyle' ) !== 'radioClick' ) {
+		form.append( { type: 'submit' } );
 	}
 
+	var result = form.render();
+	dialog.setContent( result );
+	dialog.display();
+
+	Twinkle.speedy.callback.dbMultipleChanged( result, false );
+};
+
+Twinkle.speedy.callback.dbMultipleChanged = function twinklespeedyCallbackDbMultipleChanged(form, checked) {
 	var namespace = mw.config.get('wgNamespaceNumber');
+	var value = checked;
+
+	var work_area = new Morebits.quickForm.element( {
+			type: 'div',
+			name: 'work_area'
+		} );
+
+	if (checked && Twinkle.getPref('speedySelectionStyle') === 'radioClick') {
+		work_area.append( {
+				type: 'div',
+				label: 'When finished choosing criteria, click:'
+			} );
+		work_area.append( {
+				type: 'button',
+				name: 'submit-multiple',
+				label: 'Submit Query',
+				event: function( event ) {
+					Twinkle.speedy.callback.evaluateUser( event );
+					event.stopPropagation();
+				}
+			} );
+	}
+
+	var radioOrCheckbox = (value ? 'checkbox' : 'radio');
+
 	if (namespace % 2 === 1 && namespace !== 3) {  // talk pages, but not user talk pages
-		form.append( { type: 'header', label: 'वार्ता पृष्ठ' } );
-		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.talkList } );
+		work_area.append( { type: 'header', label: 'वार्ता पृष्ठ' } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.talkList } );
 	}
 
 	switch (namespace) {
 		case 0:  // article
 		case 1:  // talk
-			form.append( { type: 'header', label: 'लेख' } );
-			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getArticleList(!firstTime) } );
+			work_area.append( { type: 'header', label: 'लेख' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getArticleList(value) } );
 			break;
 
 		case 2:  // user
 		case 3:  // user talk
-			form.append( { type: 'header', label: 'सदस्य पृष्ठ' } );
-			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getUserList(!firstTime) } );
+			work_area.append( { type: 'header', label: 'सदस्य पृष्ठ' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getUserList(value) } );
 			break;
 
 		case 6:  // file
 		case 7:  // file talk
-			form.append( { type: 'header', label: 'फ़ाइलें' } );
-			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getFileList(!firstTime) } );
+			work_area.append( { type: 'header', label: 'फ़ाइलें' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getFileList(value) } );
 			break;
 
 		case 10:  // template
 		case 11:  // template talk
-			form.append( { type: 'header', label: 'साँचे' } );
-			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.templateList } );
+			work_area.append( { type: 'header', label: 'साँचे' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.templateList } );
 			break;
 
 		default:
 			break;
 	}
 
-	form.append( { type: 'header', label: 'वैश्विक मापदंड' } );
-	form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getGeneralList(!firstTime) });
+	work_area.append( { type: 'header', label: 'वैश्विक मापदंड' } );
+	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getGeneralList(value) });
 
-	if( Twinkle.getPref( 'speedySelectionStyle' ) !== 'radioClick' ) {
-		form.append( { type: 'submit', label: ( firstTime ? undefined : "Continue" ) } );
-	}
-
-	var result = form.render();
-	dialog.setContent( result );
-	if (!oldDialog) {
-		dialog.display();
-	}
-	result.dialog = dialog;  // expando property
+	var old_area = Morebits.quickForm.getElements(form, "work_area")[0];
+	form.replaceChild(work_area.render(), old_area);
 };
 
 Twinkle.speedy.talkList = [
@@ -374,7 +396,6 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 Twinkle.speedy.normalizeHash = {
 	'कारण': 'शीह',
 	'अनेक': 'अनेक',
-	'multiple-finish': 'multiple-finish',
 	'अर्थहीन': 'व1',
 	'परीक्षण': 'व2',
 	'बर्बरता': 'व3',
@@ -439,10 +460,9 @@ Twinkle.speedy.callbacks = {
 			var thispage = new Morebits.wiki.page( mw.config.get('wgPageName'), "पृष्ठ हटाया जा रहा है" );
 			var presetreason = "[[वि:हटाना#" + params.normalized + "|" + params.normalized + "]]." + params.reason;
 			var statelem = thispage.getStatusElement();
-
-			params.input = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);	
+			var inputparams = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);	
 			
-			if(!params.input) {
+			if(!inputparams) {
 			return;
 			}
 			
@@ -450,21 +470,21 @@ Twinkle.speedy.callbacks = {
 			var reason;
 			switch(params.normalized) {
 				case 'शीह':
-					reason = params.input.name + params.dbreason;
+					reason = inputparams.name + params.dbreason;
 					break;
 				case 'talk':
 					reason = params.reason;
 					break;
 				default:
 					reason = presetreason;
-					params.input.val = '';
-					$.each(params.input, function(prop, val){
+					inputparams.val = '';
+					$.each(inputparams, function(prop, val){
 					if (typeof val === 'string' && prop!== 'name' && prop!== 'val' && val!=="") {
-						params.input.val += " " + val + " ";
+						inputparams.val += " " + val + " ";
 						}
 					});
-					if (params.input.val!=='') {
-					reason+=params.input.val;
+					if (inputparams.val!=='') {
+					reason+=inputparams.val;
 					}
 					break;
 			}
@@ -619,25 +639,9 @@ Twinkle.speedy.callbacks = {
 
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-
-			if(params.value!=='अनेक') {
-			params.input = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);
-			}
-
-			if(!params.input) {
-			return;
-			}
 			
-			if(params.value!=='सदस्य अनुरोध') {
+			if(params.normalizeds.indexOf('स1') === -1) {
 				if(Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
-					if(params.value==='अनेक') {
-						if(Twinkle.speedy.dbmultipleparams.indexOf('स1')=== -1) {
-							if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
-								statelem.error("नामांकन रद्द कर दिया गया है।");
-								return;
-							}
-						}
-					}
 					if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
 						statelem.error("नामांकन रद्द कर दिया गया है।");
 						return;
@@ -646,7 +650,6 @@ Twinkle.speedy.callbacks = {
 			}
 			
 			statelem.status( 'Checking for tags on the page...' );
-			
 			// check for existing deletion tags
 			var tag = /(\{\{(शीह|हटाएँ)-[a-zA-Z0-9\u0900-\u097F]*\}\})/.exec( text );
 			if( tag ) {
@@ -660,25 +663,45 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var code, parameters, i;
-			if (params.normalized === 'अनेक') {
+			var code, i;
+			if (params.normalizeds.length > 1)
+			{
+				params.inputs = {};
 				code = "{{शीह-अनेक";
-				for (i in Twinkle.speedy.dbmultipleparams) {
-					if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string') {
-						code += "|" + Twinkle.speedy.dbmultipleparams[i];
+				var breakFlag = false;
+				$.each(params.normalizeds, function(index, norm) {
+					code += "|" + norm;
+					params.input = Twinkle.speedy.getParameters(params.values[index], norm, statelem);
+					if (!params.input) {
+						breakFlag = true;
+						return false;  // the user aborted
 					}
+					$.extend(params.inputs, params.input);
+					for (i in params.input) {
+						if (typeof params.input[i] === 'string') {
+							code += "|" + params.input[i];
+						}
+					}
+				});
+				if (breakFlag) {
+					return;
 				}
 			}
-			else {
+			else
+			{
+				params.input = Twinkle.speedy.getParameters(params.values[0], params.normalizeds[0], statelem);
+				if (!params.input) {
+					return;  // the user aborted
+				}
 				code = "{{शीह-";
 				if (params.value === 'talk') {
 					code+= "कारण|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 				}
 				else {
-				code+= params.value;
+				code+= params.values[0];
 				}
-				for(var i in params.input) {
-					if (typeof params.input[i] === 'string' && i!== 'name' && i!== 'val' && params.input[i]!=="") {
+				for (i in params.input) {
+					if (typeof params.input[i] === 'string') {
 						code += "|" + params.input[i];
 					}
 				}
@@ -715,38 +738,28 @@ Twinkle.speedy.callbacks = {
 				// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
 				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
 			}
-
+//setCallbackParameters
 			// Generate edit summary for edit
 			var editsummary;
-			switch (params.normalized)
-			{
-				case 'शीह':
-					editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"' + params.input.dbreason + '\"।';
-					break;
-				case 'अनेक':
-					editsummary = 'शीघ्र हटाने का नामांकन (';
-					for (i in Twinkle.speedy.dbmultipleparams) {
-						if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string' && Twinkle.speedy.dbmultipleparams[i].length <= 3 && Twinkle.speedy.dbmultipleparams[i].length >= 2 && !isNaN(Twinkle.speedy.dbmultipleparams[i].charAt(1))) {
-							editsummary += '[[वि:हटाना#' + Twinkle.speedy.dbmultipleparams[i] + '|शीह ' + Twinkle.speedy.dbmultipleparams[i] + ']], ';
-						}
-					}
-					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
-					editsummary += ')।';
-					break;
-				case 'talk':
-					editsummary = 'शीघ्र हटाने का नामांकन (हटाए गए पृष्ठ का वार्ता पृष्ठ)';
-					break;
-				default:
-					editsummary = "शीघ्र हटाने का नामांकन ([[वि:हटाना#" + params.normalized + "|शीह " + params.normalized + "]]).";
-					break;
+			if (params.normalizeds.length > 1) {
+				editsummary = 'शीघ्र हटाने का नामांकन (';
+				$.each(params.normalizeds, function(index, norm) {
+					editsummary += '[[वि:हटाना#' + norm + '|शीह ' + norm + ']], ';
+				});
+				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
+				editsummary += ')।';
+			} else if (params.normalizeds[0] === 'शीह') {
+				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"' + params.input.dbreason + '\"।';
+			} else if (params.values[0] === 'talk') {
+				editsummary =  'शीघ्र हटाने का नामांकन (हटाए गए पृष्ठ का वार्ता पृष्ठ)';
+			} else {
+				editsummary = "शीघ्र हटाने का नामांकन ([[वि:हटाना#" + params.normalizeds[0] + "|शीह " + params.normalizeds[0] + "]])।";
 			}
 
 			pageobj.setPageText(code + "\n" + text);
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('nocreate');
-			if (!params.usertalk && !params.lognomination) {
-			return;}
 			pageobj.save();
 		},
 		notifyuser: function (params) {
@@ -763,33 +776,56 @@ Twinkle.speedy.callbacks = {
 			
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + Twinkle.speedy.initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + Twinkle.speedy.initialContrib + ")");
 			var notifytext = "\n\n{{subst:शीह सूचना-";
-
-			// specialcase "db" and "talk"
-			switch (params.value)
-			{
-				case 'कारण':
-					notifytext += "कारण|" + mw.config.get('wgPageName');
-					break;
-				case 'talk':
-					notifytext += "कारण|" + mw.config.get('wgPageName') + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
-					break;
-				default:
-					notifytext += params.normalized + "|" + mw.config.get('wgPageName');
-					break;
-			}
-			if (params.normalized!== 'अनेक') {
-				for (var i in params.input) {
-					if (typeof params.input[i] === 'string' && i!=='name' && params.normalized!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
-						notifytext += '|' + params.input[i];
-					}
+			if (params.normalizeds.length === 1) {
+				// specialcase "db" and "talk"
+				switch (params.values[0])
+				{
+					case 'कारण':
+						notifytext += "कारण|" + mw.config.get('wgPageName');
+						break;
+					case 'talk':
+						notifytext += "कारण|" + mw.config.get('wgPageName') + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
+						break;
+					default:
+						notifytext += params.normalizeds[0] + "|" + mw.config.get('wgPageName');
+						for (var i in params.input) {
+							if (typeof params.input[i] === 'string' && i!=='name' && params.normalizeds[0]!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
+								notifytext += '|' + params.input[i];
+							}
+						}
+						break;
 				}
 			}
 			else {
-				for (var i in Twinkle.speedy.dbmultipleparams) {
-					if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string') {
-					notifytext+= '|' + Twinkle.speedy.dbmultipleparams[i];
+				notifytext += 'अनेक' + '|' + mw.config.get('wgPageName');
+				$.each(params.normalizeds, function(index, norm) {
+					notifytext += "|" + norm;
+					switch (norm) {
+						case 'शीह':
+							notifytext += "|" + params.inputs.dbreason;
+							break;
+						case 'व6':
+						case 'व6ल':
+						case 'व6फ़':
+						case 'व6स':
+							notifytext += "|" + params.inputs.source;
+							break;
+						case 'ल4':
+							notifytext += "|" + params.inputs.art;
+							break;
+						case 'फ़2':
+							notifytext += "|" + params.inputs.cfile;
+							break;
+						case 'फ़5':
+							notifytext += "|" + params.inputs.altfile;
+							break;
+						case 'सा1':
+							notifytext += "|" + params.inputs.template;
+							break;
+						default:
+							break;
 					}
-				}
+				});
 			}
 			notifytext +="}}~~~~";
 
@@ -807,8 +843,7 @@ Twinkle.speedy.callbacks = {
 		},
 
 		// the params used are:
-		//   for all: params.normalized
-		//   for CSD: params.value
+		//   for CSD: params.values, params.normalizeds  (note: normalizeds is an array)
 		addToLog: function(params) {
 			var wikipedia_page = new Morebits.wiki.page("सदस्य:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
 			wikipedia_page.setCallbackParameters(params);
@@ -838,27 +873,21 @@ Twinkle.speedy.callbacks = {
 			}
 
 			text += "\n# [[:" + mw.config.get('wgPageName') + "]]: ";
-			switch (params.normalized)
-			{
-				case 'शीह':
-					text += "{{tl|शीह-कारण}}";
-					break;
-				case 'अनेक':
-					text += "अनेक मापदंड (";
-					for (var i in Twinkle.speedy.dbmultipleparams) {
-						if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string' && Twinkle.speedy.dbmultipleparams[i].length <= 3 && Twinkle.speedy.dbmultipleparams[i].length >= 2 && !isNaN(Twinkle.speedy.dbmultipleparams[i].charAt(1))) {
-							text += '[[वि:हटाना#' + Twinkle.speedy.dbmultipleparams[i] + '|' + Twinkle.speedy.dbmultipleparams[i] + ']], ';
-						}
-					}
-					text = text.substr(0, text.length - 2);  // remove trailing comma
-					text += ')';
-					break;
-				default:
-					text += "[[वि:हटाना#" + params.normalized + "|शीह " + params.normalized + "]] ({{tl|शीह-" + params.value + "}})";
-					break;
+			if (params.normalizeds.length > 1) {
+				text += "अनेक मापदंड (";
+				$.each(params.normalizeds, function(index, norm) {
+					text += '[[वि:हटाना#' + norm + '|' + norm + ']], ';
+				});
+				text = text.substr(0, text.length - 2);  // remove trailing comma
+				text += ')';
+			}
+			else if (params.normalizeds[0] === 'शीह') {
+				text += "{{tl|शीह-कारण}}";
+			} else {
+				text += "[[वि:हटाना#" + params.normalizeds[0] + "|शीह " + params.normalizeds[0] + "]] ({{tl|शीह-" + params.values[0] + "}})";
 			}
 
-			if (Twinkle.speedy.initialContrib) {
+			if (params.usertalk) {
 				text += "; {{सदस्य|1=" + Twinkle.speedy.initialContrib + "}} को सूचित किया";
 			}
 			text += " ~~~~~\n";
@@ -874,7 +903,7 @@ Twinkle.speedy.callbacks = {
 // prompts user for parameters to be passed into the speedy deletion tag
 Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
 {
-	var parameters = {};
+	var parameters = {}, oart;
 	switch( normalized ) {
 		case 'शीह':
 			var dbrationale = prompt('कृपया शीघ्र हटाने के लिये कारण दें।   \n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
@@ -883,7 +912,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'कारण बताना आवश्यक है।  नामांकन रोक दिया गया है।' );
 				return null;
 			}
-			parameters.name = "कारण";
+//			parameters.name = "कारण";
 			parameters.dbreason = dbrationale;
 			break;
 		case 'व6':
@@ -902,7 +931,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'आपने जो स्रोत यू॰आर॰एल दिया है, वह http से नहीं शुरू होता। नामांकन रोक दिया गया है।' );
 				return null;
 			}
-			parameters.name = "स्रोत यू॰आर॰एल";
+//			parameters.name = "स्रोत यू॰आर॰एल";
 			parameters.source = url;
 			break;
 		case 'ल4':
@@ -917,10 +946,14 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			if (!oarticle.exists())
 				{
 					statelem.error( 'आपने जो नाम दिया है, इस नाम का कोई लेख नहीं है। नामांकन रोक दिया गया है।' );
+					oart = null;
 					return null;
 				}
 			});
-			parameters.name = "मूल लेख";
+			if (!oart) {
+				return null;
+			}
+//			parameters.name = "मूल लेख";
 			parameters.art = article;
 			break;
 		case 'फ़2':
@@ -931,7 +964,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
 				return null;
 			}
-			parameters.name = "कॉमन्स पर फ़ाइल";
+//			parameters.name = "कॉमन्स पर फ़ाइल";
 			parameters.cfile = cfile;
 			break;
 		case 'फ़5':
@@ -942,7 +975,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'आपने मुक्त विकल्प का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
 				return null;
 			}
-			parameters.name = "मुक्त विकल्प";
+//			parameters.name = "मुक्त विकल्प";
 			parameters.altfile = alternative;
 			break;
 		case 'सा1':
@@ -952,7 +985,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'आपने बेहतर साँचे का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
 				return null;
 			}
-			parameters.name = "बेहतर साँचा";
+//			parameters.name = "बेहतर साँचा";
 			parameters.template = bettertemplate;
 			break;
 		default:
@@ -961,17 +994,13 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 	return parameters;
 };
 
-Twinkle.speedy.resolveCsdValue = function twinklespeedyResolveCsdValue(e) {
-	var value = (e.target.values ? e.target.values : (e.target.form ? e.target.form : e.target).getChecked('csd'));
-	if ($.isArray(value)) {
-		if (value.length === 0) {
-			alert( "Please select a criterion!" );
-			return null;
-		} else {
-			value = value[0];
-		}
+Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
+	var values = (e.target.form ? e.target.form : e.target).getChecked('csd');
+	if (values.length === 0) {
+		alert( "Please select a criterion!" );
+		return null;
 	}
-	return value;
+	return values;
 };
 
 Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e)
@@ -985,7 +1014,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		return;
 	}
 
-	var value = Twinkle.speedy.resolveCsdValue(e);
+	var value = Twinkle.speedy.resolveCsdValues(e)[0];
 	if (!value) {
 		return;
 	}
@@ -1010,113 +1039,65 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 	var form = (e.target.form ? e.target.form : e.target);
 
-	var value = Twinkle.speedy.resolveCsdValue(e);
-	if (!value) {
+	if (e.target.type === "checkbox") {
 		return;
 	}
 
-	if (value === 'अनेक')
-	{
-		form.style.display = "none"; // give the user a cue that the dialog is being changed
-		setTimeout(function() {
-			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, form.dialog);
-		}, 150);
+	var values = Twinkle.speedy.resolveCsdValues(e);
+	if (!values) {
 		return;
 	}
+	//var multiple = form.multiple.checked;
+	var normalizeds = [];
+	$.each(values, function(index, value) {
+		var norm = Twinkle.speedy.normalizeHash[ value ];
 
-	if (value === 'multiple-finish') {
-		value = 'अनेक';
-	}
-	else
-	{
-		// clear these out, whatever the case, to avoid errors
-		Twinkle.speedy.dbmultipleparams = [];
-	}
-
-	var normalized = Twinkle.speedy.normalizeHash[ value ];
-	var i;
-
-	// analyse each db-multiple criterion to determine whether to watch the page/notify the creator
+		normalizeds.push(norm);
+	});
+	// analyse each criterion to determine whether to watch the page/notify the creator
 	var watchPage = false;
-	if (value === 'अनेक')
-	{
-		for (i in Twinkle.speedy.dbmultipleparams)
-		{
-			if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string' &&
-				Twinkle.getPref('watchSpeedyPages').indexOf(Twinkle.speedy.dbmultipleparams[i]) !== -1)
-			{
-				watchPage = true;
-				break;
-			}
+	$.each(normalizeds, function(index, norm) {
+		if (Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1) {
+			watchPage = true;
+			return false;  // break
 		}
-	}
-	else
-	{
-		watchPage = Twinkle.getPref('watchSpeedyPages').indexOf(normalized) !== -1;
-	}
+	});
 
 	var notifyuser = false;
-	if (value === 'अनेक')
-	{
-		for (i in Twinkle.speedy.dbmultipleparams)
-		{
-			if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string' &&
-				Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(Twinkle.speedy.dbmultipleparams[i]) !== -1)
-			{
+	if (form.notify.checked) {
+		$.each(normalizeds, function(index, norm) {
+			if (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1) {
 				notifyuser = true;
-				break;
+				return false;  // break
 			}
-		}
-	}
-	else
-	{
-		notifyuser = (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(normalized) !== -1) && form.notify.checked;
+		});
 	}
 
 /*
 	var welcomeuser = false;
-	if (notifyuser)
-	{
-		if (value === 'अनेक')
-		{
-			for (i in Twinkle.speedy.dbmultipleparams)
-			{
-				if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string' &&
-					Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(Twinkle.speedy.dbmultipleparams[i]) !== -1)
-				{
-					welcomeuser = true;
-					break;
-				}
+	if (notifyuser) {
+		$.each(normalizeds, function(index, norm) {
+			if (Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1) {
+				welcomeuser = true;
+				return false;  // break
 			}
-		}
-		else
-		{
-			welcomeuser = Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(normalized) !== -1;
-		}
+		});
 	}
 */
 
 	var csdlog = false;
-	if (Twinkle.getPref('logSpeedyNominations') && value === 'अनेक')
-	{
-		for (i in Twinkle.speedy.dbmultipleparams)
-		{
-			if (typeof Twinkle.speedy.dbmultipleparams[i] === 'string' &&
-				Twinkle.getPref('noLogOnSpeedyNomination').indexOf(Twinkle.speedy.dbmultipleparams[i]) === -1)
-			{
+	if (Twinkle.getPref('logSpeedyNominations')) {
+		$.each(normalizeds, function(index, norm) {
+			if (Twinkle.getPref('noLogOnSpeedyNomination').indexOf(norm) === -1) {
 				csdlog = true;
-				break;
+				return false;  // break
 			}
-		}
-	}
-	else
-	{
-		csdlog = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(normalized) === -1;
+		});
 	}
 
 	var params = {
-		value: value,
-		normalized: normalized,
+		values: values,
+		normalizeds: normalizeds,
 		watch: watchPage,
 		usertalk: notifyuser,
 //		welcomeuser: welcomeuser,
@@ -1138,44 +1119,4 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 			Twinkle.speedy.callbacks.user.main(params);
 		});
 	});
-};
-
-Twinkle.speedy.dbmultipleparams = [];
-Twinkle.speedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
-{
-	var form = (e.target.form ? e.target.form : e.target);
-	var value = Twinkle.speedy.resolveCsdValue(e);
-	if (!value) {
-		return;
-	}
-
-	var normalized = Twinkle.speedy.normalizeHash[value];
-	if (value !== 'multiple-finish')
-	{
-		if (Twinkle.speedy.dbmultipleparams.indexOf(normalized) !== -1)
-		{
-			alert('आप यह मापदंड पहले ही चुन चुके हैं। कृपया कोई अन्य मापदंड चुनें।');
-		}
-		else
-		{
-			var parameters = Twinkle.speedy.getParameters(value, normalized, Morebits.status);
-			Twinkle.speedy.dbmultipleparams.push(normalized);
-			if (parameters)
-			{
-			$.each(parameters, function addparams(prop, val) {
-				if (typeof val === 'string' && prop!== 'name') {
-					Twinkle.speedy.dbmultipleparams.push(val);
-				}
-			});
-			}
-		}
-		form.style.display = "none"; // give the user a cue that the dialog is being changed
-		setTimeout(function() {
-			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, form.dialog);
-		}, 150);
-	}
-	else
-	{
-		Twinkle.speedy.callback.evaluateUser(e);
-	}
 };
