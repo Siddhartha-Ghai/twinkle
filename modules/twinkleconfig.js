@@ -18,7 +18,7 @@
 Twinkle.config = {};
 
 Twinkle.config.commonEnums = {
-	watchlist: { yes: "Add to watchlist", no: "Don't add to watchlist", "default": "Follow your site preferences" },
+	watchlist: { yes: "ध्यानसूची में जोड़ें", no: "ध्यानसूची में नहीं जोड़ें", "default": "आपकी वरीयताओं अनुसार चलें" },
 	talkPageMode: { window: "In a window, replacing other user talks", tab: "In a new tab", blank: "In a totally new window" }
 };
 
@@ -267,7 +267,7 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Speedy deletion (CSD)",
+	title: "शीघ्र हटाना (शीह)",
 	preferences: [
 		
 		// TwinkleConfig.watchSpeedyPages (array)
@@ -570,14 +570,14 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "XFD (deletion discussions)",
+	title: "पृष्ठ हटाने हेतु चर्चा",
 	preferences: [
 		// TwinkleConfig.xfdWatchPage (string)
 		// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchPage",
-			label: "Add the nominated page to watchlist",
+			label: "नामांकित पृष्ठ को ध्यानसूची में जोड़ें।",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -588,8 +588,8 @@ Twinkle.config.sections = [
 		// Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchDiscussion",
-			label: "Add the deletion discussion page to watchlist",
-			helptip: "This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)",
+			label: "चर्चा पृष्ठ को ध्यानसूची में जोड़ें",
+			helptip: "यहाँ चर्चा पृष्ठ से तात्पर्य विकिपीडिया:पृष्ठ हटाने हेतु चर्चा के उपयुक्त चर्चा उप-पृष्ठ से है।",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -598,20 +598,20 @@ Twinkle.config.sections = [
 		// The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
 		// add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
 		// Sorry in advance for any false positives.).
-		{
+/*		{
 			name: "xfdWatchList",
 			label: "Add the daily log/list page to the watchlist (where applicable)",
 			helptip: "This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
-
+*/
 		// TwinkleConfig.xfdWatchUser (string)
 		// The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchUser",
-			label: "Add the user talk page to watchlist (when notifying)",
+			label: "पृष्ठ निर्माता के वार्ता पृष्ठ को ध्यानसूची में डालें।",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		}
@@ -1029,7 +1029,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var button = document.createElement("button");
 		button.setAttribute("id", "twinkle-config-submit");
 		button.setAttribute("type", "submit");
-		button.appendChild(document.createTextNode("Save changes"));
+		button.appendChild(document.createTextNode("बदलाव सहेजें"));
 		footerbox.appendChild(button);
 		var footerspan = document.createElement("span");
 		footerspan.className = "plainlinks";
