@@ -2179,7 +2179,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			
 			// only notify user for redirects, not normalization
 			if ( $(xml).find('redirects').length > 0 ) {
-				Morebits.status.info("सूचना", ctx.pageName + " से " + resolvedName + 'को पुनर्निर्देषित');
+				Morebits.status.info("सूचना", ctx.pageName + " से " + resolvedName + ' को पुनर्निर्देषित');
 			}
 			ctx.pageName = resolvedName;  // always update in case of normalization
 		}
