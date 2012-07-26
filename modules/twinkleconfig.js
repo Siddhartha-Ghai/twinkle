@@ -577,7 +577,7 @@ Twinkle.config.sections = [
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchPage",
-			label: "नामांकित पृष्ठ को ध्यानसूची में जोड़ें।",
+			label: "नामांकित पृष्ठ को ध्यानसूची में जोड़ें",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -611,7 +611,7 @@ Twinkle.config.sections = [
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchUser",
-			label: "पृष्ठ निर्माता के वार्ता पृष्ठ को ध्यानसूची में डालें।",
+			label: "पृष्ठ निर्माता के वार्ता पृष्ठ को ध्यानसूची में डालें",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		}

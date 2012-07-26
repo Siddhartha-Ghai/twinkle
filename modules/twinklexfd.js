@@ -286,7 +286,7 @@ Twinkle.xfd.callbacks = {
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
 			// Starting discussion page
-			var wikipedia_page = new Morebits.wiki.page(params.discussionpage, "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
+			var wikipedia_page = new Morebits.wiki.page('विकिपीडिया:पृष्ठ हटाने हेतु चर्चा/लेख/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
 
