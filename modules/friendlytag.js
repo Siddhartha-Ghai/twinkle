@@ -875,11 +875,13 @@ Twinkle.tag.callbacks = {
 			pageText = pageText.replace(/^\s*(?:((?:\s*\{\{\s*(?:about|correct title|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\})+(?:\s*\n)?)\s*)?/i,
 				"$1" + tagText);
 		}
-		summaryText += /*' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
-			' to ' + Twinkle.tag.mode +*/ Twinkle.getPref('summaryAd');
+		// avoid truncated summaries
+		if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
+			summaryText = summaryText.replace(/\[\[[^\|]+\|([^\]]+)\]\]/g, "$1");
+		}
 
 		pageobj.setPageText(pageText);
-		pageobj.setEditSummary(summaryText);
+		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
