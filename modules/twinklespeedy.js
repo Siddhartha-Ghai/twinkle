@@ -109,7 +109,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						value: 'redirects',
 						name: 'redirects',
 						tooltip: "यह विकल्प पृष्ठ को आ रहे सभी पुनार्निर्देशों को भी हटाता है। यदि लेख का विषय ज्ञानकोशीय हो तो आम तौर पर ऐसा नहीं किया जाना चाहिये।",
-						checked: true,
+						checked: Twinkle.getPref('deleteRedirectsOnDelete'),
 						disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
 							event.stopPropagation();
