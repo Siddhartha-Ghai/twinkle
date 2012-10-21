@@ -54,15 +54,6 @@ Twinkle.defaultConfig.twinkle = {
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	showRollbackLinks: [ "diff", "others" ],
-	 // DI (twinkleimage)
-	notifyUserOnDeli: true,
-	deliWatchPage: "default",
-	deliWatchUser: "default",
-	 // PROD
-	watchProdPages: true,
-	prodReasonDefault: "",
-	logProdPages: false,
-	prodLogPageName: "PROD log",
 	 // CSD
 	watchSpeedyPages: [ "व3", "व4", "व6", "व6ल", "व6स", "व6फ़" ],
 	markSpeedyPagesAsPatrolled: true,

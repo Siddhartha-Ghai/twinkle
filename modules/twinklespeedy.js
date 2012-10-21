@@ -628,7 +628,22 @@ Twinkle.speedy.callbacks = {
 			if(!Twinkle.speedy.cont) {
 			return;
 			}
-
+			
+			if(params.value!=='सदस्य अनुरोध') {
+				if(Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
+					if(params.value==='अनेक') {
+						if(Twinkle.speedy.dbmultipleparams.indexOf('स1')=== -1) {
+							if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
+								return;
+							}
+						}
+					}
+					if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
+						return;
+					}
+				}
+			}
+			
 			statelem.status( 'Checking for tags on the page...' );
 			
 			// check for existing deletion tags
@@ -638,8 +653,8 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var xfd = /(?:\{\{([rsaiftcm]fd|md1)[^{}]*?\}\})/i.exec( text );
-			if( xfd && !confirm( "The deletion-related template {{" + xfd[1] + "}} was found on the page. Do you still want to add a CSD template?" ) ) {
+			var xfd = /(?:\{\{(हहेच (लेख|साँचा|श्रेणी|फ़ाइल|अन्य))[^{}]*?\}\})/i.exec( text );
+			if( xfd && !confirm( "पृष्ठ पर हहेच साँचा {{" + xfd[1] + "}} पाया गया है। क्या आप अब भी शीघ्र हटाने का नामांकन जोड़ना चाहते हैं?" ) ) {
 				return;
 			}
 
@@ -653,7 +668,7 @@ Twinkle.speedy.callbacks = {
 				}
 			}
 			else {
-				code = "{{शीह-" 
+				code = "{{शीह-";
 				if (params.value === 'talk') {
 					code+= "कारण|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 				}
@@ -734,11 +749,16 @@ Twinkle.speedy.callbacks = {
 		},
 		notifyuser: function (params) {
 			// don't notify users when their user talk page is nominated, or if the user is the creator
-			if ((Twinkle.speedy.initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) || Twinkle.speedy.self) {
+			if (Twinkle.speedy.initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
 				Status.warn("सूचना साँचा नहीं जोड़ा जाएगा।"); 
 				return;
 			}
-
+			
+			if(Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
+				alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
+				return;
+			}
+			
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + Twinkle.speedy.initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + Twinkle.speedy.initialContrib + ")");
 			var notifytext = "\n\n{{subst:शीह सूचना-";
 
@@ -1035,6 +1055,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		notifyuser = (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(normalized) !== -1) && e.target.form.notify.checked;
 	}
 
+/*
 	var welcomeuser = false;
 	if (notifyuser)
 	{
@@ -1055,6 +1076,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 			welcomeuser = Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(normalized) !== -1;
 		}
 	}
+*/
 
 	var csdlog = false;
 	if (Twinkle.getPref('logSpeedyNominations') && value === 'अनेक')
@@ -1079,28 +1101,23 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		normalized: normalized,
 		watch: watchPage,
 		usertalk: notifyuser,
-		welcomeuser: welcomeuser,
+//		welcomeuser: welcomeuser,
 		lognomination: csdlog
 	};
 	
 	Morebits.status.init( e.target.form );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "टैगिंग सम्पूर्ण";
+	Morebits.wiki.actionCompleted.notice = "टैगिंग सम्पूर्ण, पृष्ठ कुछ ही क्षणों में रीलोड होगा";
 
 	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "पृष्ठ टैग हो रहा है");
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(function (params) {
 		wikipedia_page.lookupCreator(function() {
-		Twinkle.speedy.initialContrib = wikipedia_page.getCreator();
-		if(Twinkle.speedy.initialContrib === mw.config.get('wgUserName')) {
-		Twinkle.speedy.self = true;
-		}
-		else {
-		Twinkle.speedy.self = false;
-		}
-	Twinkle.speedy.callbacks.user.main(params);
-	});
+			Twinkle.speedy.initialContrib = wikipedia_page.getCreator();
+			Twinkle.speedy.self = (Twinkle.speedy.initialContrib === mw.config.get('wgUserName')) ? true : false;
+			Twinkle.speedy.callbacks.user.main(params);
+		});
 	});
 };
 
