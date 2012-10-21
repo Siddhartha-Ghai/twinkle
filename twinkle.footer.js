@@ -72,9 +72,7 @@ Twinkle.load = function () {
 	Twinkle.talkback();
 	// Deletion
 	Twinkle.speedy();
-	Twinkle.prod();
 	Twinkle.xfd();
-	//Twinkle.image();
 	// maintenance
 	Twinkle.protect();
 	Twinkle.tag();
@@ -85,7 +83,6 @@ Twinkle.load = function () {
 	Twinkle.fluff.init();
 	if ( Morebits.userIsInGroup('sysop') ) {
 		Twinkle.delimages();
-		Twinkle.deprod();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();
 		Twinkle.batchundelete();

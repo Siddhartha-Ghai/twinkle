@@ -832,7 +832,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		nompage.load(Twinkle.xfd.callbacks.ffd.discussionPage);
 
 		// Updating data for the action completed event
-		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgPageName');
+		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgTitle');
 		Morebits.wiki.actionCompleted.notice = "नामांकन सम्पूर्ण, चर्चा पृष्ठ खोला जा रहा है";
 
 		// Notification to first contributor

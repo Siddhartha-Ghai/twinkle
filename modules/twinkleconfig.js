@@ -154,40 +154,6 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Proposed deletion (PROD)",
-	preferences: [
-		// TwinkleConfig.watchProdPages (boolean)
-		// If, when applying prod template to page, to watch the page
-		{
-			name: "watchProdPages",
-			label: "Add article to watchlist when tagging",
-			type: "boolean"
-		},
-
-		// TwinkleConfig.prodReasonDefault (string)
-		// The prefilled PROD reason.
-		{
-			name: "prodReasonDefault",
-			label: "Prefilled PROD reason",
-			type: "string"
-		},
-
-		{
-			name: "logProdPages",
-			label: "Keep a log in userspace of all pages you tag for PROD",
-			helptip: "Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you tag for PROD using Twinkle.",
-			type: "boolean"
-		},
-		{
-			name: "prodLogPageName",
-			label: "Keep the PROD userspace log at this user subpage",
-			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.",
-			type: "string"
-		}
-	]
-},
-
-{
 	title: "Revert and rollback",  // twinklefluff module
 	preferences: [
 		// TwinkleConfig.openTalkPage (array)
@@ -280,6 +246,14 @@ Twinkle.config.sections = [
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
 		},
 
+		//TwinkleConfig.
+		{
+			name: "NotifySelfSpeedy",
+			label: "स्वयं बनाए पृष्ठों को शीघ्र हटाने हेतु चिन्हित करते समय सूचित करें",
+			helptip: "यदि आप स्वयं बनाए किसी पृष्ठ को शीघ्र हटाने हेतु चिन्हित कर रहे होंगे, तो आपको एक जावास्क्रिप्ट एलर्ट द्वारा सूचित करेगा। साथ ही यदि आप अपने बनाए किसी पृष्ठ को स1 के अतिरिक्त किसी मापदंड के अंतर्गत चिन्हित कर रहे होंगे तो आपको यह जानकारी देकर आपसे नामांकन के लिए पुष्टि लेगा।",
+			type: "boolean"
+		},
+
 		// TwinkleConfig.markSpeedyPagesAsPatrolled (boolean)
 		// If, when applying speedy template to page, to mark the page as patrolled (if the page was reached from NewPages)
 		{
@@ -303,7 +277,7 @@ Twinkle.config.sections = [
 		// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
 		// On what types of speedy deletion notifications shall the user be welcomed
 		// with a "firstarticle" notice if his talk page has not yet been created.
-		{
+/*		{
 			name: "welcomeUserOnSpeedyDeletionNotification",
 			label: "Welcome page creator alongside notification when tagging with these criteria",
 			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{<a href=\"" + mw.util.wikiGetlink("Template:Firstarticle") + "\">firstarticle</a>}}.",
@@ -311,7 +285,7 @@ Twinkle.config.sections = [
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
 		},
-
+*/
 		// TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
 		// What types of actions that should result user talk page to be opened when speedily deleting (admin only)
 		{
@@ -691,11 +665,6 @@ Twinkle.config.sections = [
 		// twinkledelimages.js: How many files should be processed maximum
 		{
 			name: "deliMax",
-			type: "integer"
-		},
-		// twinkledeprod.js: How many pages should be processed at a time
-		{
-			name: "proddeleteChunks",
 			type: "integer"
 		}
 	]
