@@ -634,11 +634,13 @@ Twinkle.speedy.callbacks = {
 					if(params.value==='अनेक') {
 						if(Twinkle.speedy.dbmultipleparams.indexOf('स1')=== -1) {
 							if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
+								Status.warn("नामांकन रद्द कर दिया गया है।");
 								return;
 							}
 						}
 					}
 					if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
+						Status.warn("नामांकन रद्द कर दिया गया है।");
 						return;
 					}
 				}
@@ -748,13 +750,13 @@ Twinkle.speedy.callbacks = {
 			pageobj.save();
 		},
 		notifyuser: function (params) {
-			// don't notify users when their user talk page is nominated, or if the user is the creator
+			// don't notify users when their user talk page is nominated
 			if (Twinkle.speedy.initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
 				Status.warn("सूचना साँचा नहीं जोड़ा जाएगा।"); 
 				return;
 			}
 			
-			if(Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
+			if (Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
 				alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
 				return;
 			}
