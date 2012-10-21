@@ -91,7 +91,6 @@ Twinkle.defaultConfig.twinkle = {
 	batchUndeleteMinCutOff: 5,
 	deliChunks: 500,
 	deliMax: 5000,
-	proddeleteChunks: 50
 };
 
 // now some skin dependent config.
