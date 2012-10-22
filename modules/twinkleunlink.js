@@ -63,7 +63,7 @@ Twinkle.unlink.callback = function(presetReason) {
 			'blnamespace': Twinkle.getPref('unlinkNamespaces') // Main namespace and portal namespace only, keep on talk pages.
 		};
 	}
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks );
+	var wikipedia_api = new Morebits.wiki.api( 'कड़ियाँ खोजी जा रही हैं', query, Twinkle.unlink.callbacks.display.backlinks );
 	wikipedia_api.params = { form: form, Window: Window, image: mw.config.get('wgNamespaceNumber') === 6 };
 	wikipedia_api.post();
 
@@ -98,7 +98,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 		for (var i = 0; i < pages.length; ++i)
 		{
 			var myparams = $.extend({}, params);
-			var articlepage = new Morebits.wiki.page(pages[i], '"' + pages[i] + '"' + 'पृष्ठ से कड़ियाँ हटाई जा रही हैं।');
+			var articlepage = new Morebits.wiki.page(pages[i], '"' + pages[i] + '"' + ' पृष्ठ से कड़ियाँ हटाई जा रही हैं');
 			articlepage.setCallbackParameters(myparams);
 			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
 		}

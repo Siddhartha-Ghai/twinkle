@@ -48,26 +48,24 @@ Twinkle.config.commonSets = {
 		"स1", "स2", "व6स"
 	],
 	namespacesNoSpecial: {
-		"0": "Article",
-		"1": "Talk (article)",
-		"2": "User",
-		"3": "User talk",
-		"4": "Wikipedia",
-		"5": "Wikipedia talk",
-		"6": "File",
-		"7": "File talk",
-		"8": "MediaWiki",
-		"9": "MediaWiki talk",
-		"10": "Template",
-		"11": "Template talk",
-		"12": "Help",
-		"13": "Help talk",
-		"14": "Category",
-		"15": "Category talk",
-		"100": "Portal",
-		"101": "Portal talk",
-		"108": "Book",
-		"109": "Book talk"
+		"0": "लेख",
+		"1": "वार्ता",
+		"2": "सदस्य",
+		"3": "सदस्य वार्ता",
+		"4": "विकिपीडिया",
+		"5": "विकिपीडिया वार्ता",
+		"6": "चित्र",
+		"7": "चित्र वार्ता",
+		"8": "मीडियाविकि",
+		"9": "मीडियाविकि वार्ता",
+		"10": "साँचा",
+		"11": "साँचा वार्ता",
+		"12": "सहायता",
+		"13": "सहायता वार्ता",
+		"14": "श्रेणी",
+		"15": "श्रेणी वार्ता",
+		"100": "प्रवेशद्वार",
+		"101": "प्रवेशद्वार वार्ता"
 	}
 };
 
@@ -523,7 +521,7 @@ Twinkle.config.sections = [
 		{
 			name: "quickWelcomeMode",
 			label: "अवतरण अंतर पृष्ठ पर \"स्वागत\" पर क्लिक करने पर",
-			helptip: "If you choose to welcome automatically, the template you specify below will be used.",
+			helptip: "यदि आप अपने-आप स्वागत करने का चुनाव करते हाँ तो आप नीचे जिस साँचे का नाम देंगे, स्वागत के लिए उसका प्रयोग किया जाएगा।",
 			type: "enum",
 			enumValues: { auto: "अपने-आप स्वागत करे", norm: "आपसे साँचा चुनने को कहे" }
 		},
@@ -718,7 +716,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var toctitle = document.createElement("div");
 		toctitle.id = "toctitle";
 		var toch2 = document.createElement("h2");
-		toch2.textContent = "Contents ";
+		toch2.textContent = "अनुक्रम ";
 		toctitle.appendChild(toch2);
 		// add TOC show/hide link
 		var toctoggle = document.createElement("span");
@@ -727,7 +725,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var toctogglelink = document.createElement("a");
 		toctogglelink.className = "internal";
 		toctogglelink.setAttribute("href", "#tw-tocshowhide");
-		toctogglelink.textContent = "hide";
+		toctogglelink.textContent = "छुपाएँ";
 		toctoggle.appendChild(toctogglelink);
 		toctoggle.appendChild(document.createTextNode("]"));
 		toctitle.appendChild(toctoggle);
@@ -738,9 +736,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 			var $tocul = $(tocul);
 			$tocul.toggle();
 			if ($tocul.find(":visible").length) {
-				toctogglelink.textContent = "hide";
+				toctogglelink.textContent = "छुपाएँ";
 			} else {
-				toctogglelink.textContent = "show";
+				toctogglelink.textContent = "दिखाएँ";
 			}
 		}, false);
 		toctd.appendChild(tocul);
@@ -981,7 +979,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						resetlink.style.cssFloat = "right";
 					}
 					resetlink.style.margin = "0 0.6em";
-					resetlink.appendChild(document.createTextNode("Reset"));
+					resetlink.appendChild(document.createTextNode("रीसेट"));
 					cell.appendChild(resetlink);
 				}
 				row.appendChild(cell);
@@ -1037,15 +1035,15 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.style.borderWidth = "2px";
 
 			if (mw.config.get("wgArticleId") > 0) {  // page exists
-				box.appendChild(document.createTextNode("This page contains your Twinkle preferences. You can change them using the "));
+				box.appendChild(document.createTextNode("इस पृष्ठ पर आपकी ट्विंकल वरीयताएँ हैं। आप निम्न लिंक पर क्लिक कर के अपनी ट्विंकल वरीयताएँ आसानी से बदल सकते हैं: "));
 			} else {  // page does not exist
-				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
+				box.appendChild(document.createTextNode(" आप निम्न लिंक पर क्लिक कर के अपनी ट्विंकल वरीयताएँ आसानी से बदल सकते हैं: "));
 			}
 			link = document.createElement("a");
 			link.setAttribute("href", mw.util.wikiGetlink(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
-			box.appendChild(document.createTextNode(", or by editing this page."));
+			box.appendChild(document.createTextNode("\nयदि आप चाहें तो आप इस पृष्ठ को सीधे भी संपादित कर सकते हैं, परन्तु कृपया ऐसा तभी करें यदि आपको जावास्क्रिप्ट एवं ट्विंकल की उपयुक्त जानकारी हो।"));
 			$(box).insertAfter($("#contentSub"));
 
 		} else if (mw.config.get("wgTitle").indexOf(mw.config.get("wgUserName")) === 0 &&
@@ -1053,7 +1051,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			// place "Looking for Twinkle options?" notice
 			box.style.width = "60%";
 
-			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
+			box.appendChild(document.createTextNode("यदि आप अपनी ट्विंकल वरीयताएँ परिवर्तित करना चाहते हैं तो निम्न लिंक पर क्लिक करें: "));
 			link = document.createElement("a");
 			link.setAttribute("href", mw.util.wikiGetlink(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
@@ -1340,7 +1338,7 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	Morebits.wiki.actionCompleted.notice = "Save";
 
 	var userjs = mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").user] + ":" + mw.config.get("wgUserName") + "/twinkleoptions.js";
-	var wikipedia_page = new Morebits.wiki.page(userjs, "Saving preferences to " + userjs);
+	var wikipedia_page = new Morebits.wiki.page(userjs, "आपकी ट्विंकल वरीयताएँ निम्न पृष्ठ पर सहेजी जा रही हैं: " + userjs);
 	wikipedia_page.setCallbackParameters(e.target);
 	wikipedia_page.load(Twinkle.config.writePrefs);
 
@@ -1562,15 +1560,17 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	}
 
 	var text =
-		"// twinkleoptions.js: personal Twinkle preferences file\n" +
+		"// twinkleoptions.js: व्यक्तिगत ट्विंकल वरीयता फ़ाइल\n" +
 		"//\n" +
-		"// NOTE: The easiest way to change your Twinkle preferences is by using the\n" +
-		"// Twinkle preferences panel, at [[" + mw.config.get("wgPageName") + "]].\n" +
+		"// नोट: ट्विंकल वरीयताएँ परिवर्तित करने का सबसे आसान तरीका है \n[[" +
+		mw.config.get("wgPageName") + "|Twinkle preferences panel]]// का प्रयोग करना।" +
 		"//\n" +
-		"// This file is AUTOMATICALLY GENERATED.  Any changes you make (aside from\n" +
-		"// changing the configuration parameters in a valid-JavaScript way) will be\n" +
-		"// overwritten the next time you click \"save\" in the Twinkle preferences\n" +
-		"// panel.  If modifying this file, make sure to use correct JavaScript.\n" +
+		"// यह फ़ाइल स्वचालित रूप से बनाई गई है।\n" +
+		"// मान्य जावास्क्रिप्ट के अतिरिक्त\n" +
+		"// आप जो भी बदलाव यहाँ करेंगे,\n" +
+		"// वे अगली बारी ट्विंकल वरीयताएँ सहेजने पर\n" +
+		"// अपने-आप हटा दिए जाएँगे।\n" +
+		"// इस फ़ाइल को संपादित करते समय मान्य जावास्क्रिप्ट का ही प्रयोग करें।\n" +
 		"\n" +
 		"window.Twinkle.prefs = ";
 	text += JSON.stringify(newConfig, null, 2);
@@ -1580,7 +1580,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		"// End of twinkleoptions.js\n";
 
 	pageobj.setPageText(text);
-	pageobj.setEditSummary("Saving Twinkle preferences: automatic edit from [[" + mw.config.get("wgPageName") + "]] ([[WP:TW|TW]])");
+	pageobj.setEditSummary("ट्विंकल वरीयताएँ संजोयी जा रही हैं। स्वचालित सम्पादन: [[" + mw.config.get("wgPageName") + "]] से। ([[WP:TW|TW]])");
 	pageobj.setCreateOption("recreate");
 	pageobj.save(Twinkle.config.saveSuccess);
 };
@@ -1592,7 +1592,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticebox.className = "successbox";
 	noticebox.style.fontSize = "100%";
 	noticebox.style.marginTop = "2em";
-	noticebox.innerHTML = "<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href=\"" + mw.util.wikiGetlink("WP:BYPASS") + "\" title=\"WP:BYPASS\">WP:BYPASS</a> for instructions).</p>";
+	noticebox.innerHTML = "<p><b>आपकी ट्विंकल वरीयताएँ संजो दी गई हैं।</b></p><p>बदलाव देखने के लिए आपको <b>अपने ब्राउज़र की कैश मेमोरी खाली करनी होगी</b> (देखें <a href=\"" + mw.util.wikiGetlink("WP:BYPASS") + "\" title=\"WP:BYPASS\">WP:BYPASS</a>).</p>";
 	Morebits.status.root.appendChild(noticebox);
 	var noticeclear = document.createElement("br");
 	noticeclear.style.clear = "both";
