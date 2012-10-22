@@ -19,7 +19,7 @@ Twinkle.config = {};
 
 Twinkle.config.commonEnums = {
 	watchlist: { yes: "ध्यानसूची में जोड़ें", no: "ध्यानसूची में नहीं जोड़ें", "default": "आपकी वरीयताओं अनुसार चलें" },
-	talkPageMode: { window: "In a window, replacing other user talks", tab: "In a new tab", blank: "In a totally new window" }
+	talkPageMode: { window: "एक नई विंडो में, पहले से खुले वार्ता पृष्ठ की जगह", tab: "एक नए टैब में", blank: "एक बिलकुल नई विंडो में" }
 };
 
 Twinkle.config.commonSets = {
@@ -102,14 +102,14 @@ Twinkle.config.commonSets = {
 
 Twinkle.config.sections = [
 {
-	title: "General",
+	title: "सामान्य",
 	preferences: [
 		// TwinkleConfig.summaryAd (string)
 		// Text to be appended to the edit summary of edits made using Twinkle
 		{
 			name: "summaryAd",
-			label: "\"Ad\" to be appended to Twinkle's edit summaries",
-			helptip: "The summary ad should start with a space, and be kept short.",
+			label: "ट्विंकल के सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
+			helptip: "यह स्पेस से शुरू होना चाहिए, और छोटा होना चाहिए।",
 			type: "string"
 		},
 
@@ -117,8 +117,8 @@ Twinkle.config.sections = [
 		// Text to be appended to the edit summary of deletions made using Twinkle
 		{
 			name: "deletionSummaryAd",
-			label: "Summary ad to use for deletion summaries",
-			helptip: "Normally the same as the edit summary ad above.",
+			label: "पृष्ठ हटाते समय सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
+			helptip: "यह आम-तौर पर सामान्य ऐड ही रखी जाती है।",
 			adminOnly: true,
 			type: "string"
 		},
@@ -127,8 +127,8 @@ Twinkle.config.sections = [
 		// Text to be appended to the edit summary of page protections made using Twinkle
 		{
 			name: "protectionSummaryAd",
-			label: "Summary ad to use for page protections",
-			helptip: "Normally the same as the edit summary ad above.",
+			label: "पृष्ठ सुरक्षित करते समय सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
+			helptip: "यह आम-तौर पर सामान्य ऐड ही रखी जाती है।",
 			adminOnly: true,
 			type: "string"
 		},
@@ -139,7 +139,7 @@ Twinkle.config.sections = [
 		// 'blank': force open in a new window, even if such a window exists
 		{
 			name: "userTalkPageMode",
-			label: "When opening a user talk page, open it",
+			label: "वार्ता पृष्ठ खोलते समय उसे खोलें",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.talkPageMode
 		},
@@ -147,7 +147,7 @@ Twinkle.config.sections = [
 		// TwinkleConfig.dialogLargeFont (boolean)
 		{
 			name: "dialogLargeFont",
-			label: "Use larger text in Twinkle dialogs",
+			label: "ट्विंकल की विंडो में बड़े पाठ का प्रयोग करें",
 			type: "boolean"
 		}
 	]
@@ -221,12 +221,12 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Shared IP tagging",
+	title: "साझा आइ॰पी॰ पता टैगिंग",
 	inFriendlyConfig: true,
 	preferences: [
 		{
 			name: "markSharedIPAsMinor",
-			label: "Mark shared IP tagging as a minor edit",
+			label: "साझा आइ॰पी॰ पता टैगिंग को छोटा बदलाव चिन्हित करें",
 			type: "boolean"
 		}
 	]
@@ -240,7 +240,7 @@ Twinkle.config.sections = [
 		// Whether to add speedy tagged pages to watchlist
 		{
 			name: "watchSpeedyPages",
-			label: "Add page to watchlist when tagging with these criteria",
+			label: "निम्न मापदंडों से नामांकन करते समय लेख को ध्यानसूची में डालें",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -258,8 +258,8 @@ Twinkle.config.sections = [
 		// If, when applying speedy template to page, to mark the page as patrolled (if the page was reached from NewPages)
 		{
 			name: "markSpeedyPagesAsPatrolled",
-			label: "Mark page as patrolled when tagging (if possible)",
-			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached via Special:NewPages.",
+			label: "नामांकन करते समय लेख को जाँचा हुआ (patrolled) चिन्हित करें (यदि संभव हो)",
+			helptip: "पृष्ठ जाँचे हुए तभी चिन्हित किये जाएँगे यदि उनपर विशेष:नए_पृष्ठ द्वारा जाया गया हो।",
 			type: "boolean"
 		},
 
@@ -267,8 +267,8 @@ Twinkle.config.sections = [
 		// What types of actions should result that the author of the page being notified of nomination
 		{
 			name: "notifyUserOnSpeedyDeletionNomination",
-			label: "Notify page creator only when tagging with these criteria",
-			helptip: "Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.",
+			label: "निम्न मापदंडों से नामांकन करते समय पृष्ठ निर्माता को सूचित करें",
+			helptip: "यदि आप नामांकन विंडो में से सूचित करना चुनते हैं और यहाँ उपयुक्त चेकबॉक्स चेक करते हैं, पृष्ठ निर्माता को तभी सूचित किया जाएगा।",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
@@ -290,7 +290,7 @@ Twinkle.config.sections = [
 		// What types of actions that should result user talk page to be opened when speedily deleting (admin only)
 		{
 			name: "openUserTalkPageOnSpeedyDelete",
-			label: "Open user talk page when deleting under these criteria",
+			label: "निम्न मापदंडों के अंतर्गत पृष्ठ हटाते समय पृष्ठ निर्माता का वार्ता पृष्ठ खोलें",
 			adminOnly: true,
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
@@ -301,7 +301,7 @@ Twinkle.config.sections = [
 		// If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
 		{
 			name: "deleteTalkPageOnDelete",
-			label: "Check the \"also delete talk page\" box by default",
+			label: "\"वार्ता पृष्ठ भी हटाएँ\" चेकबॉक्स को डिफ़ॉल्ट रूप से चेक करें",
 			adminOnly: true,
 			type: "boolean"
 		},
@@ -310,7 +310,7 @@ Twinkle.config.sections = [
 		// Make the CSD screen default to "tag" instead of "delete" (admin only)
 		{
 			name: "deleteSysopDefaultToTag",
-			label: "Default to speedy tagging instead of outright deletion",
+			label: "नामांकन को हटाने के बजाए डिफ़ॉल्ट रखें",
 			adminOnly: true,
 			type: "boolean"
 		},
@@ -319,7 +319,7 @@ Twinkle.config.sections = [
 		// Defines the width of the Twinkle SD window in pixels
 		{
 			name: "speedyWindowWidth",
-			label: "Width of speedy deletion window (pixels)",
+			label: "विंडो की चौड़ाई (पिक्सेल में)",
 			type: "integer"
 		},
 
@@ -327,26 +327,26 @@ Twinkle.config.sections = [
 		// Defines the width of the Twinkle SD window in pixels
 		{
 			name: "speedyWindowHeight",
-			label: "Height of speedy deletion window (pixels)",
-			helptip: "If you have a big monitor, you might like to increase this.",
+			label: "विंडो की ऊँचाई (पिक्सेल में)",
+			helptip: "यदि आपके पास बड़ा मॉनिटर है तो आप इसे बढ़ाना पसंद करेंगे।",
 			type: "integer"
 		},
 
 		{
 			name: "logSpeedyNominations",
-			label: "Keep a log in userspace of all CSD nominations",
-			helptip: "Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you nominate for CSD using Twinkle.",
+			label: "सभी शीघ्र हटाने के नामांकनों का अपने सदस्य नामस्थान में लॉग रखें",
+			helptip: "चूँकि आम सदस्य अपने हटाए हुए योगदान नहीं देख सकते हैं, अपने सदस्य नामस्थान में नामांकनों का लॉग रखना ट्विंकल द्वारा किये गए नामांकनों की सूची पाने का आसान तरीका है।",
 			type: "boolean"
 		},
 		{
 			name: "speedyLogPageName",
-			label: "Keep the CSD userspace log at this user subpage",
-			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.",
+			label: "सदस्य नामस्थान का लॉग इस पृष्ठ पर रखें",
+			helptip: "यहाँ अपने सदस्य उप-पृष्ठ का नाम दें। इसमें अपना सदस्य नाम एवं नामस्थान ना जोड़ें। यह तभी काम करता है यदि आप सदस्य नामस्थान लॉग सक्षम करें।",
 			type: "string"
 		},
 		{
 			name: "noLogOnSpeedyNomination",
-			label: "Do not create a userspace log entry when tagging with these criteria",
+			label: "सदस्य नामस्थान लॉग में निम्न मापदंडों से किये गए नामांकनों की प्रविष्टि ना जोड़ें",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -355,78 +355,79 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Tag",
+	title: "टैग",
 	inFriendlyConfig: true,
 	preferences: [
 		{
 			name: "watchTaggedPages",
-			label: "Add page to watchlist when tagging",
+			label: "पृष्ठों को रखरखाव के लिए टैग करते समय उन्हें ध्यानसूची में जोड़ें",
 			type: "boolean"
 		},
 		{
 			name: "markTaggedPagesAsMinor",
-			label: "Mark addition of tags as a minor edit",
+			label: "रखरखाव टैगिंग को छोटा सम्पादन चिन्हित करें",
 			type: "boolean"
 		},
 		{
 			name: "markTaggedPagesAsPatrolled",
-			label: "Mark pages as patrolled when tagging (if possible)",
-			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached via Special:NewPages.",
+			label: "पृष्ठों को टैग करते समय उन्हें जाँचा हुआ (patrolled) चिन्हित करें (यदि संभव हो)",
+			helptip: "पृष्ठ जाँचे हुए तभी चिन्हित किये जाएँगे यदि उनपर विशेष:नए_पृष्ठ द्वारा जाया गया हो।",
 			type: "boolean"
 		},
 		{
 			name: "groupByDefault",
-			label: "Check the \"group into {{multiple issues}}\" box by default",
+			label: "\"यदि संभव  हो तो {{अनेक समस्याएँ}} द्वारा वर्गीकृत करें\" चेकबॉक्स को डिफ़ॉल्ट रूप से चेक करें",
 			type: "boolean"
 		},
 		{
 			name: "tagArticleSortOrder",
-			label: "Default view order for article tags",
+			label: "लेख रखरखाव साँचों के लिए डिफ़ॉल्ट दृश्यता",
 			type: "enum",
-			enumValues: { "cat": "By categories", "alpha": "In alphabetical order" }
+			enumValues: { "cat": "वर्ग अनुसार", "alpha": "वर्णमाला अनुसार" }
 		},
 		{
 			name: "customTagList",
-			label: "Custom article maintenance tags to display",
-			helptip: "These appear as additional options at the bottom of the list of tags. For example, you could add new maintenance tags which have not yet been added to Twinkle's defaults.",
+			label: "लेख रखरखाव के लिए दिखाने हेतु विशिष्ट टैग",
+			helptip: "ये टैग सूची के अंत में अतिरिक्त विकल्पों की तरह नज़र आते हैं। आप इसमें ऐसे रखरखाव साँचे जोड़ सकते हैं जो ट्विंकल में डिफ़ॉल्ट रूप से उपलब्ध नहीं हैं।",
 			type: "customList",
-			customListValueTitle: "Template name (no curly brackets)",
-			customListLabelTitle: "Text to show in Tag dialog"
+			customListValueTitle: "साँचे का नाम (बिना ब्रैकेट के)",
+			customListLabelTitle: "टैग विंडो में दिखाने हेतु पाठ"
 		}
 	]
 },
 
 {
-	title: "Talkback",
+	title: "सन्देश",
 	inFriendlyConfig: true,
 	preferences: [
 		{
 			name: "markTalkbackAsMinor",
-			label: "Mark talkbacks as minor edits",
+			label: "सन्देशों को छोटा सम्पादन चिन्हित करें।",
 			type: "boolean"
 		},
 		{
 			name: "insertTalkbackSignature",
-			label: "Insert signature within talkbacks",
+			label: "सन्देशों में हस्ताक्षर जोड़ें",
+			helptip: "यदि यह सक्षम है तो केवल {{सन्देश}} साँचा जोड़ने पर भी उसके नीचे आपके हस्ताक्षर जोड़े जाएँगे।",
 			type: "boolean"
 		},
 		{
 			name: "talkbackHeading",
-			label: "Section heading to use for talkbacks",
+			label: "सन्देश के लिए प्रयोग किया जाने वाला अनुभाग शीर्षक",
 			type: "string"
 		}
 	]
 },
 
 {
-	title: "Unlink",
+	title: "कड़ीतोड़",
 	preferences: [
 		// TwinkleConfig.unlinkNamespaces (array)
 		// In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
 		{
 			name: "unlinkNamespaces",
-			label: "Remove links from pages in these namespaces",
-			helptip: "Avoid selecting any talk namespaces, as Twinkle might end up unlinking on talk archives (a big no-no).",
+			label: "कड़ियाँ निम्न नामस्थानों से हटाएँ",
+			helptip: "किसी भी चर्चा/वार्ता नामस्थान को चुनते समय याद रखें कि इससे पुरालेखों में से भी कड़ियाँ हट जाएँगी (जो नहीं किया जाना चाहिए)।",
 			type: "set",
 			setValues: Twinkle.config.commonSets.namespacesNoSpecial
 		}
@@ -476,75 +477,75 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Welcome user",
+	title: "स्वागत",
 	inFriendlyConfig: true,
 	preferences: [
 		{
 			name: "topWelcomes",
-			label: "Place welcomes above existing content on user talk pages",
+			label: "स्वागत साँचे सदस्य वार्ता पृष्ठ पर ऊपर-ऊपर जोड़ें",
 			type: "boolean"
 		},
 		{
 			name: "watchWelcomes",
-			label: "Add user talk pages to watchlist when welcoming",
-			helptip: "Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.",
+			label: "स्वागत करते समय सदस्य वार्ता पृष्ठ अपनी ध्यानसूची में जोड़ें",
+			helptip: "इससे आप उस नए सदस्य का ध्यान रख सकेंगे, और आवश्यकता पड़ने पर उनकी मदद कर सकेंगे।",
 			type: "boolean"
 		},
 		{
 			name: "insertHeadings",
-			label: "Insert a section heading before welcomes",
+			label: "स्वागत से पहले अनुभाग शीर्षक जोड़ें",
 			type: "boolean"
 		},
 		{
 			name: "welcomeHeading",
-			label: "Section heading to use for welcomes",
-			helptip: "Only has an effect if headings are enabled, and the heading is not part of the template.",
+			label: "स्वागत के लिए प्रयुक्त अनुभाग शीर्षक",
+			helptip: "इससे तभी फ़र्क पड़ेगा यदि अनुभाग शीर्षक सक्षम है और साँचे में पहले से अनुभाग शीर्षक नहीं है।",
 			type: "string"
 		},
 		{
 			name: "insertUsername",
-			label: "Add your username to the template (where applicable)",
-			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
+			label: "साँचों में अपना सदस्यनाम जोड़ें (जहाँ आवश्यक हो)",
+			helptip: "कुछ स्वागत साँचों में स्वागत करने वाले सदस्य का नाम भी जुड़ता है। यदि आप इस विकल्प को अक्षम करते हैं तो ऐसे साँचों में आपका सदस्यनाम नहीं दिखाई देगा।",
 			type: "boolean"
 		},
 		{
 			name: "insertSignature",
-			label: "Add your signature after the welcome",
+			label: "स्वागत के बाद हस्ताक्षर जोड़ें",
 			helptip: "Strongly recommended.",
 			type: "boolean"
 		},
 		{
 			name: "maskTemplateInSummary",
-			label: "Omit the name of the welcome template in the edit summary",
-			helptip: "The names of some of the templates (e.g. \"welcome-anon-vandal\") may be viewed by the user as attacks, so it is better to leave them out of the edit summary",
+			label: "सम्पादन सारांश में साँचे का नाम णा जोड़ें",
+			helptip: "नए सदस्यों को \"Welcomevandal\" जैसे नाम अटपटे या बुरे लग सकते हैं, इसलिए उन्हें सम्पादन सारांश में ना जोड़ा जाए तो अच्छा है।",
 			type: "boolean"
 		},
 		{
 			name: "quickWelcomeMode",
-			label: "Clicking the \"welcome\" link on a diff page will",
+			label: "अवतरण अंतर पृष्ठ पर \"स्वागत\" पर क्लिक करने पर",
 			helptip: "If you choose to welcome automatically, the template you specify below will be used.",
 			type: "enum",
-			enumValues: { auto: "welcome automatically", norm: "prompt you to select a template" }
+			enumValues: { auto: "अपने-आप स्वागत करे", norm: "आपसे साँचा चुनने को कहे" }
 		},
 		{
 			name: "quickWelcomeTemplate",
-			label: "Template to use when welcoming automatically",
-			helptip: "Enter the name of a welcome template, without the curly brackets. A link to the given article will be added.",
+			label: "अपने-आप स्वागत करते समय प्रयोग करने हेतु साँचा",
+			helptip: "एक स्वागत साँचा का नाम जोड़ें, बिना ब्रैकेट के। उपयुक्त पृष्ठ की कड़ी अपने-आप जोड़ी जाएगी।",
 			type: "string"
 		},
 		{
 			name: "customWelcomeList",
-			label: "Custom welcome templates to display",
-			helptip: "You can add other welcome templates, or user subpages that are welcome templates (prefixed with \"User:\"). Don't forget that these templates are substituted onto user talk pages.",
+			label: "विशिष्ट स्वागत साँचे",
+			helptip: "आप अन्य विशिष्ट स्वागत साँचे (अथवा सदस्य नामस्थान के पृष्ठ जो साँचे हैं) यहाँ जोड़ सकते हैं। ये स्वागत विंडो में जोड़ के दिखाए जाएँगे और सदस्य वार्ता पृष्ठों पर substitute किये जाएँगे। सदस्य नामस्थान के पृष्ठ जोड़ते समय पृष्ठ का पूरा नाम (नाम्थान सहित) बताएँ। साँचों के लिए ऐसा करने की आवश्यकता नहीं है।",
 			type: "customList",
-			customListValueTitle: "Template name (no curly brackets)",
-			customListLabelTitle: "Text to show in Welcome dialog"
+			customListValueTitle: "साँचे का नाम (बिना ब्रैकेट के)",
+			customListLabelTitle: "स्वागत विंडो में दिखाने हेतु पाठ"
 		}
 	]
 },
 
 {
-	title: "पृष्ठ हटाने हेतु चर्चा",
+	title: "पृष्ठ हटाने हेतु चर्चा (हहेच)",
 	preferences: [
 		// TwinkleConfig.xfdWatchPage (string)
 		// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't

@@ -1153,57 +1153,55 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 
 /**
  * **************** Morebits.wikipedia ****************
- * English Wikipedia-specific objects
+ * Hindi Wikipedia-specific objects
  */
 
 Morebits.wikipedia = {};
 
 Morebits.wikipedia.namespaces = {
-	'-2':  'Media',
-	'-1':  'Special',
-	'0':   '',
-	'1':   'Talk',
-	'2':   'User',
-	'3':   'User talk',
-	'4':   'Project',
-	'5':   'Project talk',
-	'6':   'File',
-	'7':   'File talk',
-	'8':   'MediaWiki',
-	'9':   'MediaWiki talk',
-	'10':  'Template',
-	'11':  'Template talk',
-	'12':  'Help',
-	'13':  'Help talk',
-	'14':  'Category',
-	'15':  'Category talk',
-	'100': 'Portal',
-	'101': 'Portal talk',
-	'108': 'Book',
-	'109': 'Book talk'
+	"0": "",
+	"1": "वार्ता",
+	"2": "सदस्य",
+	"3": "सदस्य वार्ता",
+	"4": "विकिपीडिया",
+	"5": "विकिपीडिया वार्ता",
+	"6": "चित्र",
+	"7": "चित्र वार्ता",
+	"8": "मीडियाविकि",
+	"9": "मीडियाविकि वार्ता",
+	"10": "साँचा",
+	"11": "साँचा वार्ता",
+	"12": "सहायता",
+	"13": "सहायता वार्ता",
+	"14": "श्रेणी",
+	"15": "श्रेणी वार्ता",
+	"100": "प्रवेशद्वार",
+	"101": "प्रवेशद्वार वार्ता",
+	"-1": "विशेष",
+	"-2": "मीडिया"
 };
 
 Morebits.wikipedia.namespacesFriendly = {
-	'0':   '(Article)',
-	'1':   'Talk',
-	'2':   'User',
-	'3':   'User talk',
-	'4':   'Wikipedia',
-	'5':   'Wikipedia talk',
-	'6':   'File',
-	'7':   'File talk',
-	'8':   'MediaWiki',
-	'9':   'MediaWiki talk',
-	'10':  'Template',
-	'11':  'Template talk',
-	'12':  'Help',
-	'13':  'Help talk',
-	'14':  'Category',
-	'15':  'Category talk',
-	'100': 'Portal',
-	'101': 'Portal talk',
-	'108': 'Book',
-	'109': 'Book talk'
+	"0": "(लेख)",
+	"1": "वार्ता",
+	"2": "सदस्य",
+	"3": "सदस्य वार्ता",
+	"4": "विकिपीडिया",
+	"5": "विकिपीडिया वार्ता",
+	"6": "चित्र",
+	"7": "चित्र वार्ता",
+	"8": "मीडियाविकि",
+	"9": "मीडियाविकि वार्ता",
+	"10": "साँचा",
+	"11": "साँचा वार्ता",
+	"12": "सहायता",
+	"13": "सहायता वार्ता",
+	"14": "श्रेणी",
+	"15": "श्रेणी वार्ता",
+	"100": "प्रवेशद्वार",
+	"101": "प्रवेशद्वार वार्ता",
+	"-1": "विशेष",
+	"-2": "मीडिया"
 };
 
 
@@ -2811,12 +2809,21 @@ Morebits.wikitext.page.prototype = {
 		reason = reason ? ' ' + reason + ': ' : '';
 		var first_char = image.substr( 0, 1 );
 		var image_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( image.substr( 1 ), true ); 
-
+		
+		var AllImageNamespaceAliases = "";
+		for ( var alias in mw.config.get('wgNamespaceIds') ) {
+			if ( mw.config.get('wgNamespaceIds')[alias] === 6 ) {
+				AllImageNamespaceAliases += alias + "|";
+				AllImageNamespaceAliases += alias.substr( 0, 1 ).toUpperCase() + alias.slice(1) + "|";
+			}
+		}
+		AllImageNamespaceAliases = AllImageNamespaceAliases.slice(0,-1);
+		
 		/*
 		 * Check for normal image links, i.e. [[Image:Foobar.png|...]]
 		 * Will eat the whole link
 		 */
-		var links_re = new RegExp( "\\[\\[(?:[Ii]mage|[Ff]ile):\\s*" + image_re_string );
+		var links_re = new RegExp( "\\[\\[(?:" + AllImageNamespaceAliases + "):\\s*" + image_re_string );
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( unbinder.content, '[[', ']]' ));
 		for( var i = 0; i < allLinks.length; ++i ) {
 			if( links_re.test( allLinks[i] ) ) {
@@ -2831,7 +2838,7 @@ Morebits.wikitext.page.prototype = {
 		 * Check for gallery images, i.e. instances that must start on a new line, eventually preceded with some space, and must include Image: prefix
 		 * Will eat the whole line.
 		 */
-		var gallery_image_re = new RegExp( "(^\\s*(?:[Ii]mage|[Ff]ile):\\s*" + image_re_string + ".*?$)", 'mg' );
+		var gallery_image_re = new RegExp( "(^\\s*(?:" + AllImageNamespaceAliases + "):\\s*" + image_re_string + ".*?$)", 'mg' );
 		unbinder.content.replace( gallery_image_re, "<!-- " + reason + "$1 -->" );
 
 		// unbind the newly created comments
@@ -2840,7 +2847,7 @@ Morebits.wikitext.page.prototype = {
 		 * Check free image usages, for example as template arguments, might have the Image: prefix excluded, but must be preceeded by an |
 		 * Will only eat the image name and the preceeding bar and an eventual named parameter
 		 */
-		var free_image_re = new RegExp( "(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:(?:[Ii]mage|[Ff]ile):\\s*)?" + image_re_string + ")", 'mg' );
+		var free_image_re = new RegExp( "(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:(?:" + AllImageNamespaceAliases + "):\\s*)?" + image_re_string + ")", 'mg' );
 		unbinder.content.replace( free_image_re, "<!-- " + reason + "$1 -->" );
 
 		// Rebind the content now, we are done!
@@ -2852,7 +2859,17 @@ Morebits.wikitext.page.prototype = {
 		if( first_char.toUpperCase() !== first_char.toLowerCase() ) {
 			first_char_regex = '[' + RegExp.escape( first_char.toUpperCase(), true ) + RegExp.escape( first_char.toLowerCase(), true ) + ']';
 		}
-		var image_re_string = "(?:[Ii]mage|[Ff]ile):\\s*" + first_char_regex + RegExp.escape( image.substr( 1 ), true );
+
+		var AllImageNamespaceAliases = "";
+		for ( var alias in mw.config.get('wgNamespaceIds') ) {
+			if ( mw.config.get('wgNamespaceIds')[alias] === 6 ) {
+				AllImageNamespaceAliases += alias + "|";
+				AllImageNamespaceAliases += alias.substr( 0, 1 ).toUpperCase() + alias.slice(1) + "|";
+			}
+		}
+		AllImageNamespaceAliases = AllImageNamespaceAliases.slice(0,-1);
+
+		var image_re_string = "(?:" + AllImageNamespaceAliases + "):\\s*" + first_char_regex + RegExp.escape( image.substr( 1 ), true );
 		var links_re = new RegExp( "\\[\\[" + image_re_string );
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( this.text, '[[', ']]' ));
 		for( var i = 0; i < allLinks.length; ++i ) {
@@ -2869,7 +2886,17 @@ Morebits.wikitext.page.prototype = {
 	},
 	removeTemplate: function( template ) {
 		var first_char = template.substr( 0, 1 );
-		var template_re_string = "(?:[Tt]emplate:)?\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( template.substr( 1 ), true ); 
+
+		var AllTemplateNamespaceAliases = "";
+		for ( var alias in mw.config.get('wgNamespaceIds') ) {
+			if ( mw.config.get('wgNamespaceIds')[alias] === 10 ) {
+				AllTemplateNamespaceAliases += alias + "|";
+				AllTemplateNamespaceAliases += alias.substr( 0, 1 ).toUpperCase() + alias.slice(1) + "|";
+			}
+		}
+		AllTemplateNamespaceAliases = AllTemplateNamespaceAliases.slice(0,-1);
+
+		var template_re_string = "(?:" + AllTemplateNamespaceAliases + "):?\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( template.substr( 1 ), true ); 
 		var links_re = new RegExp( "\\{\\{" + template_re_string );
 		var allTemplates = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( this.text, '{{', '}}', [ '{{{', '}}}' ] ));
 		for( var i = 0; i < allTemplates.length; ++i ) {

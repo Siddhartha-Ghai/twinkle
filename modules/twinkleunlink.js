@@ -1,4 +1,4 @@
-/*
+﻿/*
  ****************************************
  *** twinkleunlink.js: Unlink module
  ****************************************
@@ -11,7 +11,7 @@ Twinkle.unlink = function twinkleunlink() {
 	if( mw.config.get('wgNamespaceNumber') < 0 ) {
 		return;
 	}
-	twAddPortletLink( Twinkle.unlink.callback, "Unlink", "tw-unlink", "Unlink backlinks" );
+	twAddPortletLink( Twinkle.unlink.callback, "कड़ीतोड़", "tw-unlink", "अन्य पृष्ठों से इस पृष्ठ की कड़ियाँ हटाएँ" );
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
@@ -30,7 +30,7 @@ Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
 	var Window = new Morebits.simpleWindow( 800, 400 );
-	Window.setTitle( "Unlink backlinks" );
+	Window.setTitle( "कड़ियाँ हटाएँ" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
 
@@ -38,7 +38,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	form.append( {
 		type: 'textarea',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'कारण: ',
 		value: (presetReason ? presetReason : '')
 	} );
 
@@ -70,7 +70,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	var root = document.createElement( 'div' );
 	root.style.padding = '15px';  // just so it doesn't look broken
 	Morebits.status.init( root );
-	wikipedia_api.statelem.status( "loading..." );
+	wikipedia_api.statelem.status( "कड़ियाँ लोड हो रही हैं..." );
 	Window.setContent( root );
 	Window.display();
 };
@@ -82,13 +82,13 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	Twinkle.unlink.imageusagedone = 0;
 
 	function processunlink(pages, imageusage) {
-		var statusIndicator = new Morebits.status((imageusage ? 'Unlinking instances of file usage' : 'Unlinking backlinks'), '0%');
+		var statusIndicator = new Morebits.status((imageusage ? 'फ़ाइल प्रयोग हटाया जा रहा है' : 'कड़ियाँ हटाई जा रही हैं'), '0%');
 		var total = pages.length;  // removing doubling of this number - no apparent reason for it
 
 		Morebits.wiki.addCheckpoint();
 
 		if( !pages.length ) {
-			statusIndicator.info( '100% (completed)' );
+			statusIndicator.info( '100% (सम्पूर्ण)' );
 			Morebits.wiki.removeCheckpoint();
 			return;
 		}
@@ -98,7 +98,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 		for (var i = 0; i < pages.length; ++i)
 		{
 			var myparams = $.extend({}, params);
-			var articlepage = new Morebits.wiki.page(pages[i], 'Unlinking in article "' + pages[i] + '"');
+			var articlepage = new Morebits.wiki.page(pages[i], '"' + pages[i] + '"' + 'पृष्ठ से कड़ियाँ हटाई जा रही हैं।');
 			articlepage.setCallbackParameters(myparams);
 			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
 		}
@@ -144,24 +144,24 @@ Twinkle.unlink.callbacks = {
 				}
 				if (!list.length)
 				{
-					apiobj.params.form.append( { type: 'div', label: 'No instances of file usage found.' } );
+					apiobj.params.form.append( { type: 'div', label: 'फ़ाइल का प्रयोग कहीं नहीं मिला।' } );
 				}
 				else
 				{
-					apiobj.params.form.append( { type:'header', label: 'File usage' } );
+					apiobj.params.form.append( { type:'header', label: 'फ़ाइल प्रयोग' } );
 					namespaces = [];
 					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
 						namespaces.push(Morebits.wikipedia.namespacesFriendly[v]);
 					});
 					apiobj.params.form.append( {
 						type: 'div',
-						label: "Selected namespaces: " + namespaces.join(', '),
-						tooltip: "You can change this with your Twinkle preferences, at [[WP:TWPREFS]]"
+						label: "चुने हुए नामस्थान: " + namespaces.join(', '),
+						tooltip: "आप ये नामस्थान अपनी ट्विंकल वरीयताओं में बदल सकते हैं, [[वि:Twinkle/Preferences]] पर।"
 					});
 					if ($(xmlDoc).find('query-continue').length) {
 						apiobj.params.form.append( {
 							type: 'div',
-							label: "First " + list.length.toString() + " file usages shown."
+							label: "पहले " + list.length.toString() + " फ़ाइल प्रयोग नीचे सूचीबद्ध हैं।"
 						});
 					}
 					apiobj.params.form.append( {
@@ -187,13 +187,13 @@ Twinkle.unlink.callbacks = {
 				});
 				apiobj.params.form.append( {
 					type: 'div',
-					label: "Selected namespaces: " + namespaces.join(', '),
-					tooltip: "You can change this with your Twinkle preferences, at [[WP:TWPREFS]]"
+					label: "चुने हुए नामस्थान: " + namespaces.join(', '),
+					tooltip: "आप ये नामस्थान अपनी ट्विंकल वरीयताओं में बदल सकते हैं, [[वि:Twinkle/Preferences]] पर।"
 				});
 				if ($(xmlDoc).find('query-continue').length) {
 					apiobj.params.form.append( {
 						type: 'div',
-						label: "First " + list.length.toString() + " backlinks shown."
+						label: "यहाँ की कड़ियों वाले पहले" + list.length.toString() + "पृष्ठ नीचे सूचीबद्ध हैं।"
 					});
 				}
 				apiobj.params.form.append( {
@@ -205,7 +205,7 @@ Twinkle.unlink.callbacks = {
 			}
 			else
 			{
-				apiobj.params.form.append( { type: 'div', label: 'No backlinks found.' } );
+				apiobj.params.form.append( { type: 'div', label: "कोई कड़ियाँ नहीं मिली।" } );
 			}
 
 			if (havecontent) {
@@ -232,7 +232,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Removing link(s) to \"" + mw.config.get('wgPageName') + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("\"" + mw.config.get('wgPageName') + "\" पृष्ठ की कड़ियाँ हटाई जा रही हैं। कारण: " + params.reason + "।" + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
@@ -252,7 +252,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Commenting out use(s) of file \"" + mw.config.get('wgPageName') + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("\"" + mw.config.get('wgPageName') + "\" फ़ाइल का प्रयोग हटाया जा रहा है। कारण: " + params.reason + "।" + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
@@ -262,7 +262,7 @@ Twinkle.unlink.callbacks = {
 		var now = parseInt( 100 * (params.imageusage ? ++(Twinkle.unlink.imageusagedone) : ++(Twinkle.unlink.backlinksdone))/total, 10 ) + '%';
 		params.globalstatus.update( now );
 		if((params.imageusage ? Twinkle.unlink.imageusagedone : Twinkle.unlink.backlinksdone) >= total) {
-			params.globalstatus.info( now + ' (completed)' );
+			params.globalstatus.info( now + ' (सम्पूर्ण)' );
 			Morebits.wiki.removeCheckpoint();
 		}
 	}
