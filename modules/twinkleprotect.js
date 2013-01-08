@@ -14,13 +14,13 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	twAddPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "PP" : "RPP", "tw-rpp",
-		Morebits.userIsInGroup('sysop') ? "Protect page" : "Request page protection" );
+	twAddPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "सुरक्षा" : "सुरक्षा", "tw-rpp",
+		Morebits.userIsInGroup('sysop') ? "पृष्ठ सुरक्षित करें" : "पृष्ठ को सुरक्षित करने का अनुरोध करें" );
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
 	if (!twinkleUserAuthorized) {
-		alert("Your account is too new to use Twinkle.");
+		alert("आपका अकाउंट ट्विंकल प्रयोग करने के लिये बहुत नया है।");
 		return;
 	}
 	var Window = new Morebits.simpleWindow( 620, 530 );
