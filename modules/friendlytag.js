@@ -154,6 +154,44 @@ Twinkle.tag.updateSortOrder = function(e) {
 					}
 				]
 			};
+		} else if (tag === "विलय" || tag === "को विलय" || tag === "में विलय") {
+			var otherTagName = "विलय";
+			switch (tag)
+			{
+				case "को विलय":
+					otherTagName = "में विलय";
+					break;
+				case "में विलय":
+					otherTagName = "को विलय";
+					break;
+			}
+			checkbox.subgroup = [
+				{
+					name: 'mergeTarget',
+					type: 'input',
+					label: 'अन्य लेख: ',
+					tooltip: 'यदि एक से अधिक लेख निर्दिष्ट करने हों तो उनके बीच में पाइप का प्रयोग करें, जैसे पहला लेख|दूसरा लेख'
+				},
+				{
+					name: 'mergeTagOther',
+					type: 'checkbox',
+					list: [
+						{
+							label: 'दुसरे लेख को {{' + otherTagName + '}} साँचे से चिन्हित करें',
+							checked: true,
+							tooltip: 'यह केवल तभी उपलब्ध है यदि केवल एक लेख का नाम दिया जाये।'
+						}
+					]
+				}
+			];
+			if (mw.config.get('wgNamespaceNumber') === 0) {
+				checkbox.subgroup.push({
+					name: 'mergeReason',
+					type: 'textarea',
+					label: 'विलय के लिये कारण (वार्ता पृष्ठ पर जोड़ा जायेगा):',
+					tooltip: 'यह वैकल्पिक है, परन्तु जहाँ तक संभव हो इसका प्रयोग किया जाना चाहिए। इसका प्रयोग ना करना हो तो इसे खाली छोड़ दें।'
+				});
+			}
 		}
 		return checkbox;
 	};
@@ -732,6 +770,11 @@ Twinkle.tag.callbacks = {
 				} else {
 					Morebits.status.info( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the article already...excluding' );
+					// don't do anything else with merge tags
+					if (params.tags[i] === "विलय" || params.tags[i] === "को विलय" || 
+						params.tags[i] === "में विलय") {
+						params.mergeTarget = params.mergeReason = params.mergeTagOther = false;
+					}
 				}
 			}
 
@@ -832,14 +875,23 @@ Twinkle.tag.callbacks = {
 					case 'विलय':
 					case 'को विलय':
 					case 'में विलय':
-						var param = prompt('कृपया विलय में शामिल अन्य लेखों के नाम बताएँ।  \n' +
-							"एक से अधिक लेखों के नाम डालने के लिये उनके बीच में वर्टिकल पाइप (|) का प्रयोग करें।  \n" +
-							"यह जानकारी आवश्यक है। नाम डालने के बाद OK दबाएँ, विलय टैग छोड़ने के लिये Cancel दबाएँ।", "");
-						if (param === null) {
-							continue;
-						} else if (param !== "") {
-							currentTag += '|' + param;
+						if (params.mergeTarget) {
+							params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
+							currentTag += '|' + params.mergeTarget;
+							if (!params.talkPageLink) {
+								params.talkPageLink = 'वार्ता:' + mw.config.get('wgTitle') + '#' + params.mergeTarget
+								 + ' के साथ प्रस्तावित विलय';
+							}
+							currentTag += '|discuss=' + params.talkPageLink;
 						}
+//						var param = prompt('कृपया विलय में शामिल अन्य लेखों के नाम बताएँ।  \n' +
+//							"एक से अधिक लेखों के नाम डालने के लिये उनके बीच में वर्टिकल पाइप (|) का प्रयोग करें।  \n" +
+//							"यह जानकारी आवश्यक है। नाम डालने के बाद OK दबाएँ, विलय टैग छोड़ने के लिये Cancel दबाएँ।", "");
+//						if (param === null) {
+//							continue;
+//						} else if (param !== "") {
+//							currentTag += '|' + param;
+//						}
 						break;
 					default:
 						break;
@@ -889,6 +941,40 @@ Twinkle.tag.callbacks = {
 
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
+		}
+		
+		// special functions for merge tags
+		var talkpageLink = null;
+		if (params.mergeReason) {
+			// post the rationale on the talk page
+			// (only operates in main namespace)
+			var talkpageText = "\n\n== [[" + params.mergeTarget + "]] के साथ प्रस्तावित विलय ==\n\n";
+			talkpageText += params.mergeReason.trim() + " ~~~~";
+			
+			var talkpage = new Morebits.wiki.page("वार्ता:" + mw.config.get("wgTitle"), "वार्ता पृष्ठ पर कारण जोड़ा जा रहा है");
+			talkpage.setAppendText(talkpageText);
+			talkpage.setEditSummary('[[' + mw.config.get("wgTitle") +
+				']] और [[' + params.mergeTarget + ']] को विलय करने का प्रस्ताव' + Twinkle.getPref('summaryAd'));
+			talkpage.setCreateOption('recreate');
+			talkpage.append();
+		}
+		if (params.mergeTagOther) {
+			// tag the target page if requested
+			var otherTagName = "विलय";
+			if (tags.indexOf("को विलय") !== -1) {
+				otherTagName = "में विलय";
+			} else if (tags.indexOf("में विलय") !== -1) {
+				otherTagName = "को विलय";
+			}
+			var newParams = { 
+				tags: [otherTagName],
+				mergeTarget: mw.config.get("wgPageName"),
+				talkPageLink: params.talkPageLink
+			};
+			var otherpage = new Morebits.wiki.page(params.mergeTarget, "अन्य पृष्ठ चिन्हित किया जा रहा है (" +
+				params.mergeTarget + ")");
+			otherpage.setCallbackParameters(newParams);
+			otherpage.load(Twinkle.tag.callbacks.main);
 		}
 	},
 
@@ -980,6 +1066,9 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
 			params.globalizeSubcategory = form["articleTags.वैश्वीकरण"] ? form["articleTags.वैश्वीकरण"].value : null;
+			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
+			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
+			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
 			break;
 		case 'file':
 			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
@@ -995,6 +1084,10 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	if( !params.tags.length ) {
 		alert( 'You must select at least one tag!' );
+		return;
+	}
+	if( params.mergeTagOther && params.mergeTarget.indexOf('|') !== -1 ) {
+		alert( 'विलय के लिए चिन्हित करते समय अनेक अन्य लेखों को चिन्हित करना अभी संभव नहीं है। कृपया दूसरे लेख को चिन्हित करने के विकल्प को अनचेक कर के पुनः यत्न करें।' );
 		return;
 	}
 
