@@ -864,7 +864,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			if (Twinkle.speedy.initialContrib) {
-				text += "; {{सदस्य|" + Twinkle.speedy.initialContrib + "}} को सूचित किया";
+				text += "; {{सदस्य|1=" + Twinkle.speedy.initialContrib + "}} को सूचित किया";
 			}
 			text += " ~~~~~\n";
 
