@@ -2952,14 +2952,14 @@ Morebits.queryString.create = function( arr ) {
 		} else {
 			res = encodeURIComponent( arr[i] );
 		}
-		if( i === 'wpEditToken' ) {
+		if( i === 'token' ) {
 			editToken = res;
 		} else {
 			resarr.push( encodeURIComponent( i ) + '=' + res );
 		}
 	}
 	if( editToken !== undefined ) {
-		resarr.push( 'wpEditToken=' + editToken );
+		resarr.push( 'token=' + editToken );
 	}
 	return resarr.join('&');
 };
@@ -2972,6 +2972,7 @@ Morebits.queryString.prototype.create = Morebits.queryString.create;
  */
 
 Morebits.status = function Status( text, stat, type ) {
+	this.textRaw = text;
 	this.text = this.codify(text);
 	this.type = type || 'status';
 	this.generate(); 
@@ -3004,6 +3005,7 @@ Morebits.status.onError = function( handler ) {
 Morebits.status.prototype = {
 	stat: null,
 	text: null,
+	textRaw: null,
 	type: 'status',
 	target: null,
 	node: null,
@@ -3049,7 +3051,7 @@ Morebits.status.prototype = {
 				}
 				// also log error messages in the browser console
 				if (console && console.error) {
-					console.error(status);
+					console.error(this.textRaw + ": " + status);
 				}
 			}
 		}
