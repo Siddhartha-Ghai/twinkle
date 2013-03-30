@@ -456,9 +456,19 @@ Twinkle.speedy.reasonHash = {
 Twinkle.speedy.callbacks = {
 	sysop: {
 		main: function( params ) {
+			var thispage;
 
-			var thispage = new Morebits.wiki.page( mw.config.get('wgPageName'), "पृष्ठ हटाया जा रहा है" );
+			Morebits.wiki.addCheckpoint();  // prevent actionCompleted from kicking in until user interaction is done
+			
+			if( params.openusertalk ) {
+				thispage = new Morebits.wiki.page( mw.config.get('wgPageName') );  // a necessary evil, in order to clear incorrect status text
+				thispage.setCallbackParameters( params );
+				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
+			}
+
+			var input, reason;
 			var presetreason = "[[वि:हटाना#" + params.normalized + "|" + params.normalized + "]]." + params.reason;
+			var thispage = new Morebits.wiki.page( mw.config.get('wgPageName'), "पृष्ठ हटाया जा रहा है" );
 			var statelem = thispage.getStatusElement();
 //			var inputparams = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);	
 			
@@ -467,14 +477,15 @@ Twinkle.speedy.callbacks = {
 //			}
 			
 			// delete page
-			var input, reason;
 			switch(params.normalized) {
 				case 'शीह':
 					input = prompt('कृपया शीघ्र हटाने के लिये कारण दें।\n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
+
 					if (!input || !input.replace(/^\s*/, "").replace(/\s*$/, ""))
 					{
 						statelem.error( 'कारण बताना आवश्यक है।  नामांकन रोक दिया गया है।' );
-						return null;
+						Morebits.wiki.removeCheckpoint();
+						return;
 					}
 					reason = 'कारण: ' + input;
 					break;
@@ -492,16 +503,19 @@ Twinkle.speedy.callbacks = {
 					else if (input.indexOf("http") !== 0)
 					{
 						statelem.error( 'आपने जो स्रोत यू॰आर॰एल दिया है, वह http से नहीं शुरू होता। नामांकन रोक दिया गया है।' );
-						return null;
+						Morebits.wiki.removeCheckpoint();
+						return;
 					}
 					reason = presetreason + "स्रोत यू॰आर॰एल: " + input;
 					break;
 				case 'ल4':
 					input = prompt( 'कृपया मूल लेख का नाम बताएँ', "");
+
 					if (input === "" || !input)
 					{
 						statelem.error( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						return null;
+						Morebits.wiki.removeCheckpoint();
+						return;
 					}
 					reason = presetreason + "मूल लेख: " + input;
 					break;
@@ -511,7 +525,8 @@ Twinkle.speedy.callbacks = {
 					if (input === "" || !input)
 					{
 						statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						return null;
+						Morebits.wiki.removeCheckpoint();
+						return;
 					}
 					reason = presetreason + "कॉमन्स पर फ़ाइल: " + input;
 					break;
@@ -521,16 +536,19 @@ Twinkle.speedy.callbacks = {
 					if (input === "" || !input)
 					{
 						statelem.error( 'आपने मुक्त विकल्प का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						return null;
+						Morebits.wiki.removeCheckpoint();
+						return;
 					}
 					reason = presetreason + "मुक्त विकल्प: " + input;
 					break;
 				case 'सा1':
 					input = prompt( 'कृपया बेहतर साँचे का नाम बताएँ:', "" );
+
 					if (input === "" || !input)
 					{
 						statelem.error( 'आपने बेहतर साँचे का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						return null;
+						Morebits.wiki.removeCheckpoint();
+						return;
 					}
 					reason = presetreason + "बेहतर साँचा: " + input;
 					break;
@@ -540,14 +558,40 @@ Twinkle.speedy.callbacks = {
 			}
 
 			thispage.setEditSummary( reason + Twinkle.getPref('deletionSummaryAd') );
-			thispage.deletePage();
-
+			thispage.deletePage(function() {
+				statelem.info("done");
+				Twinkle.speedy.callbacks.sysop.deleteTalk( params );
+			});
+			Morebits.wiki.removeCheckpoint();
+		},
+		deleteTalk: function( params ) {
 			// delete talk page
 			if (params.deleteTalkPage &&
 			    document.getElementById( 'ca-talk' ).className !== 'new') {
 				var talkpage = new Morebits.wiki.page( Morebits.wikipedia.namespaces[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), "वार्ता पृष्ठ हटाया जा रहा है" );
 				talkpage.setEditSummary('हटाए गए पृष्ठ [[' + mw.config.get('wgPageName') + "]] का वार्ता पृष्ठ। " + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
+				// this is ugly, but because of the architecture of wiki.api, it is needed
+				// (otherwise success/failure messages for the previous action would be suppressed)
+				window.setTimeout(function() { Twinkle.speedy.callbacks.sysop.deleteRedirects( params ) }, 1800);
+			} else {
+				Twinkle.speedy.callbacks.sysop.deleteRedirects( params );
+			}
+		},
+		deleteRedirects: function( params ) {
+			// delete redirects
+			if (params.deleteRedirects) {
+				var query = {
+					'action': 'query',
+					'list': 'backlinks',
+					'blfilterredir': 'redirects',
+					'bltitle': mw.config.get('wgPageName'),
+					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+				};
+				var wikipedia_api = new Morebits.wiki.api( 'getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
+					new Morebits.status( 'Deleting redirects' ) );
+				wikipedia_api.params = params;
+				wikipedia_api.post();
 			}
 
 			// promote Unlink tool
@@ -585,28 +629,6 @@ Twinkle.speedy.callbacks = {
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
 			}
-
-			// open talk page of first contributor
-			if( params.openusertalk ) {
-				thispage = new Morebits.wiki.page( mw.config.get('wgPageName') );  // a necessary evil, in order to clear incorrect status text
-				thispage.setCallbackParameters( params );
-				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
-			}
-
-			// delete redirects
-			if (params.deleteRedirects) {
-				var query = {
-					'action': 'query',
-					'list': 'backlinks',
-					'blfilterredir': 'redirects',
-					'bltitle': mw.config.get('wgPageName'),
-					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
-				};
-				var wikipedia_api = new Morebits.wiki.api( 'getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
-					new Morebits.status( 'Deleting redirects' ) );
-				wikipedia_api.params = params;
-				wikipedia_api.post();
-			}
 		},
 		openUserTalkPage: function( pageobj ) {
 			pageobj.getStatusElement().unlink();  // don't need it anymore
@@ -640,34 +662,28 @@ Twinkle.speedy.callbacks = {
 		deleteRedirectsMain: function( apiobj ) {
 			var xmlDoc = apiobj.getXML();
 			var $snapshot = $(xmlDoc).find('backlinks bl');
-
 			var total = $snapshot.length;
+			var statusIndicator = apiobj.statelem;
 
 			if( !total ) {
+				statusIndicator.status("no redirects found");
 				return;
 			}
 
-			var statusIndicator = apiobj.statelem;
 			statusIndicator.status("0%");
 
-			var onsuccess = function( apiobj ) {
-				var obj = apiobj.params.obj;
-				var total = apiobj.params.total;
-				var now = parseInt( 100 * ++(apiobj.params.current)/total, 10 ) + '%';
-				obj.update( now );
-				apiobj.statelem.unlink();
-				if( apiobj.params.current >= total ) {
-					obj.info( now + ' (completed)' );
+			var current = 0;
+			var onsuccess = function( apiobjInner ) {
+				var now = parseInt( 100 * (++current)/total, 10 ) + '%';
+				statusIndicator.update( now );
+				apiobjInner.statelem.unlink();
+				if( current >= total ) {
+					statusIndicator.info( now + ' (completed)' );
 					Morebits.wiki.removeCheckpoint();
 				}
 			};
 
 			Morebits.wiki.addCheckpoint();
-
-			var params = $.extend( {}, apiobj.params );
-			params.current = 0;
-			params.total = total;
-			params.obj = statusIndicator;
 
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
