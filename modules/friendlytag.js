@@ -877,12 +877,20 @@ Twinkle.tag.callbacks = {
 					case 'में विलय':
 						if (params.mergeTarget) {
 							params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
+
 							currentTag += '|' + params.mergeTarget;
-							if (!params.talkPageLink) {
-								params.talkPageLink = 'वार्ता:' + mw.config.get('wgTitle') + '#' + params.mergeTarget
-								 + ' के साथ प्रस्तावित विलय';
+
+							// link to the correct section on the talk page, for article space only
+							if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
+								if (!params.discussArticle) {
+									// discussArticle is the article whose talk page will contain the discussion
+									params.discussArticle = (tags[i] === "को विलय" ? params.mergeTarget : mw.config.get('wgTitle'));
+									// nonDiscussArticle is the article which won't have the discussion
+									params.nonDiscussArticle = (tags[i] === "को विलय" ? mw.config.get('wgTitle') : params.mergeTarget)
+									params.talkDiscussionTitle = params.nonDiscussArticle + ' के साथ प्रस्तावित विलय';
+								}
+								currentTag += '|discuss=वार्ता:' + params.discussArticle + '#' + params.talkDiscussionTitle;
 							}
-							currentTag += '|discuss=' + params.talkPageLink;
 						}
 //						var param = prompt('कृपया विलय में शामिल अन्य लेखों के नाम बताएँ।  \n' +
 //							"एक से अधिक लेखों के नाम डालने के लिये उनके बीच में वर्टिकल पाइप (|) का प्रयोग करें।  \n" +
@@ -937,44 +945,43 @@ Twinkle.tag.callbacks = {
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
-		pageobj.save();
+		pageobj.save(function() {
+			// special functions for merge tags
+			if (params.mergeReason) {
+				// post the rationale on the talk page (only operates in main namespace)
+				var talkpageText = "\n\n== [[" + params.nonDiscussArticle + "]] के साथ प्रस्तावित विलय ==\n\n";
+				talkpageText += params.mergeReason.trim() + " ~~~~";
+				
+				var talkpage = new Morebits.wiki.page("वार्ता:" + params.discussArticle, "वार्ता पृष्ठ पर कारण जोड़ा जा रहा है");
+				talkpage.setAppendText(talkpageText);
+				talkpage.setEditSummary('[[' + params.discussArticle +
+					']] और [[' + params.nonDiscussArticle + ']] को विलय करने का प्रस्ताव' + Twinkle.getPref('summaryAd'));
+				talkpage.setCreateOption('recreate');
+				talkpage.append();
+			}
+			if (params.mergeTagOther) {
+				// tag the target page if requested
+				var otherTagName = "विलय";
+				if (tags.indexOf("में विलय") !== -1) {
+					otherTagName = "को विलय";
+				} else if (tags.indexOf("को विलय") !== -1) {
+					otherTagName = "में विलय";
+				}
+				var newParams = { 
+					tags: [otherTagName],
+					mergeTarget: mw.config.get("wgPageName"),
+					discussArticle: params.discussArticle,
+					talkDiscussionTitle: params.talkDiscussionTitle
+				};
+				var otherpage = new Morebits.wiki.page(params.mergeTarget, "अन्य पृष्ठ चिन्हित किया जा रहा है (" +
+					params.mergeTarget + ")");
+				otherpage.setCallbackParameters(newParams);
+				otherpage.load(Twinkle.tag.callbacks.main);
+			}
+		});
 
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
-		}
-		
-		// special functions for merge tags
-		var talkpageLink = null;
-		if (params.mergeReason) {
-			// post the rationale on the talk page
-			// (only operates in main namespace)
-			var talkpageText = "\n\n== [[" + params.mergeTarget + "]] के साथ प्रस्तावित विलय ==\n\n";
-			talkpageText += params.mergeReason.trim() + " ~~~~";
-			
-			var talkpage = new Morebits.wiki.page("वार्ता:" + mw.config.get("wgTitle"), "वार्ता पृष्ठ पर कारण जोड़ा जा रहा है");
-			talkpage.setAppendText(talkpageText);
-			talkpage.setEditSummary('[[' + mw.config.get("wgTitle") +
-				']] और [[' + params.mergeTarget + ']] को विलय करने का प्रस्ताव' + Twinkle.getPref('summaryAd'));
-			talkpage.setCreateOption('recreate');
-			talkpage.append();
-		}
-		if (params.mergeTagOther) {
-			// tag the target page if requested
-			var otherTagName = "विलय";
-			if (tags.indexOf("को विलय") !== -1) {
-				otherTagName = "में विलय";
-			} else if (tags.indexOf("में विलय") !== -1) {
-				otherTagName = "को विलय";
-			}
-			var newParams = { 
-				tags: [otherTagName],
-				mergeTarget: mw.config.get("wgPageName"),
-				talkPageLink: params.talkPageLink
-			};
-			var otherpage = new Morebits.wiki.page(params.mergeTarget, "अन्य पृष्ठ चिन्हित किया जा रहा है (" +
-				params.mergeTarget + ")");
-			otherpage.setCallbackParameters(newParams);
-			otherpage.load(Twinkle.tag.callbacks.main);
 		}
 	},
 
