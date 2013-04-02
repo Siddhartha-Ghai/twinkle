@@ -1397,15 +1397,14 @@ Morebits.wiki.api.prototype = {
 	},
 
 	returnError: function() {
-
+		this.statelem.error( this.errorText );
+		
 		// invoke failure callback if one was supplied
 		if (this.onError) {
 
 			// set the callback context to this.parent for new code and supply the API object
 			// as the first argument to the callback for legacy code
 			this.onError.call( this.parent, this );
-		} else {
-			this.statelem.error( this.errorText );
 		}
 		// don't complete the action so that the error remains displayed
 	},
@@ -1687,6 +1686,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		stabilizeProcessApi: null
 	};
 
+	var emptyFunction = function() { };
+
 	/**
 	 * Public interface accessors
 	 */
@@ -1827,11 +1828,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	this.load = function(onSuccess, onFailure) {
 		ctx.onLoadSuccess = onSuccess;
-		ctx.onLoadFailure = onFailure;
+		ctx.onLoadFailure = onFailure || emptyFunction;
 
 		// Need to be able to do something after the page loads
 		if (!onSuccess) {
 			ctx.statusElement.error("Internal error: no onSuccess callback provided to load()!");
+			ctx.onLoadFailure(this);
 			return;
 		}
 
@@ -1860,7 +1862,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.loadQuery.inprop = 'protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api("पृष्ठ संपादन हेतु खोला जा रहा है...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
+		ctx.loadApi = new Morebits.wiki.api("पृष्ठ खोला जा रहा है...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
 	};
@@ -1868,12 +1870,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	// Save updated .pageText to Wikipedia
 	// Only valid after successful .load()
 	this.save = function(onSuccess, onFailure) {
+		ctx.onSaveSuccess = onSuccess;
+		ctx.onSaveFailure = onFailure || emptyFunction;
+
 		if (!ctx.pageLoaded) {
 			ctx.statusElement.error("Internal error: attempt to save a page that has not been loaded!");
+			ctx.onSaveFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
 			ctx.statusElement.error("Internal error: edit summary not set before save!");
+			ctx.onSaveFailure(this);
 			return;
 		}
 
@@ -1881,11 +1888,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
 			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
 			ctx.statusElement.error("Edit to fully protected page was aborted.");
+			ctx.onSaveFailure(this);
 			return;
 		}
 
-		ctx.onSaveSuccess = onSuccess;
-		ctx.onSaveFailure = onFailure;
 		ctx.retries = 0;
 
 		var query = {
@@ -1943,15 +1949,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	this.append = function(onSuccess, onFailure) {
 		ctx.editMode = 'append';
 		ctx.onSaveSuccess = onSuccess;
-		ctx.onSaveFailure = onFailure;
-		this.load(fnAutoSave, onFailure);
+		ctx.onSaveFailure = onFailure || emptyFunction;
+		this.load(fnAutoSave, ctx.onSaveFailure);
 	};
 
 	this.prepend = function(onSuccess, onFailure) {
 		ctx.editMode = 'prepend';
 		ctx.onSaveSuccess = onSuccess;
-		ctx.onSaveFailure = onFailure;
-		this.load(fnAutoSave, onFailure);
+		ctx.onSaveFailure = onFailure || emptyFunction;
+		this.load(fnAutoSave, ctx.onSaveFailure);
 	};
 
 	this.lookupCreator = function(onSuccess) {
@@ -2007,28 +2013,33 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	this.revert = function(onSuccess, onFailure) {
+		ctx.onSaveSuccess = onSuccess;
+		ctx.onSaveFailure = onFailure || emptyFunction;
+
 		if (!ctx.revertOldID) {
 			ctx.statusElement.error("Internal error: revision ID to revert to was not set before revert!");
+			ctx.onSaveFailure(this);
 			return;
 		}
+
 		ctx.editMode = 'revert';
-		ctx.onSaveSuccess = onSuccess;
-		ctx.onSaveFailure = onFailure;
-		this.load(fnAutoSave, onFailure);
+		this.load(fnAutoSave, ctx.onSaveFailure);
 	};
 
 	this.move = function(onSuccess, onFailure) {
+		ctx.onMoveSuccess = onSuccess;
+		ctx.onMoveFailure = onFailure || emptyFunction;
+
 		if (!ctx.editSummary) {
 			ctx.statusElement.error("Internal error: move reason not set before move (use setEditSummary function)!");
+			ctx.onMoveFailure(this);
 			return;
 		}
 		if (!ctx.moveDestination) {
 			ctx.statusElement.error("Internal error: destination page name was not set before move!");
+			ctx.onMoveFailure(this);
 			return;
 		}
-
-		ctx.onMoveSuccess = onSuccess;
-		ctx.onMoveFailure = onFailure;
 
 		var query = {
 			action: 'query',
@@ -2043,25 +2054,27 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.inprop = 'protection';
 		}
 
-		ctx.moveApi = new Morebits.wiki.api("retrieving move token...", query, fnProcessMove, ctx.statusElement);
+		ctx.moveApi = new Morebits.wiki.api("retrieving move token...", query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
 		ctx.moveApi.setParent(this);
 		ctx.moveApi.post();
 	};
 
 	// |delete| is a reserved word in some flavours of JS
 	this.deletePage = function(onSuccess, onFailure) {
+		ctx.onDeleteSuccess = onSuccess;
+		ctx.onDeleteFailure = onFailure || emptyFunction;
+
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsInGroup('sysop')) {
 			ctx.statusElement.error("Cannot delete page: only admins can do that");
+			ctx.onDeleteFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
 			ctx.statusElement.error("Internal error: delete reason not set before delete (use setEditSummary function)!");
+			ctx.onDeleteFailure(this);
 			return;
 		}
-
-		ctx.onDeleteSuccess = onSuccess;
-		ctx.onDeleteFailure = onFailure;
 
 		var query = {
 			action: 'query',
@@ -2074,28 +2087,31 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.deleteApi = new Morebits.wiki.api("retrieving delete token...", query, fnProcessDelete, ctx.statusElement);
+		ctx.deleteApi = new Morebits.wiki.api("retrieving delete token...", query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
 		ctx.deleteApi.setParent(this);
 		ctx.deleteApi.post();
 	};
 
 	this.protect = function(onSuccess, onFailure) {
+		ctx.onProtectSuccess = onSuccess;
+		ctx.onProtectFailure = onFailure || emptyFunction;
+
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsInGroup('sysop')) {
 			ctx.statusElement.error("Cannot protect page: only admins can do that");
+			ctx.onProtectFailure(this);
 			return;
 		}
 		if (!ctx.protectEdit && !ctx.protectMove && !ctx.protectCreate) {
 			ctx.statusElement.error("Internal error: you must set edit and/or move and/or create protection before calling protect()!");
+			ctx.onProtectFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
 			ctx.statusElement.error("Internal error: protection reason not set before protect (use setEditSummary function)!");
+			ctx.onProtectFailure(this);
 			return;
 		}
-
-		ctx.onProtectSuccess = onSuccess;
-		ctx.onProtectFailure = onFailure;
 
 		var query = {
 			action: 'query',
@@ -2108,7 +2124,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.protectApi = new Morebits.wiki.api("retrieving protect token...", query, fnProcessProtect, ctx.statusElement);
+		ctx.protectApi = new Morebits.wiki.api("retrieving protect token...", query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -2117,22 +2133,25 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	// only works where $wgFlaggedRevsProtection = true (i.e. where FlaggedRevs
 	// settings appear on the wiki's "protect" tab)
 	this.stabilize = function(onSuccess, onFailure) {
+		ctx.onStabilizeSuccess = onSuccess;
+		ctx.onStabilizeFailure = onFailure || emptyFunction;
+
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsInGroup('sysop')) {
 			ctx.statusElement.error("Cannot apply FlaggedRevs settings: only admins can do that");
+			ctx.onStabilizeFailure(this);
 			return;
 		}
 		if (!ctx.flaggedRevs) {
 			ctx.statusElement.error("Internal error: you must set flaggedRevs before calling stabilize()!");
+			ctx.onStabilizeFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
 			ctx.statusElement.error("Internal error: reason not set before calling stabilize() (use setEditSummary function)!");
+			ctx.onStabilizeFailure(this);
 			return;
 		}
-
-		ctx.onStabilizeSuccess = onSuccess;
-		ctx.onStabilizeFailure = onFailure;
 
 		var query = {
 			action: 'query',
@@ -2144,7 +2163,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.stabilizeApi = new Morebits.wiki.api("retrieving stabilize token...", query, fnProcessStabilize, ctx.statusElement);
+		ctx.stabilizeApi = new Morebits.wiki.api("retrieving stabilize token...", query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
 		ctx.stabilizeApi.setParent(this);
 		ctx.stabilizeApi.post();
 	};
@@ -2164,7 +2183,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnLoadSuccess = function() {
 		var xml = ctx.loadApi.getXML();
 
-		if ( !fnCheckPageName(xml) ) {
+		if ( !fnCheckPageName(xml, ctx.onLoadFailure) ) {
 			return; // abort
 		}
 
@@ -2189,12 +2208,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (!ctx.editToken)
 		{
 			ctx.statusElement.error("ए॰पी॰आई से संपादन टोकन लेने में असफल");
+			ctx.onLoadFailure(this);
 			return;
 		}
 		ctx.loadTime = $(xml).find('page').attr('starttimestamp');
 		if (!ctx.loadTime)
 		{
 			ctx.statusElement.error("ए॰पी॰आई से शुरुआत टाइमस्टैम्प लेने में असफल");
+			ctx.onLoadFailure(this);
 			return;
 		}
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
@@ -2203,6 +2224,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.revertCurID = $(xml).find('rev').attr('revid');
 			if (!ctx.revertCurID) {
 				ctx.statusElement.error("ए॰पी॰आई से वर्तमान अवतरण संख्या लेने में असफल");
+				ctx.onLoadFailure(this);
 				return;
 			}
 			ctx.revertUser = $(xml).find('rev').attr('user');
@@ -2211,6 +2233,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 					ctx.revertUser = "<username hidden>";
 				} else {
 					ctx.statusElement.error("Failed to retrieve user who made the revision.");
+					ctx.onLoadFailure(this);
 					return;
 				}
 			}
@@ -2225,11 +2248,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	// helper function to parse the page name returned from the API
-	var fnCheckPageName = function(xml) {
-	
+	var fnCheckPageName = function(xml, onFailure) {
+		if (!onFailure) {
+			onFailure = emptyFunction;
+		}
+
 		// check for invalid titles
-		if ( $(xml).find('page').attr('invalid') ) {
-			ctx.statusElement.error("Attempt to edit a page with invalid title: " + ctx.pageName);
+		if ( $(xml).find('page').attr('invalid') === "" ) {
+			ctx.statusElement.error("The page title is invalid: " + ctx.pageName);
+			onFailure(this);
 			return false; // abort
 		}
 
@@ -2246,6 +2273,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		else {
 			// could be a circular redirect or other problem
 			ctx.statusElement.error("Could not resolve redirects for: " + ctx.pageName);
+			onFailure(this);
 
 			// force error to stay on the screen
 			++Morebits.wiki.numberOfActionsLeft;
@@ -2293,6 +2321,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		
 		// force error to stay on the screen
 		++Morebits.wiki.numberOfActionsLeft;
+
+		ctx.onSaveFailure(this);
 	};
 
 	// callback from saveApi.post()
@@ -2369,6 +2399,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		if ($(xml).find('page').attr('missing') === "") {
 			ctx.statusElement.error("Cannot move the page, because it no longer exists");
+			ctx.onMoveFailure(this);
 			return;
 		}
 
@@ -2379,6 +2410,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
 				ctx.statusElement.error("Move of fully protected page was aborted.");
+				ctx.onMoveFailure(this);
 				return;
 			}
 		}
@@ -2386,6 +2418,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var moveToken = $(xml).find('page').attr('movetoken');
 		if (!moveToken) {
 			ctx.statusElement.error("Failed to retrieve move token.");
+			ctx.onMoveFailure(this);
 			return;
 		}
 
@@ -2419,6 +2452,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		if ($(xml).find('page').attr('missing') === "") {
 			ctx.statusElement.error("Cannot delete the page, because it no longer exists");
+			ctx.onDeleteFailure(this);
 			return;
 		}
 
@@ -2428,12 +2462,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 			'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
 			ctx.statusElement.error("Deletion of fully protected page was aborted.");
+			ctx.onDeleteFailure(this);
 			return;
 		}
 
 		var deleteToken = $(xml).find('page').attr('deletetoken');
 		if (!deleteToken) {
 			ctx.statusElement.error("Failed to retrieve delete token.");
+			ctx.onDeleteFailure(this);
 			return;
 		}
 
@@ -2458,23 +2494,21 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var missing = ($(xml).find('page').attr('missing') === "");
 		if (((ctx.protectEdit || ctx.protectMove) && missing)) {
 			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			ctx.onProtectFailure(this);
 			return;
 		}
 		if (ctx.protectCreate && !missing) {
 			ctx.statusElement.error("Cannot create protect the page, because it already exists");
+			ctx.onProtectFailure(this);
 			return;
 		}
 
-		// cascading protection not possible on edit<sysop
-		// XXX fix this logic - I can't wrap my head around it
-		//if (ctx.protectCascade && (editprot && editprot.attr('level') !== 'sysop') && (ctx.protectEdit && ctx.protectEdit.level !== 'sysop')) {
-		//	ctx.statusElement.error("Internal error: cascading protection requires sysop-level edit protection!");
-		//	return;
-		//}
+		// TODO cascading protection not possible on edit<sysop
 
 		var protectToken = $(xml).find('page').attr('protecttoken');
 		if (!protectToken) {
 			ctx.statusElement.error("Failed to retrieve protect token.");
+			ctx.onProtectFailure(this);
 			return;
 		}
 
@@ -2537,12 +2571,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var missing = ($(xml).find('page').attr('missing') === "");
 		if (missing) {
 			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			ctx.onStabilizeFailure(this);
 			return;
 		}
 
 		var stabilizeToken = $(xml).find('page').attr('edittoken');
 		if (!stabilizeToken) {
 			ctx.statusElement.error("Failed to retrieve stabilize token.");
+			ctx.onStabilizeFailure(this);
 			return;
 		}
 
@@ -2565,7 +2601,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 }; // end Morebits.wiki.page
 
 /** Morebits.wiki.page TODO: (XXX)
- * - Do we need the onFailure callbacks? How do we know when to call them? Timeouts? Enhance Morebits.wiki.api for failures?
  * - Should we retry loads also?
  * - Need to reset current action before the save?
  * - Deal with action.completed stuff
