@@ -138,60 +138,122 @@ Twinkle.tag.updateSortOrder = function(e) {
 		if (Twinkle.tag.checkedTags.indexOf(tag) !== -1) {
 			checkbox.checked = true;
 		}
-		if (tag === "वैश्वीकरण") {
-			checkbox.subgroup = {
-				name: 'globalize',
-				type: 'select',
-				list: [
-					{ label: "{{वैश्वीकरण}}: लेख विषय का विश्वव्यापी दृष्टिकोण नहीं दर्शाता है", value: "वैश्वीकरण" },
-					{
-						label: "क्षेत्र-विशिष्ट {{वैश्वीकरण}} उपसाँचे",
-						list: [
-							{ label: "{{वैश्वीकरण/अंग्रेज़ी}}: लेख मुख्य रूप से अंग्रेज़ी वक्ताओं का दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/अंग्रेज़ी" },
-							{ label: "{{वैश्वीकरण/यूरोप}}: लेख मुख्य रूप से यूरोपीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/यूरोप" },
-							{ label: "{{वैश्वीकरण/भारत}}: लेख मुख्य रूप से भारतीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/भारत" }
-						]
-					}
-				]
-			};
-		} else if (tag === "विलय" || tag === "को विलय" || tag === "में विलय") {
-			var otherTagName = "विलय";
-			switch (tag)
-			{
-				case "को विलय":
-					otherTagName = "में विलय";
-					break;
-				case "में विलय":
-					otherTagName = "को विलय";
-					break;
-			}
-			checkbox.subgroup = [
-				{
-					name: 'mergeTarget',
+		switch (tag) {
+			case "सफ़ाई":
+				checkbox.subgroup = {
+					name: 'cleanup',
 					type: 'input',
-					label: 'अन्य लेख: ',
-					tooltip: 'यदि एक से अधिक लेख निर्दिष्ट करने हों तो उनके बीच में पाइप का प्रयोग करें, जैसे पहला लेख|दूसरा लेख'
-				},
-				{
-					name: 'mergeTagOther',
-					type: 'checkbox',
+					label: 'सफ़ाई की आवश्यकता का कारण: ',
+					tooltip: 'आवश्यक',
+					size: 35
+				};
+				break;
+			case "प्रतिलिपि सम्पादन":
+				checkbox.subgroup = {
+					name: 'copyEdit',
+					type: 'input',
+					label: '"इस लेख को ___ के लिए प्रतिलिपि सम्पादन की आवश्यकता है" ',
+					tooltip: 'उदाहरण, "वर्तनी सुधार"। वैकल्पिक।',
+					size: 35
+				};
+				break;
+			case "कॉपी पेस्ट":
+				checkbox.subgroup = {
+					name: 'copypaste',
+					type: 'input',
+					label: 'स्रोत यू॰आर॰एल: ',
+					tooltip: 'यदि ज्ञात हो।',
+					size: 50
+				};
+				break;
+			case "विशेषज्ञ":
+				checkbox.subgroup = {
+					name: 'expertSubject',
+					type: 'input',
+					label: 'Name of relevant WikiProject: ',
+					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.',
+				};
+				break;
+			case "वैश्वीकरण":
+				checkbox.subgroup = {
+					name: 'globalize',
+					type: 'select',
 					list: [
+					{ label: "{{वैश्वीकरण}}: लेख विषय का विश्वव्यापी दृष्टिकोण नहीं दर्शाता है", value: "वैश्वीकरण" },
 						{
-							label: 'दुसरे लेख को {{' + otherTagName + '}} साँचे से चिन्हित करें',
-							checked: true,
-							tooltip: 'यह केवल तभी उपलब्ध है यदि केवल एक लेख का नाम दिया जाये।'
+							label: "क्षेत्र-विशिष्ट {{वैश्वीकरण}} उपसाँचे",
+							list: [
+								{ label: "{{वैश्वीकरण/अंग्रेज़ी}}: लेख मुख्य रूप से अंग्रेज़ी वक्ताओं का दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/अंग्रेज़ी" },
+								{ label: "{{वैश्वीकरण/यूरोप}}: लेख मुख्य रूप से यूरोपीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/यूरोप" },
+								{ label: "{{वैश्वीकरण/भारत}}: लेख मुख्य रूप से भारतीय दृष्टिकोण दर्शाता है", value: "वैश्वीकरण/भारत" }
+							]
 						}
 					]
+				};
+				break;
+			case "विलय":
+			case "को विलय":
+			case "में विलय":
+				var otherTagName = "विलय";
+				switch (tag)
+				{
+					case "को विलय":
+						otherTagName = "में विलय";
+						break;
+					case "में विलय":
+						otherTagName = "को विलय";
+						break;
 				}
-			];
-			if (mw.config.get('wgNamespaceNumber') === 0) {
-				checkbox.subgroup.push({
-					name: 'mergeReason',
-					type: 'textarea',
-					label: 'विलय के लिये कारण (वार्ता पृष्ठ पर जोड़ा जायेगा):',
-					tooltip: 'यह वैकल्पिक है, परन्तु जहाँ तक संभव हो इसका प्रयोग किया जाना चाहिए। इसका प्रयोग ना करना हो तो इसे खाली छोड़ दें।'
-				});
-			}
+				checkbox.subgroup = [
+					{
+						name: 'mergeTarget',
+						type: 'input',
+						label: 'अन्य लेख: ',
+						tooltip: 'यदि एक से अधिक लेख निर्दिष्ट करने हों तो उनके बीच में पाइप का प्रयोग करें, जैसे पहला लेख|दूसरा लेख'
+					},
+					{
+						name: 'mergeTagOther',
+						type: 'checkbox',
+						list: [
+							{
+								label: 'दूसरे लेख को {{' + otherTagName + '}} साँचे से चिन्हित करें',
+								checked: true,
+								tooltip: 'यह केवल तभी उपलब्ध है यदि केवल एक लेख का नाम दिया जाये।'
+							}
+						]
+					}
+				];
+				if (mw.config.get('wgNamespaceNumber') === 0) {
+					checkbox.subgroup.push({
+						name: 'mergeReason',
+						type: 'textarea',
+						label: 'विलय के लिये कारण (वार्ता पृष्ठ पर जोड़ा जायेगा):',
+						tooltip: 'यह वैकल्पिक है, परन्तु जहाँ तक संभव हो इसका प्रयोग किया जाना चाहिए। इसका प्रयोग ना करना हो तो इसे खाली छोड़ दें।'
+					});
+				}
+				break;
+			case "हिन्दी नहीं":
+				checkbox.subgroup = [
+					{
+						name: 'translationLanguage',
+						type: 'input',
+						label: 'लेख की भाषा (यदि ज्ञात हो): ',
+						tooltip: 'यदि समझ ना आये तो [[वि:चौपाल]] पर पूछें।'
+					},
+				];
+				break;
+			case "खराब अनुवाद":
+				checkbox.subgroup = [
+					{
+						name: 'translationLanguage',
+						type: 'input',
+						label: 'स्रोत भाषा जिससे अनुवाद किया गया है (यदि ज्ञात हो): ',
+						tooltip: 'यदि समझ ना आये तो [[वि:चौपाल]] पर पूछें।'
+					},
+				];
+				break;
+			default:
+				break;
 		}
 		return checkbox;
 	};
@@ -334,12 +396,12 @@ Twinkle.tag.article.tags = {
 Twinkle.tag.article.tagCategories = {
 	"सफ़ाई एवं रखरखाव": {
 		"सामान्य सफ़ाई": [
-			"सफ़ाई",
-			"प्रतिलिपि सम्पादन",
+			"सफ़ाई",  // has a subgroup with text input
+			"प्रतिलिपि सम्पादन",  // has a subgroup with text input
 			"विकिफ़ाइ"
 		],
 		"अवांछित सामग्री": [
-			"कॉपी पेस्ट",
+			"कॉपी पेस्ट",  // has a subgroup with text input
 			"बाहरी कड़ियाँ",
 			"ग़ैर मुक्त",
 			"ज्ञानकोषीय नहीं"
@@ -360,7 +422,7 @@ Twinkle.tag.article.tagCategories = {
 	},
 	"सामग्री संबंधी आम मुद्दे": {
 		"उल्लेखनीयता": [
-			"उल्लेखनीयता"  // has subcategories and special-cased code
+			"उल्लेखनीयता"
 		],
 		"लेखन शैली": [
 			"विज्ञापन",
@@ -380,7 +442,7 @@ Twinkle.tag.article.tagCategories = {
 			"आत्मकथा",
 			"विवादित",
 			"धोखा",
-			"वैश्वीकरण",  // has subcategories and special-cased code
+			"वैश्वीकरण",  // has a subgroup with subcategories
 			"दृष्टिकोण",
 			"दृष्टिकोण जाँच",
 			"प्रशंसक दृष्टिकोण",
@@ -402,8 +464,8 @@ Twinkle.tag.article.tagCategories = {
 	},
 	"सामग्री संबंधी विशिष्ट मुद्दे": {
 		"भाषा": [
-			"हिन्दी नहीं",
-			"खराब अनुवाद"
+			"हिन्दी नहीं",  // has a subgroup with text input
+			"खराब अनुवाद"  // has a subgroup with text input
 		],
 		"कड़ियाँ": [
 			"बन्द सिरा",
@@ -420,7 +482,7 @@ Twinkle.tag.article.tagCategories = {
 			"श्रेणी कम"
 		]
 	},
-	"विलय": [
+	"विलय": [  // these three have a subgroup with several options
 		"विलय",
 		"को विलय",
 		"में विलय"
@@ -820,7 +882,7 @@ Twinkle.tag.callbacks = {
 					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
 				if( tags[i] === 'वैश्वीकरण' ) {
-					currentTag += '{{' + params.globalizeSubcategory;
+					currentTag += '{{' + params.tagParameters.globalize;
 				} else {
 					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tags[i];
 				}
@@ -828,48 +890,33 @@ Twinkle.tag.callbacks = {
 				// prompt for other parameters, based on the tag
 				switch( tags[i] ) {
 					case 'सफ़ाई':
-						var reason = prompt('आप वैकल्पिक रूप से इस लेख में सफ़ाई की आवश्यकता का कारण दे सकते हैं।\n' +
-							" कोई भी कारण न देने के लिये OK पर क्लिक करें। {{सफ़ाई}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
-						if (reason === null) {
-							continue;
-						} else if (reason !== "") {
-							currentTag += '|reason=' + reason;
+						if (params.tagParameters.cleanup) {
+							currentTag += '|reason=' + params.tagParameters.cleanup;
+						}
+						break;
+					case "प्रतिलिपि सम्पादन":
+						if (params.tagParameters.copyEdit) {
+							currentTag += '|for=' + params.tagParameters.copyEdit;
 						}
 						break;
 					case 'कॉपी पेस्ट':
-						var url = prompt('कृपया स्रोत यू॰आर॰एल(URL) दें जहाँ से आपको लगता है इसे कॉपी पेस्ट किया गया है।\n' +
-							"यदि आपको नहीं पता तो OK पर क्लिक करें। {{कॉपी पेस्ट}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
-						if (url === null) {
-							continue;
-						} else if (url !== "") {
-							currentTag += '|url=' + url;
+						if (params.tagParameters.copypaste) {
+							currentTag += '|url=' + params.tagParameters.copypaste;
 						}
 						break;
 					case 'हिन्दी नहीं':
-						var langname = prompt('कृपया उस भाषा का नाम बताएँ जिसमें आपके विचार से यह लेख लिखा हुआ है।\n' +
-							"यदि आप नहीं जानते तो OK पर क्लिक करें। {{हिन्दी नहीं}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
-						if (langname === null) {
-							continue;
-						} else if (langname !== "") {
-							currentTag += '|1=' + langname;
+						if (params.translationLanguage) {
+							currentTag += '|1=' + params.translationLanguage;
 						}
 						break;
 					case 'खराब अनुवाद':
-						var roughlang = prompt('कृपया स्रोत भाषा का नाम दें जिससे यह लेख अनूदित किया गया है।  \n' +
-							"यदि आप नहीं जानते तो OK पर क्लिक करें। {{खराब अनुवाद}} टैग छोड़ने के लिये Cancel पर क्लिक करें।", "");
-						if (roughlang === null) {
-							continue;
-						} else if (roughlang !== "") {
-							currentTag += '|1=' + roughlang;
+						if (params.translationLanguage) {
+							currentTag += '|1=' + params.translationLanguage;
 						}
 						break;
 					case 'विशेषज्ञ':
-						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
-							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
-						if (wikiproject === null) {
-							continue;
-						} else if (wikiproject !== "") {
-							currentTag += '|1=' + wikiproject;
+						if (params.tagParameters.expertSubject) {
+							currentTag += '|1=' + params.tagParameters.expertSubject;
 						}
 						break;
 					case 'विलय':
@@ -919,7 +966,7 @@ Twinkle.tag.callbacks = {
 
 			summaryText += ' {{[[';
 			if( tags[i] === 'वैश्वीकरण' ) {
-				summaryText += "साँचा:" + params.globalizeSubcategory + '|' + params.globalizeSubcategory;
+				summaryText += "साँचा:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
 			} else {
 				summaryText += (tags[i].indexOf(":") !== -1 ? tags[i] : ("साँचा:" + tags[i] + "|" + tags[i]));
 			}
@@ -1065,6 +1112,8 @@ Twinkle.tag.callbacks = {
 };
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
+	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
+
 	var form = e.target;
 	var params = {};
 
@@ -1072,10 +1121,19 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		case 'article':
 			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
-			params.globalizeSubcategory = form["articleTags.वैश्वीकरण"] ? form["articleTags.वैश्वीकरण"].value : null;
+			params.tagParameters = {
+				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
+				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
+				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
+				expertSubject: form["articleTags.expertSubject"] ? form["articleTags.expertSubject"].value : null,
+				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
+			};
+			// common to {{merge}}, {{merge from}}, {{merge to}}
 			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
 			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
 			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
+			// common to {{not English}}, {{rough translation}}
+			params.translationLanguage = form["articleTags.translationLanguage"] ? form["articleTags.translationLanguage"].value : null;
 			break;
 		case 'file':
 			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
@@ -1089,12 +1147,26 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 	}
 
+	// form validation
 	if( !params.tags.length ) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
+	if( ((params.tags.indexOf("विलय") !== -1) + (params.tags.indexOf("में विलय") !== -1) +
+		(params.tags.indexOf("को विलय") !== -1)) > 1 ) {
+		alert( 'कृपया {{विलय}}, {{में विलय}} और {{को विलय}} में से एक ही चुनें। यदि अनेक पृष्ठों को विलय करना है तो कृपया {{विलय}} का प्रयोग करें और लेखों के नाम के बीच में पाइप का प्रयोग करें। ध्यान रखें कि अनेक लेखों को विलय के लिए चिन्हित करते समय ट्विंकल अन्य पृष्ठों को स्वचालित रूप से चिन्हित नहीं कर सकता है।' );
+		return;
+	}
+	if( (params.tags.indexOf("हिन्दी नहीं") !== -1) && (params.tags.indexOf("खराब अनुवाद") !== -1) ) {
+		alert( 'कृपया {{हिन्दी नहीं}} और {{खराब अनुवाद}} में से एक ही चुनें।' );
+		return;
+	}
 	if( params.mergeTagOther && params.mergeTarget.indexOf('|') !== -1 ) {
 		alert( 'विलय के लिए चिन्हित करते समय अनेक अन्य लेखों को चिन्हित करना अभी संभव नहीं है। कृपया दूसरे लेख को चिन्हित करने के विकल्प को अनचेक कर के पुनः यत्न करें।' );
+		return;
+	}
+	if( params.tags.indexOf('सफ़ाई') !== -1 && params.tagParameters.cleanup.trim && params.tagParameters.cleanup.trim() === "") {
+		alert( 'आपको {{सफ़ाई}} साँचे के लिए एक कारण बताना होगा।' );
 		return;
 	}
 
