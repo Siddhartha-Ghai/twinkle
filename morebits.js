@@ -3224,6 +3224,8 @@ Morebits.simpleWindow.prototype = {
 	// Focuses the dialog. This might work, or on the contrary, it might not.
 	focus: function(event) {
 		$(this.content).dialog("moveToTop");
+
+		return this;
 	},
 	// Closes the dialog.  If this is set as an event handler, it will stop the event from doing anything more.
 	close: function(event) {
@@ -3231,6 +3233,8 @@ Morebits.simpleWindow.prototype = {
 			event.preventDefault();
 		}
 		$(this.content).dialog("close");
+
+		return this;
 	},
 	// Shows the dialog.  Calling display() on a dialog that has previously been closed might work, but it is not guaranteed.
 	display: function() {
@@ -3249,19 +3253,27 @@ Morebits.simpleWindow.prototype = {
 			setupTooltips(dialog.parent()[0]);
 		}
 		this.setHeight( this.height );  // init height algorithm
+
+		return this;
 	},
 	// Sets the dialog title.
 	setTitle: function( title ) {
 		$(this.content).dialog("option", "title", title);
+
+		return this;
 	},
 	// Sets the script name, appearing as a prefix to the title to help users determine which
 	// user script is producing which dialog. For instance, Twinkle modules set this to "Twinkle".
 	setScriptName: function( name ) {
 		this.scriptName = name;
+
+		return this;
 	},
 	// Sets the dialog width.
 	setWidth: function( width ) {
 		$(this.content).dialog("option", "width", width);
+
+		return this;
 	},
 	// Sets the dialog's maximum height. The dialog will auto-size to fit its contents,
 	// but the content area will grow no larger than the height given here.
@@ -3277,6 +3289,8 @@ Morebits.simpleWindow.prototype = {
 			$(this.content).dialog("option", "height", "auto");
 		}
 		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height - 30, 10) + "px";
+
+		return this;
 	},
 	// Sets the content of the dialog to the given element node, usually from rendering a Morebits.quickForm.
 	// Re-enumerates the footer buttons, but leaves the footer links as they are.
@@ -3284,6 +3298,8 @@ Morebits.simpleWindow.prototype = {
 	setContent: function( content ) {
 		this.purgeContent();
 		this.addContent( content );
+
+		return this;
 	},
 	addContent: function( content ) {
 		this.content.appendChild( content );
@@ -3304,6 +3320,8 @@ Morebits.simpleWindow.prototype = {
 		} else {
 			$(this.content).dialog("widget").find(".morebits-dialog-buttons")[0].setAttribute("data-empty", "data-empty");  // used by CSS
 		}
+
+		return this;
 	},
 	purgeContent: function( content ) {
 		this.buttons = [];
@@ -3313,6 +3331,8 @@ Morebits.simpleWindow.prototype = {
 		while( this.content.hasChildNodes() ) {
 			this.content.removeChild( this.content.firstChild );
 		}
+
+		return this;
 	},
 	// Adds a link in the bottom-right corner of the dialog.
 	// This can be used to provide help or policy links.
@@ -3332,9 +3352,13 @@ Morebits.simpleWindow.prototype = {
 		link.textContent = text;
 		$footerlinks.append(link);
 		this.hasFooterLinks = true;
+
+		return this;
 	},
 	setModality: function( modal ) {
 		$(this.content).dialog("option", "modal", modal);
+
+		return this;
 	}
 };
 
@@ -3364,7 +3388,7 @@ Morebits.simpleWindow.setButtonsEnabled = function( enabled ) {
  * Thanks.
  */
 
-if (typeof arguments === 'undefined') {  // typeof is here for a reason...
+if ( typeof arguments === "undefined" ) {  // typeof is here for a reason...
 	window.SimpleWindow = Morebits.simpleWindow;
 	window.QuickForm = Morebits.quickForm;
 	window.Wikipedia = Morebits.wiki;
