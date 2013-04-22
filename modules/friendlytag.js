@@ -228,7 +228,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						name: 'mergeReason',
 						type: 'textarea',
 						label: 'विलय के लिये कारण (वार्ता पृष्ठ पर जोड़ा जायेगा):',
-						tooltip: 'यह वैकल्पिक है, परन्तु जहाँ तक संभव हो इसका प्रयोग किया जाना चाहिए। इसका प्रयोग ना करना हो तो इसे खाली छोड़ दें।'
+						tooltip: 'यह वैकल्पिक है, परन्तु जहाँ तक संभव हो इसका प्रयोग किया जाना चाहिए। इसका प्रयोग ना करना हो तो इसे खाली छोड़ दें। यह तभी जोड़ा जाएगा यदि विलय हेतु एक ही लेख का नाम दिया जाए।'
 					});
 				}
 				break;
@@ -1161,8 +1161,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'कृपया {{हिन्दी नहीं}} और {{खराब अनुवाद}} में से एक ही चुनें।' );
 		return;
 	}
-	if( params.mergeTagOther && params.mergeTarget.indexOf('|') !== -1 ) {
-		alert( 'विलय के लिए चिन्हित करते समय अनेक अन्य लेखों को चिन्हित करना अभी संभव नहीं है। कृपया दूसरे लेख को चिन्हित करने के विकल्प को अनचेक कर के पुनः यत्न करें।' );
+	if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
+		alert( 'विलय के लिए चिन्हित करते समय अनेक अन्य लेखों को चिन्हित करना, और अनेक लेखों के लिए चर्चा शुरू करना अभी संभव नहीं है। कृपया दूसरे लेख को चिन्हित करने के विकल्प को अनचेक कर के और कारण में इनपुट खाली कर के पुनः यत्न करें।' );
 		return;
 	}
 	if( params.tags.indexOf('सफ़ाई') !== -1 && params.tagParameters.cleanup.trim && params.tagParameters.cleanup.trim() === "") {
