@@ -227,7 +227,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					checkbox.subgroup.push({
 						name: 'mergeReason',
 						type: 'textarea',
-						label: 'विलय के लिये कारण (वार्ता पृष्ठ पर जोड़ा जायेगा):',
+						label: 'विलय के लिये कारण (' + (tag === "को विलय" ? 'दुसरे' : 'इस') + ' लेख के वार्ता पृष्ठ पर जोड़ा जायेगा):',
 						tooltip: 'यह वैकल्पिक है, परन्तु जहाँ तक संभव हो इसका प्रयोग किया जाना चाहिए। इसका प्रयोग ना करना हो तो इसे खाली छोड़ दें। यह तभी जोड़ा जाएगा यदि विलय हेतु एक ही लेख का नाम दिया जाए।'
 					});
 				}
@@ -998,11 +998,11 @@ Twinkle.tag.callbacks = {
 				// post the rationale on the talk page (only operates in main namespace)
 				var talkpageText = "\n\n== [[" + params.nonDiscussArticle + "]] के साथ प्रस्तावित विलय ==\n\n";
 				talkpageText += params.mergeReason.trim() + " ~~~~";
-				
+
 				var talkpage = new Morebits.wiki.page("वार्ता:" + params.discussArticle, "वार्ता पृष्ठ पर कारण जोड़ा जा रहा है");
 				talkpage.setAppendText(talkpageText);
-				talkpage.setEditSummary('[[' + params.discussArticle +
-					']] और [[' + params.nonDiscussArticle + ']] को विलय करने का प्रस्ताव' + Twinkle.getPref('summaryAd'));
+				talkpage.setEditSummary('[[' + params.nonDiscussArticle + ']] ' + (tags.indexOf("विलय") !== -1 ? 'और' : 'को') + ' [[' + params.discussArticle + ']] ' + (tags.indexOf("विलय") !== -1 ? 'को' : 'में') + ' विलय करने का प्रस्ताव' + Twinkle.getPref('summaryAd'));
+				talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
 				talkpage.setCreateOption('recreate');
 				talkpage.append();
 			}

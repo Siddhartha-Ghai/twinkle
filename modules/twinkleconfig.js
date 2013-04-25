@@ -374,6 +374,11 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 		{
+			name: "watchMergeDiscussions",
+			label: "विलय चर्चाएँ शुरू करते समय वार्ता पृष्ठ ध्यानसूची में जोड़ें",
+			type: "boolean"
+		},
+		{
 			name: "markTaggedPagesAsMinor",
 			label: "रखरखाव टैगिंग को छोटा सम्पादन चिन्हित करें",
 			type: "boolean"
