@@ -25,11 +25,6 @@ Twinkle.speedy = function twinklespeedy() {
 
 // This function is run when the CSD tab/header link is clicked
 Twinkle.speedy.callback = function twinklespeedyCallback() {
-	if ( !twinkleUserAuthorized ) {
-		alert("आपका अकाउंट ट्विंकल प्रयोग करने के लिये बहुत नया है।");
-		return;
-	}
-
 	Twinkle.speedy.initDialog(Morebits.userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 };
 

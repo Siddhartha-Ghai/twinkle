@@ -38,11 +38,6 @@ Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 };
 
 Twinkle.xfd.callback = function twinklexfdCallback() {
-	if (!twinkleUserAuthorized) {
-		alert("आपका अकाउंट ट्विंकल प्रयोग करने के लिये बहुत नया है।");
-		return;
-	}
-
 	var Window = new Morebits.simpleWindow( 600, 350 );
 	Window.setTitle( "हटाने हेतु चर्चा के लिये नामांकन" );
 	Window.setScriptName( "Twinkle" );
