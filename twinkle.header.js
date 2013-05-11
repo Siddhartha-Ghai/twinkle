@@ -24,6 +24,9 @@
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
 
+// Check if account is experienced enough to use Twinkle
+var twinkleUserAuthorized = Morebits.userIsInGroup( "autoconfirmed" ) || Morebits.userIsInGroup( "confirmed" );
+
 // for use by custom modules (normally empty)
 Twinkle.initCallbacks = [];
 Twinkle.addInitCallback = function twinkleAddInitCallback( func ) {
@@ -276,6 +279,10 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 
 		$( a ).click(function ( e ) {
 			e.preventDefault();
+
+			if ( !twinkleUserAuthorized ) {
+				alert("Sorry, your account is too new to use Twinkle.");
+			}
 		});
 
 		span = document.createElement( "span" );
@@ -317,6 +324,3 @@ function twAddPortletLink( task, text, id, tooltip )
 	}
 	return link;
 }
-
-// Check if account is experienced enough to use Twinkle
-var twinkleUserAuthorized = Morebits.userIsInGroup( "autoconfirmed" ) || Morebits.userIsInGroup( "confirmed" );
