@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -17,17 +20,17 @@ Twinkle.tag = function friendlytag() {
 	// redirect tagging
 	if( Morebits.wiki.isPageRedirect() ) {
 		Twinkle.tag.mode = 'redirect';
-		twAddPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "पुनर्निर्देश टैग" );
+		Twinkle.addPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "पुनर्निर्देश टैग" );
 	}
 	// file tagging
 	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
 		Twinkle.tag.mode = 'file';
-		twAddPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "फ़ाइल रखरखाव टैग" );
+		Twinkle.addPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "फ़ाइल रखरखाव टैग" );
 	}
 	// article tagging
 	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
-		twAddPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "लेख रखरखाव टैग" );
+		Twinkle.addPortletLink( Twinkle.tag.callback, "टैग", "friendly-tag", "लेख रखरखाव टैग" );
 	}
 };
 
@@ -1199,3 +1202,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

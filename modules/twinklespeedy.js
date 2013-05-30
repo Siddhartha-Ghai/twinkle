@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -23,7 +26,7 @@ Twinkle.speedy = function twinklespeedy() {
 		return;
 	}
 
-	twAddPortletLink( Twinkle.speedy.callback, "शीह", "tw-csd", Morebits.userIsInGroup('sysop') ? "शीघ्र हटाने के मापदंडों अनुसार पृष्ठ को हटाएँ" : "शीघ्र हटाने का नामांकन करें" );
+	Twinkle.addPortletLink( Twinkle.speedy.callback, "शीह", "tw-csd", Morebits.userIsInGroup('sysop') ? "शीघ्र हटाने के मापदंडों अनुसार पृष्ठ को हटाएँ" : "शीघ्र हटाने का नामांकन करें" );
 };
 
 // This function is run when the CSD tab/header link is clicked
@@ -1201,3 +1204,6 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.lookupCreator);
 };
 })(jQuery);
+
+
+//</nowiki>

@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -13,7 +16,7 @@
 Twinkle.talkback = function friendlytalkback() {
 	if( mw.config.get('wgNamespaceNumber') === 3 ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		$(twAddPortletLink("#", "सन्देश", "friendly-talkback", "सरल सन्देश", "")).click(function() { Twinkle.talkback.callback(username); });
+		Twinkle.addPortletLink( Twinkle.talkback.callback(username), "सन्देश", "friendly-talkback", "सरल सन्देश" );
 	}
 };
 
@@ -236,3 +239,6 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	talkpage.append();
 };
 })(jQuery);
+
+
+//</nowiki>

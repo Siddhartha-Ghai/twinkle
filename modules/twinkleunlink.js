@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -14,7 +17,7 @@ Twinkle.unlink = function twinkleunlink() {
 	if( mw.config.get('wgNamespaceNumber') < 0 ) {
 		return;
 	}
-	twAddPortletLink( Twinkle.unlink.callback, "कड़ीतोड़", "tw-unlink", "अन्य पृष्ठों से इस पृष्ठ की कड़ियाँ हटाएँ" );
+	Twinkle.addPortletLink( Twinkle.unlink.callback, "कड़ीतोड़", "tw-unlink", "अन्य पृष्ठों से इस पृष्ठ की कड़ियाँ हटाएँ" );
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
@@ -277,3 +280,6 @@ Twinkle.unlink.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

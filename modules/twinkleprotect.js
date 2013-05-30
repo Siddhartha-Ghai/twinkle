@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -17,7 +20,7 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	twAddPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "सुरक्षा" : "सुरक्षा", "tw-rpp",
+	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "सुरक्षा" : "सुरक्षा", "tw-rpp",
 		Morebits.userIsInGroup('sysop') ? "पृष्ठ सुरक्षित करें" : "पृष्ठ को सुरक्षित करने का अनुरोध करें" );
 };
 
@@ -1258,3 +1261,6 @@ Twinkle.protect.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>
