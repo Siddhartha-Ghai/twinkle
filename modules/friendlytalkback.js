@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** friendlytalkback.js: Talkback module
@@ -232,3 +235,4 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	talkpage.setFollowRedirect(true);
 	talkpage.append();
 };
+})(jQuery);

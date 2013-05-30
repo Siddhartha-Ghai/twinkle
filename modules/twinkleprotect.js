@@ -1,4 +1,7 @@
-﻿/*
+(function($){
+
+
+/*
  ****************************************
  *** twinkleprotect.js: Protect/RPP module
  ****************************************
@@ -1254,3 +1257,4 @@ Twinkle.protect.callbacks = {
 		rppPage.save();
 	}
 };
+})(jQuery);

@@ -1,4 +1,7 @@
-﻿/*
+(function($){
+
+
+/*
  ****************************************
  *** twinkleconfig.js: Preferences module
  ****************************************
@@ -1634,3 +1637,4 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticeclear.style.clear = "both";
 	Morebits.status.root.appendChild(noticeclear);
 };
+})(jQuery);

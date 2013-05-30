@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinklewarn.js: Warn module
@@ -1744,3 +1747,4 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );
 };
+})(jQuery);

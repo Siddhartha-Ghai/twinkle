@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** friendlytag.js: Tag module
@@ -1195,3 +1198,4 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 	}
 };
+})(jQuery);
