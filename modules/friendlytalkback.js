@@ -19,10 +19,10 @@ Twinkle.talkback = function() {
 		return;
 	}
 
-	twAddPortletLink( callback, "सन्देश", "friendly-talkback", "सरल सन्देश" );
+	Twinkle.addPortletLink( Twinkle.talkback.callback, "सन्देश", "friendly-talkback", "सरल सन्देश" );
 };
-	
-var callback = function( ) {
+
+Twinkle.talkback.callback = function( ) {
 	if( Morebits.getPageAssociatedUser() === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
 		return;
 	}
@@ -225,7 +225,7 @@ var callback_evaluate = function( e ) {
 
 	var text;
 	if ( tbtarget === "notice" && page === "an") {
-			text = "\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
+			text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
 			text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=विकिपीडिया:प्रबंधक सूचनापट}} ~~~~";
 			talkpage.setEditSummary( "प्रबंधक सूचनापट पर चर्चा का नोटिस" + Twinkle.getPref("summaryAd") );
 			break;
@@ -256,6 +256,7 @@ var callback_evaluate = function( e ) {
 	talkpage.setFollowRedirect( true );
 	talkpage.append();
 };
+
 })(jQuery);
 
 
