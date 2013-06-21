@@ -272,6 +272,11 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
+			if (!pageobj.exists()) {
+				statelem.error("लगता है पृष्ठ मौजूद नहीं है; शायद हटाया जा चुका है");
+				return;
+			}
+
 			// Check for existing AfD tag, for the benefit of new page patrollers
 			var textNoAfd = text.replace(/\{\{\s*हहेच लेख\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
 			if (text !== textNoAfd) {
