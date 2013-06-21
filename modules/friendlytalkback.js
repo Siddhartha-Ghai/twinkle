@@ -74,6 +74,47 @@ Twinkle.talkback.callback = function( ) {
 	var evt = document.createEvent("Event");
 	evt.initEvent( "change", true, true );
 	result.tbtarget[0].dispatchEvent( evt );
+
+	// Check whether the user has opted out from talkback
+	// TODO: wgCategories is only set on action=view (bug 45033)
+	var wgcat = mw.config.get("wgCategories");
+	if (wgcat.length && wgcat.indexOf("Users who do not wish to receive talkbacks") === -1) {
+		Twinkle.talkback.optout = false;
+	} else {
+		var query = {
+			action: 'query',
+			prop: 'extlinks',
+			titles: mw.config.get('wgPageName'),
+			elquery: 'userjs.invalid/noTalkback',
+			ellimit: '1'
+		};
+		var wpapi = new Morebits.wiki.api("Fetching talkback opt-out status", query, Twinkle.talkback.callback.optoutStatus);
+		wpapi.post();
+	}
+};
+
+Twinkle.talkback.optout = null;
+
+Twinkle.talkback.callback.optoutStatus = function(apiobj) {
+	var xml = apiobj.getXML();
+	var $el = $(xml).find('el');
+
+	if ($el.length) {
+		Twinkle.talkback.optout = mw.config.get("wgUserName") + " prefers not to receive talkbacks";
+		var url = $el.text();
+		if (url.indexOf("reason=") > -1) {
+			Twinkle.talkback.optout += ": " + decodeURIComponent(url.substring(url.indexOf("reason=") + 7)) + ".";
+		} else {
+			Twinkle.talkback.optout += ".";
+		}
+	} else {
+		Twinkle.talkback.optout = false;
+	}
+
+	var $status = $("#twinkle-talkback-optout-message");
+	if ($status.length) {
+		$status.append(Twinkle.talkback.optout);
+	}
 };
 
 var prev_page = "";
@@ -106,6 +147,12 @@ var callback_change_target = function( e ) {
 			/* falls through */
 		default:
 			work_area.append({
+				type: "div",
+				label: "",
+				style: "color: red",
+				id: "twinkle-talkback-optout-message"
+			});
+			work_area.append({
 					type:"input",
 					name:"section",
 					label:"सम्बंधित अनुभाग (वैकल्पिक)",
@@ -114,6 +161,12 @@ var callback_change_target = function( e ) {
 				});
 			break;
 		case "usertalk":
+			work_area.append({
+				type: "div",
+				label: "",
+				style: "color: red",
+				id: "twinkle-talkback-optout-message"
+			});
 			work_area.append({
 					type:"input",
 					name:"page",
@@ -156,6 +209,12 @@ var callback_change_target = function( e ) {
 			break;
 		case "other":
 			work_area.append({
+				type: "div",
+				label: "",
+				style: "color: red",
+				id: "twinkle-talkback-optout-message"
+			});
+			work_area.append({
 					type:"input",
 					name:"page",
 					label:"पन्ने का पूरा नाम",
@@ -181,6 +240,10 @@ var callback_change_target = function( e ) {
 	root.replaceChild( work_area, old_area );
 	if (root.message) {
 		root.message.value = prev_message;
+	}
+
+	if (Twinkle.talkback.optout) {
+		$("#twinkle-talkback-optout-message").append(Twinkle.talkback.optout);
 	}
 };
 
