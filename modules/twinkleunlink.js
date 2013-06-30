@@ -107,6 +107,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 			var myparams = $.extend({}, params);
 			var articlepage = new Morebits.wiki.page(pages[i], '"' + pages[i] + '"' + ' पृष्ठ से कड़ियाँ हटाई जा रही हैं');
 			articlepage.setCallbackParameters(myparams);
+			articlepage.setBotEdit(true);  // unlink considered a floody operation
 			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
 		}
 	}
