@@ -715,7 +715,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	var type =  e.target.category.value;
 	var usertalk = e.target.notify.checked;
-	var reason = e.target.xfdreason.value;
+	var reason = Morebits.string.formatReasonText(e.target.xfdreason.value);
 	var xfdtarget, noinclude, xfdcat;
 	if( type === "श्रेणियाँ" ) {
 		xfdtarget = e.target.xfdtarget.value;
