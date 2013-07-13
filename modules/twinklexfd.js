@@ -332,7 +332,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच लेख नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
-			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] लेख को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] लेख को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -354,7 +354,7 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
 			var notifytext = "\n{{subst:हहेच लेख सूचना|पृष्ठ=" + mw.config.get('wgTitle') + "|कारण=" + params.reason + "}}~~~~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -526,7 +526,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच साँचा नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
-			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] साँचे को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] साँचे को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -596,7 +596,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच फ़ाइल नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
-			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] फ़ाइल को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] फ़ाइल को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -619,7 +619,7 @@ Twinkle.xfd.callbacks = {
 			var notifytext = "\n{{subst:हहेच फ़ाइल सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -644,7 +644,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>{{हहेच अन्य" : "{{हहेच अन्य") + '|कारण=' + params.reason + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
-			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[वि:पृष्ठ हटाने हेतु चर्चा/अन्य/" + mw.config.get('wgPageName') + "|नामांकन पृष्ठ]]।" + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[वि:पृष्ठ हटाने हेतु चर्चा/अन्य/" + Morebits.pageNameNorm + "|नामांकन पृष्ठ]]।" + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -663,8 +663,8 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + "\n\n{{subst:हहेच अन्य नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgPageName') + "}}\n");
-			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] पृष्ठ को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
+			pageobj.setPageText(text + "\n\n{{subst:हहेच अन्य नामांकन|कारण=" + params.reason + "|पृष्ठ=" + Morebits.pageNameNorm + "}}\n");
+			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] पृष्ठ को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -684,10 +684,10 @@ Twinkle.xfd.callbacks = {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
-			var notifytext = "\n{{subst:हहेच अन्य सूचना|पृष्ठ=" + mw.config.get('wgPageName') + '|कारण=' + params.reason + "}}~~~~";
+			var notifytext = "\n{{subst:हहेच अन्य सूचना|पृष्ठ=" + Morebits.pageNameNorm + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -711,9 +711,7 @@ Twinkle.xfd.callbacks = {
 
 
 Twinkle.xfd.callback.evaluate = function(e) {
-	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
-
-	var type =  e.target.category.value;
+	var type = e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = Morebits.string.formatReasonText(e.target.xfdreason.value);
 	var xfdtarget, noinclude, xfdcat;

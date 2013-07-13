@@ -572,7 +572,7 @@ Twinkle.speedy.callbacks = {
 			if (params.deleteTalkPage &&
 			    document.getElementById( 'ca-talk' ).className !== 'new') {
 				var talkpage = new Morebits.wiki.page( Morebits.wikipedia.namespaces[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), "वार्ता पृष्ठ हटाया जा रहा है" );
-				talkpage.setEditSummary('हटाए गए पृष्ठ [[' + mw.config.get('wgPageName') + "]] का वार्ता पृष्ठ। " + Twinkle.getPref('deletionSummaryAd'));
+				talkpage.setEditSummary('हटाए गए पृष्ठ [[' + Morebits.pageNameNorm + "]] का वार्ता पृष्ठ। " + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
@@ -607,7 +607,7 @@ Twinkle.speedy.callbacks = {
 					'click': function(){
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
-						Twinkle.unlink.callback("Removing usages of and/or links to deleted file " + mw.config.get('wgPageName'));
+						Twinkle.unlink.callback("Removing usages of and/or links to deleted file " + Morebits.pageNameNorm);
 					}
 				});
 				$bigtext = $('<span/>', {
@@ -623,7 +623,7 @@ Twinkle.speedy.callbacks = {
 					'click': function(){
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
-						Twinkle.unlink.callback("Removing links to deleted page " + mw.config.get('wgPageName'));
+						Twinkle.unlink.callback("Removing links to deleted page " + Morebits.pageNameNorm);
 					}
 				});
 				$bigtext = $('<span/>', {
@@ -642,7 +642,7 @@ Twinkle.speedy.callbacks = {
 				'title': 'User talk:' + user,
 				'action': 'edit',
 				'preview': 'yes',
-				'vanarticle': mw.config.get('wgPageName').replace(/_/g, ' ')
+				'vanarticle': Morebits.pageNameNorm
 			};
 
 			if (params.normalized.indexOf([ 'शीह', 'व6', 'व6ल', 'व6फ़', 'व6स', 'ल4', 'फ़2', 'फ़5', 'सा1']) !== -1) {
@@ -711,7 +711,7 @@ Twinkle.speedy.callbacks = {
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
 				var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
-				page.setEditSummary('हटाए गए पृष्ठ [[' + mw.config.get('wgPageName') + "]] को पुनर्निर्देश। " + Twinkle.getPref('deletionSummaryAd'));
+				page.setEditSummary('हटाए गए पृष्ठ [[' + Morebits.pageNameNorm + "]] को पुनर्निर्देश। " + Twinkle.getPref('deletionSummaryAd'));
 				page.deletePage(onsuccess);
 			});
 		}
@@ -877,13 +877,13 @@ Twinkle.speedy.callbacks = {
 					switch (params.values[0])
 					{
 						case 'कारण':
-							notifytext += "कारण|" + mw.config.get('wgPageName');
+							notifytext += "कारण|" + Morebits.pageNameNorm;
 							break;
 						case 'talk':
-							notifytext += "कारण|" + mw.config.get('wgPageName') + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
+							notifytext += "कारण|" + Morebits.pageNameNorm + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 							break;
 						default:
-							notifytext += params.normalizeds[0] + "|" + mw.config.get('wgPageName');
+							notifytext += params.normalizeds[0] + "|" + Morebits.pageNameNorm;
 							for (var i in params.input) {
 								if (typeof params.input[i] === 'string' && i!=='name' && params.normalizeds[0]!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
 									notifytext += '|' + params.input[i];
@@ -926,7 +926,7 @@ Twinkle.speedy.callbacks = {
 				notifytext +="}}~~~~";
 
 				usertalkpage.setAppendText(notifytext);
-				usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को शीघ्र हटाने का नामांकन।" + Twinkle.getPref('summaryAd'));
+				usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को शीघ्र हटाने का नामांकन।" + Twinkle.getPref('summaryAd'));
 				usertalkpage.setCreateOption('recreate');
 				usertalkpage.setFollowRedirect(true);
 
@@ -972,7 +972,7 @@ Twinkle.speedy.callbacks = {
 				text += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
-			text += "\n# [[:" + mw.config.get('wgPageName') + "]]: ";
+			text += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
 			if (params.normalizeds.length > 1) {
 				text += "अनेक मापदंड (";
 				$.each(params.normalizeds, function(index, norm) {
@@ -993,7 +993,7 @@ Twinkle.speedy.callbacks = {
 			text += " ~~~~~\n";
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] के शीघ्र हटाने के नामांकन का लॉग।" + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] के शीघ्र हटाने के नामांकन का लॉग।" + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
 			pageobj.save();
 		}
@@ -1094,7 +1094,6 @@ Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 
 Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e)
 {
-	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' ')); // for queen/king/whatever and country!
 	var form = (e.target.form ? e.target.form : e.target);
 
 	var tag_only = form.tag_only;
@@ -1125,7 +1124,6 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 };
 
 Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
-	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 	var form = (e.target.form ? e.target.form : e.target);
 
 	if (e.target.type === "checkbox") {

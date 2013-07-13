@@ -1606,7 +1606,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		"// twinkleoptions.js: व्यक्तिगत ट्विंकल वरीयता फ़ाइल\n" +
 		"//\n" +
 		"// नोट: ट्विंकल वरीयताएँ परिवर्तित करने का सबसे आसान तरीका है \n//[[" +
-		mw.config.get("wgPageName") + "|Twinkle preferences panel]] का प्रयोग करना।\n" +
+		Morebits.pageNameNorm + "|Twinkle preferences panel]] का प्रयोग करना।\n" +
 		"// यह फ़ाइल स्वचालित रूप से बनाई गई है।\n" +
 		"// मान्य जावास्क्रिप्ट के अतिरिक्त\n" +
 		"// आप जो भी बदलाव यहाँ करेंगे,\n" +
@@ -1622,7 +1622,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		"// End of twinkleoptions.js\n";
 
 	pageobj.setPageText(text);
-	pageobj.setEditSummary("ट्विंकल वरीयताएँ संजोयी जा रही हैं। स्वचालित सम्पादन: [[" + mw.config.get("wgPageName") + "]] से। ([[WP:TW|TW]])");
+	pageobj.setEditSummary("ट्विंकल वरीयताएँ संजोयी जा रही हैं। स्वचालित सम्पादन: [[" + Morebits.pageNameNorm + "]] से। ([[WP:TW|TW]])");
 	pageobj.setCreateOption("recreate");
 	pageobj.save(Twinkle.config.saveSuccess);
 };

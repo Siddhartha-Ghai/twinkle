@@ -1022,7 +1022,7 @@ Twinkle.tag.callbacks = {
 				}
 				var newParams = { 
 					tags: [otherTagName],
-					mergeTarget: mw.config.get("wgPageName"),
+					mergeTarget: Morebits.pageNameNorm,
 					discussArticle: params.discussArticle,
 					talkDiscussionTitle: params.talkDiscussionTitle
 				};
@@ -1118,8 +1118,6 @@ Twinkle.tag.callbacks = {
 };
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
-	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
-
 	var form = e.target;
 	var params = {};
 
@@ -1179,13 +1177,13 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.redirect = Morebits.pageNameNorm;
 	Morebits.wiki.actionCompleted.notice = "टैगिंग संपूर्ण, पन्ना कुछ ही क्षणों में रीलोड होगा";
 	if (Twinkle.tag.mode === 'redirect') {
 		Morebits.wiki.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging " + Twinkle.tag.mode);
+	var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, "Tagging " + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
 	switch (Twinkle.tag.mode) {
 		case 'article':
