@@ -954,14 +954,16 @@ Twinkle.speedy.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
+			var appendText = "";
+
 			// add blurb if log page doesn't exist
 			if (!pageobj.exists()) {
-				text =
+				appendText +=
 					"ये इस सदस्य द्वारा ट्विंकल के प्रयोग से किये गए सभी [[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] के नामांकनों का लॉग है।\n\n" +
 					"यदि आप यह लॉग अब नहीं रखना चाहते, तो आप [[वि:Twinkle/Preferences|preferences panel]] का प्रयोग कर के इसमें अद्यतन बंद कर सकते हैं, और " +
 					"[[वि:हटाना#स1|स1]] के अंतर्गत इसे शीघ्र हटाने के लिये नामांकित कर सकते हैं।\n";
 				if (Morebits.userIsInGroup("sysop") ) {
-					text += "\nयह लॉग ट्विंकल के प्रयोग से सीधे हटाए गए पृष्ठों को नहीं दिखाता।\n";
+					appendText += "\nयह लॉग ट्विंकल के प्रयोग से सीधे हटाए गए पृष्ठों को नहीं दिखाता।\n";
 				}
 			}
 
@@ -969,33 +971,33 @@ Twinkle.speedy.callbacks = {
 			var date = new Date();
 			var headerRe = new RegExp("^==+\\s*" + date.getUTCMonthName() + "\\s+" + date.getUTCFullYear() + "\\s*==+", "m");
 			if (!headerRe.exec(text)) {
-				text += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
+				appendText += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
-			text += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
+			appendText += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
 			if (params.normalizeds.length > 1) {
-				text += "अनेक मापदंड (";
+				appendText += "अनेक मापदंड (";
 				$.each(params.normalizeds, function(index, norm) {
-					text += '[[वि:हटाना#' + norm + '|' + norm + ']], ';
+					appendText += '[[वि:हटाना#' + norm + '|' + norm + ']], ';
 				});
-				text = text.substr(0, text.length - 2);  // remove trailing comma
-				text += ')';
+				appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
+				appendText += ')';
 			}
 			else if (params.normalizeds[0] === 'शीह') {
-				text += "{{tl|शीह-कारण}}";
+				appendText += "{{tl|शीह-कारण}}";
 			} else {
-				text += "[[वि:हटाना#" + params.normalizeds[0] + "|शीह " + params.normalizeds[0] + "]] ({{tl|शीह-" + params.values[0] + "}})";
+				appendText += "[[वि:हटाना#" + params.normalizeds[0] + "|शीह " + params.normalizeds[0] + "]] ({{tl|शीह-" + params.values[0] + "}})";
 			}
 
 			if (params.logInitialContrib) {
-				text += "; {{सदस्य|1=" + params.logInitialContrib + "}} को सूचित किया";
+				appendText += "; {{सदस्य|1=" + params.logInitialContrib + "}} को सूचित किया";
 			}
-			text += " ~~~~~\n";
+			appendText += " ~~~~~\n";
 
-			pageobj.setPageText(text);
+			pageobj.setAppendText(appendText);
 			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] के शीघ्र हटाने के नामांकन का लॉग।" + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
-			pageobj.save();
+			pageobj.append();
 		}
 	}
 };
