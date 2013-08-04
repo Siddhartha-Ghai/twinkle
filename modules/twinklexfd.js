@@ -129,6 +129,17 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 	var oldreasontextbox = form.getElementsByTagName('textarea')[0];
 	var oldreason = (oldreasontextbox ? oldreasontextbox.value : '');
+	
+	var appendReasonBox = function twinklexfdAppendReasonBox() {
+		work_area.append( {
+			type: 'textarea',
+			name: 'xfdreason',
+			label: 'कारण: ',
+			value: oldreason,
+			tooltip: 'आप कारण में विकिपाठ का प्रयोग कर सकते हैं। ट्विंकल स्वचालित रूप से आपके हस्ताक्षर उपयुक्त स्थानों पर जोड़ देगा।'
+		} );
+		// TODO possible future "preview" link here
+	};
 
 	switch( value ) {
 	case 'लेख':
@@ -137,12 +148,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'लेख हटाने हेतु चर्चा',
 				name: 'work_area'
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'कारण: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -184,12 +190,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				disabled: true,
 				value: ''
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'कारण: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -199,12 +200,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'साँचे हटाने हेतु चर्चा',
 				name: 'work_area'
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'कारण: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -214,12 +210,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'फ़ाइलें हटाने हेतु चर्चा',
 				name: 'work_area'
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'कारण: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -240,12 +231,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						}
 					]
 		} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'कारण: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
