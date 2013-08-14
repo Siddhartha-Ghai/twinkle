@@ -604,7 +604,7 @@ Twinkle.protect.protectionPresetsInfo = {
 		move: 'sysop',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
 	},
-	'pp-semi-template': {
+	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
 		move: 'sysop',
 		reason: '[[WP:High-risk templates|Highly visible template]]',
@@ -622,17 +622,17 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-pc-vandalism': {
 		stabilize: 'autoconfirmed',
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
-		template: null
+		template: 'pp-pc1'
 	},
 	'pp-pc-blp': {
 		stabilize: 'autoconfirmed',
 		reason: 'Violations of the [[WP:Biographies of living persons|biographies of living persons policy]]',
-		template: null
+		template: 'pp-pc1'
 	},
 	'pp-pc-protected': {
 		stabilize: 'autoconfirmed',
 		reason: null,
-		template: null
+		template: 'pp-pc1'
 	},
 	'pp-move': {
 		move: 'sysop',
@@ -706,6 +706,12 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-semi-sock}}: sockpuppetry', value: 'pp-semi-sock' },
 			{ label: '{{pp-semi-blp}}: BLP violations', value: 'pp-semi-blp' },
 			{ label: '{{pp-semi-indef}}: general long-term', value: 'pp-semi-indef' }
+		]
+	},
+	{
+		label: 'Pending changes templates',
+		list: [
+			{ label: '{{pp-pc1}}: pending changes level 1', value: 'pp-pc1' }
 		]
 	},
 	{
@@ -883,7 +889,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'pp-semi-vandalism':
 				case 'pp-semi-usertalk':
-				case 'pp-semi-template':
+				case 'pp-semi-template':  // removed for now
 				case 'pp-semi-sock':
 				case 'pp-semi-blp':
 				case 'pp-semi-protected':
@@ -922,7 +928,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent vandalism';
 					break;
 				case 'pp-template':
-				case 'pp-semi-template':
+				case 'pp-semi-template':  // removed for now
 					typereason = 'Highly visible template';
 					break;
 				case 'pp-usertalk':
