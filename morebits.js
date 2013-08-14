@@ -1,4 +1,4 @@
-﻿// <nowiki>
+// <nowiki>
 /**
  * morebits.js
  * ===========

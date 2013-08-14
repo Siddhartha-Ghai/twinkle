@@ -1,4 +1,4 @@
-﻿/**
+/**
  * +-------------------------------------------------------------------------+
  * |                  === WARNING: GLOBAL GADGET FILE ===                    |
  * |                Changes to this page affect many users.                  |

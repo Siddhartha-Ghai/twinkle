@@ -1,4 +1,4 @@
-﻿/*
+/*
  ****************************************
  *** twinklespeedy.js: CSD module
  ****************************************
@@ -61,7 +61,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 						label: 'केवल टैग करें',
 						value: 'tag_only',
 						name: 'tag_only',
-						tooltip: 'यदि आप पृष्ठ को हटाने के बजाए सिर्फ़ टैग करना चाहते हैं',
+						tooltip: 'यदि आप पृष्ठ को हटाने के बजाए सिर्फ़ टैग करना चाहते हैं',
 						checked : Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
 							// enable/disable notify checkbox
@@ -188,7 +188,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 
 		case 6:  // file
 		case 7:  // file talk
-			form.append( { type: 'header', label: 'फ़ाइलें' } );
+			form.append( { type: 'header', label: 'फ़ाइलें' } );
 			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getFileList(!firstTime) } );
 			break;
 
@@ -224,7 +224,7 @@ Twinkle.speedy.talkList = [
 	{
 		label: 'हटाए गए पृष्ठों के वार्ता पृष्ठ',
 		value: 'talk',
-		tooltip: 'इसमें ऐसे कोई भी वार्ता पृष्ठ नहीं आते जिनसे विकिपीडिया को कोई फ़ायदा हो - खासकर सदस्य वार्ता पृष्ठ और वार्ता पुरालेख।'
+		tooltip: 'इसमें ऐसे कोई भी वार्ता पृष्ठ नहीं आते जिनसे विकिपीडिया को कोई फ़ायदा हो - खासकर सदस्य वार्ता पृष्ठ और वार्ता पुरालेख।'
 	}
 ];
 
@@ -240,7 +240,7 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	result.push({
 		label: 'फ़2. चित्र का विकिमीडिया कॉमन्स पर स्रोत और लाइसेंस जानकारी सहित उपलब्ध होना',
 		value: 'कॉमन्स',
-		tooltip: 'ऐसी फ़ाइलों को हटाने से पहले जाँच लें  कि कॉमन्स पर स्रोत और लाइसेंस जानकारी सही हो, और यदि कॉमन्स पर फ़ाइल का नाम विकिपीडिया पर फ़ाइल के नाम से भिन्न है तो विकिपीडिया की फ़ाइल की जगह सभी जगह कॉमन्स की फ़ाइल का प्रयोग करें।'
+		tooltip: 'ऐसी फ़ाइलों को हटाने से पहले जाँच लें  कि कॉमन्स पर स्रोत और लाइसेंस जानकारी सही हो, और यदि कॉमन्स पर फ़ाइल का नाम विकिपीडिया पर फ़ाइल के नाम से भिन्न है तो विकिपीडिया की फ़ाइल की जगह सभी जगह कॉमन्स की फ़ाइल का प्रयोग करें।'
 	});
 	}
 		result.push({
@@ -267,7 +267,7 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	result.push({
 		label: 'व6फ़. साफ़ कॉपीराइट उल्लंघन - फ़ाइलें',
 		value: 'कॉपीराइट फ़ाइल',
-		tooltip: 'वे सभी फ़ाइलें जो अंतरजाल पर किसी ऐसी वेबसाइट से लिये गए हैं जो साफ़-साफ़ फ़ाइल को मुक्त लाइसेंस के अंतर्गत नहीं देती है। इसमें वे फ़ाइलें भी आती हैं जिनका कॉपीराइट स्वयं अपलोडर के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है।'
+		tooltip: 'वे सभी फ़ाइलें जो अंतरजाल पर किसी ऐसी वेबसाइट से लिये गए हैं जो साफ़-साफ़ फ़ाइल को मुक्त लाइसेंस के अंतर्गत नहीं देती है। इसमें वे फ़ाइलें भी आती हैं जिनका कॉपीराइट स्वयं अपलोडर के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है।'
 	});
 	}
 	return result;
@@ -368,7 +368,7 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		result.push({
 			label: 'व6. साफ़ कॉपीराइट उल्लंघन',
 			value: 'कॉपीराइट',
-			tooltip: 'इस मापदंड में वे सभी पृष्ठ आते हैं जो साफ़ तौर पर कॉपीराइट उल्लंघन हैं और जिनके इतिहास में उल्लंघन से मुक्त कोई भी अवतरण नहीं है। इसमें वे पृष्ठ भी आते हैं जिनपर डाली गई सामग्री का कॉपीराइट स्वयं उसी सदस्य के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है। इस मापदंड का प्रयोग तभी किया जाना चाहिये यदि पृष्ठ व6ल, व6फ़, अथवा व6स के अंतर्गत न आता हो।'
+			tooltip: 'इस मापदंड में वे सभी पृष्ठ आते हैं जो साफ़ तौर पर कॉपीराइट उल्लंघन हैं और जिनके इतिहास में उल्लंघन से मुक्त कोई भी अवतरण नहीं है। इसमें वे पृष्ठ भी आते हैं जिनपर डाली गई सामग्री का कॉपीराइट स्वयं उसी सदस्य के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है। इस मापदंड का प्रयोग तभी किया जाना चाहिये यदि पृष्ठ व6ल, व6फ़, अथवा व6स के अंतर्गत न आता हो।'
 		});
 	}
 	return result;
@@ -655,8 +655,8 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var xfd = /(?:\{\{(हहेच (लेख|साँचा|श्रेणी|फ़ाइल|अन्य))[^{}]*?\}\})/i.exec( text );
-			if( xfd && !confirm( "पृष्ठ पर हहेच साँचा {{" + xfd[1] + "}} पाया गया है। क्या आप अब भी शीघ्र हटाने का नामांकन जोड़ना चाहते हैं?" ) ) {
+			var xfd = /(?:\{\{(हहेच (लेख|साँचा|श्रेणी|फ़ाइल|अन्य))[^{}]*?\}\})/i.exec( text );
+			if( xfd && !confirm( "पृष्ठ पर हहेच साँचा {{" + xfd[1] + "}} पाया गया है। क्या आप अब भी शीघ्र हटाने का नामांकन जोड़ना चाहते हैं?" ) ) {
 				statelem.error("नामांकन रद्द कर दिया गया है।");
 				return;
 			}
@@ -753,12 +753,12 @@ Twinkle.speedy.callbacks = {
 		notifyuser: function (params) {
 			// don't notify users when their user talk page is nominated
 			if (Twinkle.speedy.initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-				Status.warn("सूचना साँचा नहीं जोड़ा जाएगा।"); 
+				Status.warn("सूचना साँचा नहीं जोड़ा जाएगा।"); 
 				return;
 			}
 			
 			if (Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
-				alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
+				alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
 				return;
 			}
 			
@@ -780,7 +780,7 @@ Twinkle.speedy.callbacks = {
 			}
 			if (params.normalized!== 'अनेक') {
 				for (var i in params.input) {
-					if (typeof params.input[i] === 'string' && i!=='name' && params.normalized!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
+					if (typeof params.input[i] === 'string' && i!=='name' && params.normalized!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
 						notifytext += '|' + params.input[i];
 					}
 				}
@@ -897,7 +897,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'व6':
 		case 'व6ल':
-		case 'व6फ़':
+		case 'व6फ़':
 		case 'व6स':
 			var url = prompt( 'कृपया स्रोत यू॰आर॰एल बताएँ, http समेत', "" );
 			
@@ -932,18 +932,18 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			parameters.name = "मूल लेख";
 			parameters.art = article;
 			break;
-		case 'फ़2':
-			var cfile = prompt( 'कृपया कॉमन्स पर फ़ाइल का नाम बताएँ', "");
+		case 'फ़2':
+			var cfile = prompt( 'कृपया कॉमन्स पर फ़ाइल का नाम बताएँ', "");
 			
 			if (cfile === "")
 			{
-				statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+				statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
 				Twinkle.speedy.cont = false;
 			}
-			parameters.name = "कॉमन्स पर फ़ाइल";
+			parameters.name = "कॉमन्स पर फ़ाइल";
 			parameters.cfile = cfile;
 			break;
-		case 'फ़5':
+		case 'फ़5':
 			var alternative = prompt( 'कृपया मुक्त विकल्प का नाम बताएँ।', "");
 			
 			if (alternative === "")

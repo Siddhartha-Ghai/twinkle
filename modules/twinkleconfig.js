@@ -18,24 +18,24 @@
 Twinkle.config = {};
 
 Twinkle.config.commonEnums = {
-	watchlist: { yes: "ध्यानसूची में जोड़ें", no: "ध्यानसूची में नहीं जोड़ें", "default": "आपकी वरीयताओं अनुसार चलें" },
+	watchlist: { yes: "ध्यानसूची में जोड़ें", no: "ध्यानसूची में नहीं जोड़ें", "default": "आपकी वरीयताओं अनुसार चलें" },
 	talkPageMode: { window: "एक नई विंडो में, पहले से खुले वार्ता पृष्ठ की जगह", tab: "एक नए टैब में", blank: "एक बिलकुल नई विंडो में" }
 };
 
 Twinkle.config.commonSets = {
 	csdCriteria: {
-		शीह: "विशिष्ट कारण ({{शीह}})",
-		व1: "व1", व2: "व2", व3: "व3", व4: "व4", व5: "व5", व6: "व6", व6ल: "व6ल", व6फ़: "व6फ़", व6स: "व6स",
-		ल1: "ल1", ल2: "ल2", ल4: "ल4",
-		फ़1: "फ़1", फ़2: "फ़2", फ़3: "फ़3", फ़4: "फ़4", फ़5: "फ़5", फ़6: "फ़6",
-		सा1: "सा1",
-		स1: "स1", स2: "स2"  // db-multiple is not listed here because it is treated differently within twinklespeedy
+		"शीह": "विशिष्ट कारण ({{शीह}})",
+		"व1": "व1", "व2": "व2", "व3": "व3", "व4": "व4", "व5": "व5", "व6": "व6", "व6ल": "व6ल", "व6फ़": "व6फ़", "व6स": "व6स",
+		"ल1": "ल1", "ल2": "ल2", "ल4": "ल4",
+		"फ़1": "फ़1", "फ़2": "फ़2", "फ़3": "फ़3", "फ़4": "फ़4", "फ़5": "फ़5", "फ़6": "फ़6",
+		"सा1": "सा1",
+		"स1": "स1", "स2": "स2"  // db-multiple is not listed here because it is treated differently within twinklespeedy
 	},
 	csdCriteriaDisplayOrder: [
 		"शीह",
 		"व1", "व2", "व3", "व4", "व5", "व6",
 		"ल1", "ल2", "ल4", "व6ल",
-		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
+		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
 		"सा1",
 		"स1", "स2", "व6स"
 	],
@@ -43,7 +43,7 @@ Twinkle.config.commonSets = {
 		"शीह",
 		"व1", "व2", "व3", "व4", "व5", "व6",
 		"ल1", "ल2", "ल4", "व6ल",
-		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
+		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
 		"सा1",
 		"स1", "स2", "व6स"
 	],
@@ -106,7 +106,7 @@ Twinkle.config.sections = [
 		// Text to be appended to the edit summary of edits made using Twinkle
 		{
 			name: "summaryAd",
-			label: "ट्विंकल के सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
+			label: "ट्विंकल के सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
 			helptip: "यह स्पेस से शुरू होना चाहिए, और छोटा होना चाहिए।",
 			type: "string"
 		},
@@ -115,7 +115,7 @@ Twinkle.config.sections = [
 		// Text to be appended to the edit summary of deletions made using Twinkle
 		{
 			name: "deletionSummaryAd",
-			label: "पृष्ठ हटाते समय सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
+			label: "पृष्ठ हटाते समय सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
 			helptip: "यह आम-तौर पर सामान्य ऐड ही रखी जाती है।",
 			adminOnly: true,
 			type: "string"
@@ -125,7 +125,7 @@ Twinkle.config.sections = [
 		// Text to be appended to the edit summary of page protections made using Twinkle
 		{
 			name: "protectionSummaryAd",
-			label: "पृष्ठ सुरक्षित करते समय सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
+			label: "पृष्ठ सुरक्षित करते समय सम्पादन सारांश में जोड़ने हेतु \"ऐड\"",
 			helptip: "यह आम-तौर पर सामान्य ऐड ही रखी जाती है।",
 			adminOnly: true,
 			type: "string"
@@ -299,7 +299,7 @@ Twinkle.config.sections = [
 		// If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
 		{
 			name: "deleteTalkPageOnDelete",
-			label: "\"वार्ता पृष्ठ भी हटाएँ\" चेकबॉक्स को डिफ़ॉल्ट रूप से चेक करें",
+			label: "\"वार्ता पृष्ठ भी हटाएँ\" चेकबॉक्स को डिफ़ॉल्ट रूप से चेक करें",
 			adminOnly: true,
 			type: "boolean"
 		},
@@ -308,7 +308,7 @@ Twinkle.config.sections = [
 		// Make the CSD screen default to "tag" instead of "delete" (admin only)
 		{
 			name: "deleteSysopDefaultToTag",
-			label: "नामांकन को हटाने के बजाए डिफ़ॉल्ट रखें",
+			label: "नामांकन को हटाने के बजाए डिफ़ॉल्ट रखें",
 			adminOnly: true,
 			type: "boolean"
 		},
@@ -339,12 +339,12 @@ Twinkle.config.sections = [
 		{
 			name: "speedyLogPageName",
 			label: "सदस्य नामस्थान का लॉग इस पृष्ठ पर रखें",
-			helptip: "यहाँ अपने सदस्य उप-पृष्ठ का नाम दें। इसमें अपना सदस्य नाम एवं नामस्थान ना जोड़ें। यह तभी काम करता है यदि आप सदस्य नामस्थान लॉग सक्षम करें।",
+			helptip: "यहाँ अपने सदस्य उप-पृष्ठ का नाम दें। इसमें अपना सदस्य नाम एवं नामस्थान ना जोड़ें। यह तभी काम करता है यदि आप सदस्य नामस्थान लॉग सक्षम करें।",
 			type: "string"
 		},
 		{
 			name: "noLogOnSpeedyNomination",
-			label: "सदस्य नामस्थान लॉग में निम्न मापदंडों से किये गए नामांकनों की प्रविष्टि ना जोड़ें",
+			label: "सदस्य नामस्थान लॉग में निम्न मापदंडों से किये गए नामांकनों की प्रविष्टि ना जोड़ें",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -358,7 +358,7 @@ Twinkle.config.sections = [
 	preferences: [
 		{
 			name: "watchTaggedPages",
-			label: "पृष्ठों को रखरखाव के लिए टैग करते समय उन्हें ध्यानसूची में जोड़ें",
+			label: "पृष्ठों को रखरखाव के लिए टैग करते समय उन्हें ध्यानसूची में जोड़ें",
 			type: "boolean"
 		},
 		{
@@ -374,19 +374,19 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "groupByDefault",
-			label: "\"यदि संभव  हो तो {{अनेक समस्याएँ}} द्वारा वर्गीकृत करें\" चेकबॉक्स को डिफ़ॉल्ट रूप से चेक करें",
+			label: "\"यदि संभव  हो तो {{अनेक समस्याएँ}} द्वारा वर्गीकृत करें\" चेकबॉक्स को डिफ़ॉल्ट रूप से चेक करें",
 			type: "boolean"
 		},
 		{
 			name: "tagArticleSortOrder",
-			label: "लेख रखरखाव साँचों के लिए डिफ़ॉल्ट दृश्यता",
+			label: "लेख रखरखाव साँचों के लिए डिफ़ॉल्ट दृश्यता",
 			type: "enum",
 			enumValues: { "cat": "वर्ग अनुसार", "alpha": "वर्णमाला अनुसार" }
 		},
 		{
 			name: "customTagList",
 			label: "लेख रखरखाव के लिए दिखाने हेतु विशिष्ट टैग",
-			helptip: "ये टैग सूची के अंत में अतिरिक्त विकल्पों की तरह नज़र आते हैं। आप इसमें ऐसे रखरखाव साँचे जोड़ सकते हैं जो ट्विंकल में डिफ़ॉल्ट रूप से उपलब्ध नहीं हैं।",
+			helptip: "ये टैग सूची के अंत में अतिरिक्त विकल्पों की तरह नज़र आते हैं। आप इसमें ऐसे रखरखाव साँचे जोड़ सकते हैं जो ट्विंकल में डिफ़ॉल्ट रूप से उपलब्ध नहीं हैं।",
 			type: "customList",
 			customListValueTitle: "साँचे का नाम (बिना ब्रैकेट के)",
 			customListLabelTitle: "टैग विंडो में दिखाने हेतु पाठ"
@@ -405,8 +405,8 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "insertTalkbackSignature",
-			label: "सन्देशों में हस्ताक्षर जोड़ें",
-			helptip: "यदि यह सक्षम है तो केवल {{सन्देश}} साँचा जोड़ने पर भी उसके नीचे आपके हस्ताक्षर जोड़े जाएँगे।",
+			label: "सन्देशों में हस्ताक्षर जोड़ें",
+			helptip: "यदि यह सक्षम है तो केवल {{सन्देश}} साँचा जोड़ने पर भी उसके नीचे आपके हस्ताक्षर जोड़े जाएँगे।",
 			type: "boolean"
 		},
 		{
@@ -418,14 +418,14 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "कड़ीतोड़",
+	title: "कड़ीतोड़",
 	preferences: [
 		// TwinkleConfig.unlinkNamespaces (array)
 		// In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
 		{
 			name: "unlinkNamespaces",
-			label: "कड़ियाँ निम्न नामस्थानों से हटाएँ",
-			helptip: "किसी भी चर्चा/वार्ता नामस्थान को चुनते समय याद रखें कि इससे पुरालेखों में से भी कड़ियाँ हट जाएँगी (जो नहीं किया जाना चाहिए)।",
+			label: "कड़ियाँ निम्न नामस्थानों से हटाएँ",
+			helptip: "किसी भी चर्चा/वार्ता नामस्थान को चुनते समय याद रखें कि इससे पुरालेखों में से भी कड़ियाँ हट जाएँगी (जो नहीं किया जाना चाहिए)।",
 			type: "set",
 			setValues: Twinkle.config.commonSets.namespacesNoSpecial
 		}
@@ -480,42 +480,42 @@ Twinkle.config.sections = [
 	preferences: [
 		{
 			name: "topWelcomes",
-			label: "स्वागत साँचे सदस्य वार्ता पृष्ठ पर ऊपर-ऊपर जोड़ें",
+			label: "स्वागत साँचे सदस्य वार्ता पृष्ठ पर ऊपर-ऊपर जोड़ें",
 			type: "boolean"
 		},
 		{
 			name: "watchWelcomes",
-			label: "स्वागत करते समय सदस्य वार्ता पृष्ठ अपनी ध्यानसूची में जोड़ें",
-			helptip: "इससे आप उस नए सदस्य का ध्यान रख सकेंगे, और आवश्यकता पड़ने पर उनकी मदद कर सकेंगे।",
+			label: "स्वागत करते समय सदस्य वार्ता पृष्ठ अपनी ध्यानसूची में जोड़ें",
+			helptip: "इससे आप उस नए सदस्य का ध्यान रख सकेंगे, और आवश्यकता पड़ने पर उनकी मदद कर सकेंगे।",
 			type: "boolean"
 		},
 		{
 			name: "insertHeadings",
-			label: "स्वागत से पहले अनुभाग शीर्षक जोड़ें",
+			label: "स्वागत से पहले अनुभाग शीर्षक जोड़ें",
 			type: "boolean"
 		},
 		{
 			name: "welcomeHeading",
 			label: "स्वागत के लिए प्रयुक्त अनुभाग शीर्षक",
-			helptip: "इससे तभी फ़र्क पड़ेगा यदि अनुभाग शीर्षक सक्षम है और साँचे में पहले से अनुभाग शीर्षक नहीं है।",
+			helptip: "इससे तभी फ़र्क पड़ेगा यदि अनुभाग शीर्षक सक्षम है और साँचे में पहले से अनुभाग शीर्षक नहीं है।",
 			type: "string"
 		},
 		{
 			name: "insertUsername",
-			label: "साँचों में अपना सदस्यनाम जोड़ें (जहाँ आवश्यक हो)",
-			helptip: "कुछ स्वागत साँचों में स्वागत करने वाले सदस्य का नाम भी जुड़ता है। यदि आप इस विकल्प को अक्षम करते हैं तो ऐसे साँचों में आपका सदस्यनाम नहीं दिखाई देगा।",
+			label: "साँचों में अपना सदस्यनाम जोड़ें (जहाँ आवश्यक हो)",
+			helptip: "कुछ स्वागत साँचों में स्वागत करने वाले सदस्य का नाम भी जुड़ता है। यदि आप इस विकल्प को अक्षम करते हैं तो ऐसे साँचों में आपका सदस्यनाम नहीं दिखाई देगा।",
 			type: "boolean"
 		},
 		{
 			name: "insertSignature",
-			label: "स्वागत के बाद हस्ताक्षर जोड़ें",
+			label: "स्वागत के बाद हस्ताक्षर जोड़ें",
 			helptip: "Strongly recommended.",
 			type: "boolean"
 		},
 		{
 			name: "maskTemplateInSummary",
-			label: "सम्पादन सारांश में साँचे का नाम णा जोड़ें",
-			helptip: "नए सदस्यों को \"Welcomevandal\" जैसे नाम अटपटे या बुरे लग सकते हैं, इसलिए उन्हें सम्पादन सारांश में ना जोड़ा जाए तो अच्छा है।",
+			label: "सम्पादन सारांश में साँचे का नाम णा जोड़ें",
+			helptip: "नए सदस्यों को \"Welcomevandal\" जैसे नाम अटपटे या बुरे लग सकते हैं, इसलिए उन्हें सम्पादन सारांश में ना जोड़ा जाए तो अच्छा है।",
 			type: "boolean"
 		},
 		{
@@ -528,13 +528,13 @@ Twinkle.config.sections = [
 		{
 			name: "quickWelcomeTemplate",
 			label: "अपने-आप स्वागत करते समय प्रयोग करने हेतु साँचा",
-			helptip: "एक स्वागत साँचा का नाम जोड़ें, बिना ब्रैकेट के। उपयुक्त पृष्ठ की कड़ी अपने-आप जोड़ी जाएगी।",
+			helptip: "एक स्वागत साँचा का नाम जोड़ें, बिना ब्रैकेट के। उपयुक्त पृष्ठ की कड़ी अपने-आप जोड़ी जाएगी।",
 			type: "string"
 		},
 		{
 			name: "customWelcomeList",
 			label: "विशिष्ट स्वागत साँचे",
-			helptip: "आप अन्य विशिष्ट स्वागत साँचे (अथवा सदस्य नामस्थान के पृष्ठ जो साँचे हैं) यहाँ जोड़ सकते हैं। ये स्वागत विंडो में जोड़ के दिखाए जाएँगे और सदस्य वार्ता पृष्ठों पर substitute किये जाएँगे। सदस्य नामस्थान के पृष्ठ जोड़ते समय पृष्ठ का पूरा नाम (नाम्थान सहित) बताएँ। साँचों के लिए ऐसा करने की आवश्यकता नहीं है।",
+			helptip: "आप अन्य विशिष्ट स्वागत साँचे (अथवा सदस्य नामस्थान के पृष्ठ जो साँचे हैं) यहाँ जोड़ सकते हैं। ये स्वागत विंडो में जोड़ के दिखाए जाएँगे और सदस्य वार्ता पृष्ठों पर substitute किये जाएँगे। सदस्य नामस्थान के पृष्ठ जोड़ते समय पृष्ठ का पूरा नाम (नाम्थान सहित) बताएँ। साँचों के लिए ऐसा करने की आवश्यकता नहीं है।",
 			type: "customList",
 			customListValueTitle: "साँचे का नाम (बिना ब्रैकेट के)",
 			customListLabelTitle: "स्वागत विंडो में दिखाने हेतु पाठ"
@@ -550,7 +550,7 @@ Twinkle.config.sections = [
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchPage",
-			label: "नामांकित पृष्ठ को ध्यानसूची में जोड़ें",
+			label: "नामांकित पृष्ठ को ध्यानसूची में जोड़ें",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -561,7 +561,7 @@ Twinkle.config.sections = [
 		// Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchDiscussion",
-			label: "चर्चा पृष्ठ को ध्यानसूची में जोड़ें",
+			label: "चर्चा पृष्ठ को ध्यानसूची में जोड़ें",
 			helptip: "यहाँ चर्चा पृष्ठ से तात्पर्य विकिपीडिया:पृष्ठ हटाने हेतु चर्चा के उपयुक्त चर्चा उप-पृष्ठ से है।",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
@@ -1560,17 +1560,17 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	}
 
 	var text =
-		"// twinkleoptions.js: व्यक्तिगत ट्विंकल वरीयता फ़ाइल\n" +
+		"// twinkleoptions.js: व्यक्तिगत ट्विंकल वरीयता फ़ाइल\n" +
 		"//\n" +
 		"// नोट: ट्विंकल वरीयताएँ परिवर्तित करने का सबसे आसान तरीका है \n[[" +
 		mw.config.get("wgPageName") + "|Twinkle preferences panel]]// का प्रयोग करना।" +
 		"//\n" +
-		"// यह फ़ाइल स्वचालित रूप से बनाई गई है।\n" +
+		"// यह फ़ाइल स्वचालित रूप से बनाई गई है।\n" +
 		"// मान्य जावास्क्रिप्ट के अतिरिक्त\n" +
 		"// आप जो भी बदलाव यहाँ करेंगे,\n" +
 		"// वे अगली बारी ट्विंकल वरीयताएँ सहेजने पर\n" +
 		"// अपने-आप हटा दिए जाएँगे।\n" +
-		"// इस फ़ाइल को संपादित करते समय मान्य जावास्क्रिप्ट का ही प्रयोग करें।\n" +
+		"// इस फ़ाइल को संपादित करते समय मान्य जावास्क्रिप्ट का ही प्रयोग करें।\n" +
 		"\n" +
 		"window.Twinkle.prefs = ";
 	text += JSON.stringify(newConfig, null, 2);

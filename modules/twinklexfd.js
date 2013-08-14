@@ -77,9 +77,9 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'फ़ाइलें हटाने हेतु चर्चा',
+			label: 'फ़ाइलें हटाने हेतु चर्चा',
 			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
-			value: 'फ़ाइलें'
+			value: 'फ़ाइलें'
 		} );
 	categories.append( {
 			type: 'option',
@@ -97,7 +97,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 					label: 'यदि संभव हो तो पृष्ठ निर्माता को सूचित करें',
 					value: 'notify',
 					name: 'notify',
-					tooltip: "यदि यह सक्षम है तो पृष्ठ निर्माता के वार्ता पृष्ठ पर एक सूचना साँचा जोड़ दिया जाएगा।",
+					tooltip: "यदि यह सक्षम है तो पृष्ठ निर्माता के वार्ता पृष्ठ पर एक सूचना साँचा जोड़ दिया जाएगा।",
 					checked: true
 				}
 			]
@@ -207,10 +207,10 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
-	case 'फ़ाइलें':
+	case 'फ़ाइलें':
 		work_area = new Morebits.quickForm.element( {
 				type: 'field',
-				label: 'फ़ाइलें हटाने हेतु चर्चा',
+				label: 'फ़ाइलें हटाने हेतु चर्चा',
 				name: 'work_area'
 			} );
 		work_area.append( {
@@ -286,7 +286,7 @@ Twinkle.xfd.callbacks = {
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
 			// Starting discussion page
-			var wikipedia_page = new Morebits.wiki.page('विकिपीडिया:पृष्ठ हटाने हेतु चर्चा/लेख/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
+			var wikipedia_page = new Morebits.wiki.page('विकिपीडिया:पृष्ठ हटाने हेतु चर्चा/लेख/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
 
@@ -569,8 +569,8 @@ Twinkle.xfd.callbacks = {
 
 			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
-			pageobj.setPageText('{{हहेच फ़ाइल|कारण=' + params.reason + "}}\n" + text);
-			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/" + mw.config.get('wgTitle') + "|नामांकन पृष्ठ]]।" + Twinkle.getPref('summaryAd'));
+			pageobj.setPageText('{{हहेच फ़ाइल|कारण=' + params.reason + "}}\n" + text);
+			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/" + mw.config.get('wgTitle') + "|नामांकन पृष्ठ]]।" + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -589,8 +589,8 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + "\n\n{{subst:हहेच फ़ाइल नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
-			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] फ़ाइल को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
+			pageobj.setPageText(text + "\n\n{{subst:हहेच फ़ाइल नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
+			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] फ़ाइल को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -610,7 +610,7 @@ Twinkle.xfd.callbacks = {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
-			var notifytext = "\n{{subst:हहेच फ़ाइल सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
+			var notifytext = "\n{{subst:हहेच फ़ाइल सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
@@ -744,7 +744,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/लेख/' + mw.config.get('wgTitle');
 		Morebits.wiki.actionCompleted.notice = "नामांकन सम्पूर्ण, चर्चा पृष्ठ खोला जा रहा है";
 
-		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "लेख पर नामांकन साँचा जोड़ा जा रहा है");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "लेख पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.afd.taggingArticle);
@@ -764,12 +764,12 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		params = { reason: reason, target: xfdtarget, type: xfdcat };
 
 		// Tagging category
-		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "श्रेणी पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "श्रेणी पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.cfd.taggingCategory);
 
 		// Starting discussion page
-		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/श्रेणियाँ/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
+		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/श्रेणियाँ/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
 		nompage.load(Twinkle.xfd.callbacks.cfd.discussionPage);
 
@@ -792,13 +792,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		params = { reason: reason, noinclude: noinclude };
 		// Tagging template
-		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "साँचे पर नामांकन साँचा जोड़ा जा रहा है");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "साँचे पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplate);
 
 		// Starting discussion page
-		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/साँचे/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
+		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/साँचे/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
 		nompage.load(Twinkle.xfd.callbacks.tfd.discussionPage);
 
@@ -816,23 +816,23 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		Morebits.wiki.removeCheckpoint();
 		break;
 
-	case 'फ़ाइलें': // FFD
+	case 'फ़ाइलें': // FFD
 		Morebits.wiki.addCheckpoint();
 
 		params = { reason: reason };
 		// Tagging file
-		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "फ़ाइल विवरण पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "फ़ाइल विवरण पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setFollowRedirect(true);
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.ffd.taggingImage);
 
 		// Adding discussion
-		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
+		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
 		nompage.load(Twinkle.xfd.callbacks.ffd.discussionPage);
 
 		// Updating data for the action completed event
-		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgTitle');
+		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgTitle');
 		Morebits.wiki.actionCompleted.notice = "नामांकन सम्पूर्ण, चर्चा पृष्ठ खोला जा रहा है";
 
 		// Notification to first contributor
@@ -850,13 +850,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		params = { noinclude: noinclude, reason: reason };
 		// Tagging file
-		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setFollowRedirect(true);
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
 
 		// Adding discussion
-		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/अन्य/' + mw.config.get('wgPageName'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
+		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/अन्य/' + mw.config.get('wgPageName'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
 		nompage.load(Twinkle.xfd.callbacks.mfd.discussionPage);
 
