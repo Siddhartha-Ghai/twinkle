@@ -492,7 +492,49 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
 			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
 			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
-			{ label: 'Highly visible template (semi)', value: 'pp-semi-template' },
+			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
+		]
+	},
+	{
+		label: 'Pending changes',
+		list: [
+			{ label: 'Generic (PC)', value: 'pp-pc-protected' },
+			{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
+			{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
+		]
+	},
+	{
+		label: 'Move protection',
+		list: [
+			{ label: 'Generic (move)', value: 'pp-move' },
+			{ label: 'Dispute/move warring (move)', value: 'pp-move-dispute' },
+			{ label: 'Page-move vandalism (move)', value: 'pp-move-vandalism' },
+			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
+		]
+	},
+	{ label: 'Unprotection', value: 'unprotect' }
+];
+
+// NOTE: this will be merged with the protectionTypes object
+// once PC is implemented for admins
+Twinkle.protect.protectionTypesAdmin = [
+	{
+		label: 'Full protection',
+		list: [
+			{ label: 'Generic (full)', value: 'pp-protected' },
+			{ label: 'Content dispute/edit warring (full)', value: 'pp-dispute' },
+			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
+			{ label: 'Highly visible template (full)', value: 'pp-template' },
+			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
+		]
+	},
+	{
+		label: 'Semi-protection',
+		list: [
+			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
+			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
+			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
+			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
 			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
 		]
 	},
@@ -576,6 +618,21 @@ Twinkle.protect.protectionPresetsInfo = {
 		edit: 'autoconfirmed',
 		reason: null,
 		template: 'pp-protected'
+	},
+	'pp-pc-vandalism': {
+		stabilize: 'autoconfirmed',
+		reason: 'Persistent [[WP:Vandalism|vandalism]]',
+		template: null
+	},
+	'pp-pc-blp': {
+		stabilize: 'autoconfirmed',
+		reason: 'Violations of the [[WP:Biographies of living persons|biographies of living persons policy]]',
+		template: null
+	},
+	'pp-pc-protected': {
+		stabilize: 'autoconfirmed',
+		reason: null,
+		template: null
 	},
 	'pp-move': {
 		move: 'sysop',
@@ -832,6 +889,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-semi-protected':
 					typename = 'semi-protection';
 					break;
+				case 'pp-pc-vandalism':
+				case 'pp-pc-blp':
+				case 'pp-pc-protected':
+					typename = 'pending changes';
+					break;
 				case 'pp-move':
 				case 'pp-move-dispute':
 				case 'pp-move-indef':
@@ -856,6 +918,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'pp-vandalism':
 				case 'pp-semi-vandalism':
+				case 'pp-pc-vandalism':
 					typereason = 'Persistent vandalism';
 					break;
 				case 'pp-template':
@@ -870,6 +933,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent sockpuppetry';
 					break;
 				case 'pp-semi-blp':
+				case 'pp-pc-blp':
 					typereason = '[[WP:BLP|BLP]] policy violations';
 					break;
 				case 'pp-move-dispute':
