@@ -2789,7 +2789,7 @@ Morebits.wikitext.page.prototype = {
 	text: '',
 	removeLink: function( link_target ) {
 		var first_char = link_target.substr( 0, 1 );
-		var link_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( link_target.substr( 1 ), true );
+		var link_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape( link_target.substr( 1 ), true );
 		var link_simple_re = new RegExp( "\\[\\[:?(" + link_re_string + ")\\]\\]", 'g' );
 		var link_named_re = new RegExp( "\\[\\[:?" + link_re_string + "\\|(.+?)\\]\\]", 'g' );
 		this.text = this.text.replace( link_simple_re, "$1" ).replace( link_named_re, "$1" );
@@ -2800,7 +2800,7 @@ Morebits.wikitext.page.prototype = {
 
 		reason = reason ? (reason + ': ') : '';
 		var first_char = image.substr( 0, 1 );
-		var image_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( image.substr( 1 ), true );
+		var image_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape( image.substr( 1 ), true );
 
 		var AllImageNamespaceAliases = "";
 		for ( var alias in mw.config.get('wgNamespaceIds') ) {
