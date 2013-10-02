@@ -42,6 +42,20 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 	var form = new Morebits.quickForm( Twinkle.tag.callback.evaluate );
 
+	if (document.getElementsByClassName("patrollink").length) {
+		form.append( {
+			type: 'checkbox',
+			list: [
+				{
+					label: 'पृष्ठ को जाँचा हुआ चिन्हित करें',
+					value: 'patrolPage',
+					name: 'patrolPage',
+					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
+				}
+			]
+		} );
+	}
+
 	switch( Twinkle.tag.mode ) {
 		case 'article':
 			Window.setTitle( "लेख रखरखाव टैगिंग" );
@@ -1033,7 +1047,7 @@ Twinkle.tag.callbacks = {
 			}
 		});
 
-		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
+		if( params.patrol ) {
 			pageobj.patrol();
 		}
 	},
@@ -1111,7 +1125,7 @@ Twinkle.tag.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 
-		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
+		if( params.patrol ) {
 			pageobj.patrol();
 		}
 	}
@@ -1120,6 +1134,9 @@ Twinkle.tag.callbacks = {
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
 	var params = {};
+	if (form.patrolPage) {
+		params.patrol = form.patrolPage.checked;
+	}
 
 	switch (Twinkle.tag.mode) {
 		case 'article':

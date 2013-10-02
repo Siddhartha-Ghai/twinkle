@@ -391,8 +391,7 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "markTaggedPagesAsPatrolled",
-			label: "पृष्ठों को टैग करते समय उन्हें जाँचा हुआ (patrolled) चिन्हित करें (यदि संभव हो)",
-			helptip: "पृष्ठ जाँचे हुए तभी चिन्हित किये जाएँगे यदि उनपर विशेष:नए_पृष्ठ द्वारा जाया गया हो।",
+			label: "\"पृष्ठ को जाँचा हुआ चिन्हित करें\" वाला बॉक्स डिफ़ॉल्ट रूप से चेक करें",
 			type: "boolean"
 		},
 		{
@@ -1113,7 +1112,7 @@ Twinkle.config.legacyPrefsNotice = function twinkleconfigLegacyPrefsNotice(pageo
 		contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
 			'<img alt="" src="http://upload.wikimedia.org/wikipedia/en/3/38/Imbox_content.png" /></td>' +
 			'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
-			'<p>To do this, you can <a href="' + mw.config.get("wgScript") + '?title=User:' + encodeURIComponent(mw.config.get("wgUserName")) + '/' + mw.config.get("skin") + '.js&action=edit" target="_tab"><b>edit your personal JavaScript</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+			'<p>To do this, you can <a href="' + mw.config.get("wgScript") + '?title=User:' + encodeURIComponent(mw.config.get("wgUserName")) + '/' + mw.config.get("skin") + '.js&action=edit" target="_blank"><b>edit your personal JavaScript</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
 			'</td></tr></table>';
 	} else {
 		$(contentnotice).remove();
