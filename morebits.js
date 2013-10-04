@@ -1178,6 +1178,8 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 Morebits.wikipedia = {};
 
 Morebits.wikipedia.namespaces = {
+	"-1": "विशेष",
+	"-2": "मीडिया",
 	"0": "",
 	"1": "वार्ता",
 	"2": "सदस्य",
@@ -1196,8 +1198,8 @@ Morebits.wikipedia.namespaces = {
 	"15": "श्रेणी वार्ता",
 	"100": "प्रवेशद्वार",
 	"101": "प्रवेशद्वार वार्ता",
-	"-1": "विशेष",
-	"-2": "मीडिया"
+	'828': 'Module',
+	'829': 'Module talk'
 };
 
 Morebits.wikipedia.namespacesFriendly = {
@@ -1220,7 +1222,9 @@ Morebits.wikipedia.namespacesFriendly = {
 	"100": "प्रवेशद्वार",
 	"101": "प्रवेशद्वार वार्ता",
 	"-1": "विशेष",
-	"-2": "मीडिया"
+	"-2": "मीडिया",
+	'828': 'Module',
+	'829': 'Module talk'
 };
 
 
