@@ -34,7 +34,41 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 	Twinkle.speedy.initDialog(Morebits.userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 };
 
-Twinkle.speedy.dialog = null;  // used by unlink feature
+// Used by unlink feature
+Twinkle.speedy.dialog = null;
+
+// The speedy criteria list can be in one of several modes
+Twinkle.speedy.mode = {
+	sysopSubmit: 1,  // radio buttons, no subgroups, submit when "Submit" button is clicked
+	sysopRadioClick: 2,  // radio buttons, no subgroups, submit when a radio button is clicked
+	userMultipleSubmit: 3,  // check boxes, subgroups, "Submit" button already pressent
+	userMultipleRadioClick: 4,  // check boxes, subgroups, need to add a "Submit" button
+	userSingleSubmit: 5,  // radio buttons, subgroups, submit when "Submit" button is clicked
+	userSingleRadioClick: 6,  // radio buttons, subgroups, submit when a radio button is clicked
+
+	// are we in "delete page" mode?
+	// (sysops can access both "delete page" [sysop] and "tag page only" [user] modes)
+	isSysop: function twinklespeedyModeIsSysop(mode) {
+		return mode === Twinkle.speedy.mode.sysopSubmit ||
+			mode === Twinkle.speedy.mode.sysopRadioClick;
+	},
+	// do we have a "Submit" button once the form is created?
+	hasSubmitButton: function twinklespeedyModeHasSubmitButton(mode) {
+		return mode === Twinkle.speedy.mode.sysopSubmit ||
+			mode === Twinkle.speedy.mode.userMultipleSubmit ||
+			mode === Twinkle.speedy.mode.userMultipleRadioClick ||
+			mode === Twinkle.speedy.mode.userSingleSubmit;
+	},
+	// is db-multiple the outcome here?
+	isMultiple: function twinklespeedyModeIsMultiple(mode) {
+		return mode === Twinkle.speedy.mode.userMultipleSubmit ||
+			mode === Twinkle.speedy.mode.userMultipleRadioClick;
+	},
+	// do we want subgroups? (if not we have to use prompt())
+	wantSubgroups: function twinklespeedyModeWantSubgroups(mode) {
+		return !Twinkle.speedy.mode.isSysop(mode);
+	}
+};
 
 // Prepares the speedy deletion dialog and displays it
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
@@ -76,7 +110,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 							cForm.multiple.disabled = !cChecked;
 							cForm.multiple.checked = false;
 
-							Twinkle.speedy.callback.dbMultipleChanged(cForm, false);
+							Twinkle.speedy.callback.modeChanged(cForm);
 
 							event.stopPropagation();
 						}
@@ -148,7 +182,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					tooltip: "इसे चुन के आप पृष्ठ पर लागू होने वाले अनेक मापदंड निर्दिष्ट कर सकते हैं।",
 					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
 					event: function( event ) {
-						Twinkle.speedy.callback.dbMultipleChanged( event.target.form, event.target.checked );
+						Twinkle.speedy.callback.modeChanged( event.target.form );
 						event.stopPropagation();
 					}
 				}
@@ -169,19 +203,34 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.setContent( result );
 	dialog.display();
 
-	Twinkle.speedy.callback.dbMultipleChanged( result, false );
+	Twinkle.speedy.callback.modeChanged( result );
 };
 
-Twinkle.speedy.callback.dbMultipleChanged = function twinklespeedyCallbackDbMultipleChanged(form, checked) {
+Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
 	var namespace = mw.config.get('wgNamespaceNumber');
-	var value = checked;
+	var form = form;
+
+	// first figure out what mode we're in
+	var mode = Twinkle.speedy.mode.userSingleSubmit;
+	if (form.tag_only && !form.tag_only.checked) {
+		mode = Twinkle.speedy.mode.sysopSubmit;
+	} else {
+		if (form.multiple.checked) {
+			mode = Twinkle.speedy.mode.userMultipleSubmit;
+		} else {
+			mode = Twinkle.speedy.mode.userSingleSubmit;
+		}
+	}
+	if (Twinkle.getPref('speedySelectionStyle') === 'radioClick') {
+		mode++;
+	}
 
 	var work_area = new Morebits.quickForm.element( {
 			type: 'div',
 			name: 'work_area'
 		} );
 
-	if (checked && Twinkle.getPref('speedySelectionStyle') === 'radioClick') {
+	if (mode === Twinkle.speedy.mode.userMultipleRadioClick) {
 		work_area.append( {
 				type: 'div',
 				label: 'When finished choosing criteria, click:'
@@ -197,36 +246,37 @@ Twinkle.speedy.callback.dbMultipleChanged = function twinklespeedyCallbackDbMult
 			} );
 	}
 
-	var radioOrCheckbox = (value ? 'checkbox' : 'radio');
+	var radioOrCheckbox = (Twinkle.speedy.mode.isMultiple(mode) ? 'checkbox' : 'radio');
 
-	if (namespace % 2 === 1 && namespace !== 3) {  // talk pages, but not user talk pages
+	if (namespace % 2 === 1 && namespace !== 3) {
+		// show db-talk on talk pages, but not user talk pages
 		work_area.append( { type: 'header', label: 'वार्ता पृष्ठ' } );
-		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.talkList } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.talkList, mode) } );
 	}
 
 	switch (namespace) {
 		case 0:  // article
 		case 1:  // talk
 			work_area.append( { type: 'header', label: 'लेख' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getArticleList(value) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleList, mode) } );
 			break;
 
 		case 2:  // user
 		case 3:  // user talk
 			work_area.append( { type: 'header', label: 'सदस्य पृष्ठ' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getUserList(value) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
 			break;
 
 		case 6:  // file
 		case 7:  // file talk
 			work_area.append( { type: 'header', label: 'फ़ाइलें' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getFileList(value) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) } );
 			break;
 
 		case 10:  // template
 		case 11:  // template talk
 			work_area.append( { type: 'header', label: 'साँचे' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.templateList } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.templateList, mode) } );
 			break;
 
 		default:
@@ -234,11 +284,95 @@ Twinkle.speedy.callback.dbMultipleChanged = function twinklespeedyCallbackDbMult
 	}
 
 	work_area.append( { type: 'header', label: 'वैश्विक मापदंड' } );
-	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getGeneralList(value) });
+	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.generalList, mode) });
 
 	var old_area = Morebits.quickForm.getElements(form, "work_area")[0];
 	form.replaceChild(work_area.render(), old_area);
 };
+
+Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mode) {
+	// mode switches
+	var isSysop = Twinkle.speedy.mode.isSysop(mode);
+	var multiple = Twinkle.speedy.mode.isMultiple(mode);
+	var wantSubgroups = Twinkle.speedy.mode.wantSubgroups(mode);
+	var hasSubmitButton = Twinkle.speedy.mode.hasSubmitButton(mode);
+
+	var openSubgroupHandler = function(e) { 
+		$(e.target.form).find('input').attr('disabled', 'disabled');
+		$(e.target.form).children().css('color', 'gray');
+		$(e.target).parent().css('color', 'black').find('input').attr('disabled', false);
+		$(e.target).parent().find('input:text')[0].focus();
+		e.stopPropagation();
+	};
+	var submitSubgroupHandler = function(e) {
+		Twinkle.speedy.callback.evaluateUser(e);
+		e.stopPropagation();
+	}
+
+	return $.map(list, function(critElement) {
+		var criterion = $.extend({}, critElement);
+
+		if (!wantSubgroups) {
+			criterion.subgroup = null;
+		}
+
+		if (multiple) {
+			if (criterion.hideWhenMultiple) {
+				return null;
+			}
+			if (criterion.hideSubgroupWhenMultiple) {
+				criterion.subgroup = null;
+			}
+		} else {
+			if (criterion.hideWhenSingle) {
+				return null;
+			}
+			if (criterion.hideSubgroupWhenSingle) {
+				criterion.subgroup = null;
+			}
+		}
+
+		if (isSysop) {
+			if (criterion.hideWhenSysop) {
+				return null;
+			}
+			if (criterion.hideSubgroupWhenSysop) {
+				criterion.subgroup = null;
+			}
+		} else {
+			if (criterion.hideWhenUser) {
+				return null;
+			}
+			if (criterion.hideSubgroupWhenUser) {
+				criterion.subgroup = null;
+			}
+		}
+
+		if (criterion.subgroup && !hasSubmitButton) {
+			if ($.isArray(criterion.subgroup)) {
+				criterion.subgroup.push({ 
+					type: 'button',
+					name: 'submit',
+					label: 'Submit Query',
+					event: submitSubgroupHandler
+				});
+			} else {
+				criterion.subgroup = [
+					criterion.subgroup,
+					{
+						type: 'button',
+						name: 'submit',  // ends up being called "csd.submit" so this is OK
+						label: 'Submit Query',
+						event: submitSubgroupHandler
+					}
+				];
+			}
+			criterion.event = openSubgroupHandler;
+		}
+
+		return criterion;
+	});
+}
 
 Twinkle.speedy.talkList = [
 	{
@@ -248,151 +382,193 @@ Twinkle.speedy.talkList = [
 	}
 ];
 
-// this is a function to allow for db-multiple filtering
-Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
-	var result = [];
-	result.push({
+Twinkle.speedy.fileList = [
+	{
 		label: 'फ़1. 14 दिन से अधिक समय तक कोई लाइसेंस न होना',
 		value: 'लाइसेंस',
 		tooltip: 'इसमें वे सभी फाइलें आती हैं जिनमें अपलोड होने से दो सप्ताह के बाद तक भी कोई लाइसेंस नहीं दिया गया है। ऐसा होने पर यदि फ़ाइल पुरानी होने के कारण सार्वजनिक क्षेत्र(पब्लिक डोमेन) में नहीं होगी, तो उसे शीघ्र हटा दिया जाएगा।'
-	});
-	if (!multiple) {
-	result.push({
+	},
+	{
 		label: 'फ़2. चित्र का विकिमीडिया कॉमन्स पर स्रोत और लाइसेंस जानकारी सहित उपलब्ध होना',
 		value: 'कॉमन्स',
-		tooltip: 'ऐसी फ़ाइलों को हटाने से पहले जाँच लें  कि कॉमन्स पर स्रोत और लाइसेंस जानकारी सही हो, और यदि कॉमन्स पर फ़ाइल का नाम विकिपीडिया पर फ़ाइल के नाम से भिन्न है तो विकिपीडिया की फ़ाइल की जगह सभी जगह कॉमन्स की फ़ाइल का प्रयोग करें।'
-	});
-	}
-		result.push({
+		tooltip: 'ऐसी फ़ाइलों को हटाने से पहले जाँच लें  कि कॉमन्स पर स्रोत और लाइसेंस जानकारी सही हो, और यदि कॉमन्स पर फ़ाइल का नाम विकिपीडिया पर फ़ाइल के नाम से भिन्न है तो विकिपीडिया की फ़ाइल की जगह सभी जगह कॉमन्स की फ़ाइल का प्रयोग करें।',
+		subgroup: {
+			name: 'nowcommons_filename',
+			type: 'input',
+			label: 'कॉमन्स पर फ़ाइल का नाम: ',
+			value: Morebits.pageNameNorm,
+			tooltip: 'यदि कॉमन्स पर फ़ाइल का यही नाम है तो आप इसे रिक्त छोड़ सकते हैं। फ़ाइल के नाम से पहले "File:" अथवा "चित्र:" लगाना वैकल्पिक है।'
+		},
+		hideWhenMultiple: true
+	},
+	{
 			label: 'फ़3. अप्रयुक्त ग़ैर मुक्त उचित उपयोग फ़ाइल',
 			value: 'अप्रयुक्त ग़ैर मुक्त',
 			tooltip: 'इस मापदंड के अंतर्गत वे फ़ाइलें आती हैं जो कॉपीराइट सुरक्षित हैं और उचित उपयोग हेतु विकिपीडिया पर डाली गई हैं, परंतु जिनका कोई उपयोग न किया जा रहा है और न ही होने की संभावना है।'
-		});
-	result.push({
+	},
+	{
 		label: 'फ़4. ग़ैर मुक्त उचित उपयोग उपयोग फ़ाइल जिसपर कोई उचित उपयोग औचित्य न दिया हो',
 		value: 'औचित्य',
 		tooltip: 'ऐसी कॉपीराइट सुरक्षित फ़ाइलें जिनपर 7 दिन तक कोई उचित उपयोग औचित्य न दिया हो, उन्हें इस मापदंड के अंतर्गत हटाया जा सकता है।'
-	});
-	result.push({
+	},
+	{
 		label: 'फ़5. ग़ैर मुक्त फ़ाइलें जिनका मुक्त विकल्प उपलब्ध हो',
 		value: 'मुक्त विकल्प',
-		tooltip: 'इस मापदंड के अंतर्गत वे फ़ाइलें आती हैं जो ग़ैर मुक्त हैं और जिनका कोई मुक्त विकल्प उपलब्ध है। यह आवश्यक नहीं कि मुक्त विकल्प हूबहू वही फ़ाइल हो।'
-	});
-	result.push({
+		tooltip: 'इस मापदंड के अंतर्गत वे फ़ाइलें आती हैं जो ग़ैर मुक्त हैं और जिनका कोई मुक्त विकल्प उपलब्ध है। यह आवश्यक नहीं कि मुक्त विकल्प हूबहू वही फ़ाइल हो।',
+		subgroup: {
+			name: 'free_alternative_filename',
+			type: 'input',
+			label: 'मुक्त विकल्प फ़ाइल का नाम: '
+		}
+	},
+	{
 		label: 'फ़6. फ़ालतू फ़ाइलें',
 		value: 'फ़ालतू',
 		tooltip: 'इस मापदंड के अंतर्गत वे फ़ाइलें आती हैं जिनका कोई प्रयोग नहीं हो रहा है और जिनका कोई ज्ञानकोशीय प्रयोग नहीं किया जा सकता है। इसमें चित्र, ध्वनियाँ एवं वीडियो फ़ाइलें नहीं आती हैं।'
-	});
-	if (!multiple) {
-	result.push({
+	},
+	{
 		label: 'व6फ़. साफ़ कॉपीराइट उल्लंघन - फ़ाइलें',
 		value: 'कॉपीराइट फ़ाइल',
-		tooltip: 'वे सभी फ़ाइलें जो अंतरजाल पर किसी ऐसी वेबसाइट से लिये गए हैं जो साफ़-साफ़ फ़ाइल को मुक्त लाइसेंस के अंतर्गत नहीं देती है। इसमें वे फ़ाइलें भी आती हैं जिनका कॉपीराइट स्वयं अपलोडर के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है।'
-	});
+		tooltip: 'वे सभी फ़ाइलें जो अंतरजाल पर किसी ऐसी वेबसाइट से लिये गए हैं जो साफ़-साफ़ फ़ाइल को मुक्त लाइसेंस के अंतर्गत नहीं देती है। इसमें वे फ़ाइलें भी आती हैं जिनका कॉपीराइट स्वयं अपलोडर के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है।',
+		subgroup: {
+				name: 'copyvio_url',
+				type: 'input',
+				label: 'स्रोत यू॰आर॰एल: ',
+				tooltip: 'कृपया स्रोत यू॰आर॰एल बताएँ, http अथवा https समेत।',
+				size: 60
+			},
+		hideWhenMultiple: true
 	}
-	return result;
-};
+];
 
-Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
-	var result = [];
-	result.push({
+Twinkle.speedy.articleList = [
+	{
 		label: 'ल1. पूर्णतया अन्य भाषा में लिखे लेख',
 		value: 'अन्य भाषा',
 		tooltip: 'इसमें वे लेख आते हैं जो पूर्णतया हिन्दी के अलावा किसी और भाषा में लिखे हुए हैं, चाहे उनका नाम हिन्दी में हो या किसी और भाषा में।'
-	});
-	result.push({
+	},
+	{
 		label: 'ल2. साफ़ प्रचार',
 		value: 'प्रचार',
 		tooltip: 'इसमें वे सभी पृष्ठ आते हैं जिनमें केवल प्रचार है, चाहे वह किसी व्यक्ति-विशेष का हो, किसी समूह का, किसी प्रोडक्ट का, अथवा किसी कंपनी का। इसमें प्रचार वाले केवल वही लेख आते हैं जिन्हें ज्ञानकोष के अनुरूप बनाने के लिये शुरू से दोबारा लिखना पड़ेगा।'
-	});
-	result.push({
+	},
+	{
 		label: 'ल4. प्रतिलिपि लेख',
 		value: 'प्रतिलिपि',
-		tooltip: 'इस मापदंड के अंतर्गत वो लेख आते हैं जो किसी पुराने लेख की प्रतिलिपि हैं। इसमें वे लेख भी आते हैं जो किसी ऐसे विषय पर बनाए गए हैं जिनपर पहले से लेख मौजूद है और पुराना लेख नए लेख से बेहतर है।'
-	});
-	if (!multiple) {
-		result.push({
-			label: 'व6ल. साफ़ कॉपीराइट उल्लंघन - लेख',
-			value: 'कॉपीराइट लेख',
-			tooltip: 'इस मापदंड में वे सभी पृष्ठ आते हैं जो साफ़ तौर पर कॉपीराइट उल्लंघन हैं और जिनके इतिहास में उल्लंघन से मुक्त कोई भी अवतरण नहीं है।'
-		});
+		tooltip: 'इस मापदंड के अंतर्गत वो लेख आते हैं जो किसी पुराने लेख की प्रतिलिपि हैं। इसमें वे लेख भी आते हैं जो किसी ऐसे विषय पर बनाए गए हैं जिनपर पहले से लेख मौजूद है और पुराना लेख नए लेख से बेहतर है।',
+		subgroup: {
+				name: 'copypaste_1',
+				type: 'input',
+				label: 'मूल लेख: ',
+				tooltip: 'मूल पुराने लेख का नाम जिसकी प्रतिलिपि यह लेख है'
+			}
+	},
+	{
+		label: 'व6ल. साफ़ कॉपीराइट उल्लंघन - लेख',
+		value: 'कॉपीराइट लेख',
+		tooltip: 'इस मापदंड में वे सभी पृष्ठ आते हैं जो साफ़ तौर पर कॉपीराइट उल्लंघन हैं और जिनके इतिहास में उल्लंघन से मुक्त कोई भी अवतरण नहीं है।',
+		subgroup: {
+				name: 'copyvio_url',
+				type: 'input',
+				label: 'स्रोत यू॰आर॰एल: ',
+				tooltip: 'कृपया स्रोत यू॰आर॰एल बताएँ, http अथवा https समेत।',
+				size: 60
+			},
+		hideWhenMultiple: true
 	}
-	return result;
-};
+];
 
-Twinkle.speedy.getUserList = function twinklespeedyGetUserList(multiple) {
-	var result = [];
-	result.push({
+Twinkle.speedy.userList = [
+	{
 		label: 'स1. सदस्य अनुरोध',
 		value: 'सदस्य अनुरोध',
 		tooltip: 'यदि सदस्य अपने सदस्य पृष्ठ, वार्ता पृष्ठ अथवा किसी उपपृष्ठ को हटाने का स्वयं अनुरोध करता है तो उस पृष्ठ को शीघ्र हटाया जा सकता है।'
-	});
-	result.push({
+	},
+	{
 		label: 'स2. अस्तित्वहीन सदस्यों के सदस्य पृष्ठ अथवा उपपृष्ठ',
 		value: 'अस्तित्वहीन',
 		tooltip: 'ऐसे सदस्यों के पृष्ठ, वार्ता पृष्ठ अथवा उपपृष्ठ जो विकिपीडिया पर पंजीकृत नहीं हैं; इस मापदंड के अंतर्गत शाघ्र हटाए जा सकते हैं।'
-	});
-	if (!multiple) {
-		result.push({
-			label: 'व6स. साफ़ कॉपीराइट उल्लंघन - सदस्य पृष्ठ',
-			value: 'कॉपीराइट सदस्य',
-			tooltip: 'सदस्य अपने सदस्य पृष्ठ, वार्ता पृष्ठ अथवा किसी उपपृष्ठ पर कॉपीराइट सामग्री नहीं रख सकते और ऐसे पृष्ठों को शीघ्र हटाया जा सकता है। इसमें ऐसे पृष्ठ भी आते हैं जिनमें मुख्य रूप से "ग़ैर मुक्त उचित उपयोग चित्रों" की दीर्घा(गैलरी) हो, क्योंकि ऐसे चित्रों का सदस्य नामस्थान में प्रयोग विकिपीडिया की नीतियों के विरुद्ध है।'
-		});
+	},
+	{
+		label: 'व6स. साफ़ कॉपीराइट उल्लंघन - सदस्य पृष्ठ',
+		value: 'कॉपीराइट सदस्य',
+		tooltip: 'सदस्य अपने सदस्य पृष्ठ, वार्ता पृष्ठ अथवा किसी उपपृष्ठ पर कॉपीराइट सामग्री नहीं रख सकते और ऐसे पृष्ठों को शीघ्र हटाया जा सकता है। इसमें ऐसे पृष्ठ भी आते हैं जिनमें मुख्य रूप से "ग़ैर मुक्त उचित उपयोग चित्रों" की दीर्घा(गैलरी) हो, क्योंकि ऐसे चित्रों का सदस्य नामस्थान में प्रयोग विकिपीडिया की नीतियों के विरुद्ध है।',
+		subgroup: {
+				name: 'copyvio_url',
+				type: 'input',
+				label: 'स्रोत यू॰आर॰एल: ',
+				tooltip: 'कृपया स्रोत यू॰आर॰एल बताएँ, http अथवा https समेत।',
+				size: 60
+			},
+		hideWhenMultiple: true
 	}
-	return result;
-};
+];
 
 Twinkle.speedy.templateList = [
 	{
 		label: 'सा1. अप्रयुक्त साँचे जिनकी जगह किसी बेहतर साँचे ने ले ली है',
 		value: 'पुराना साँचा',
-		tooltip: 'इसके अंतर्गत वे सभी साँचे आते हैं जो अब प्रयोग में नहीं हैं और जिनकी जगह उनसे बेहतर किसी साँचे ने ले ली है। यदि नए साँचे के बेहतर होने पर विवाद हो, अथवा साँचा प्रयोग में हो तो हटाने हेतु चर्चा प्रक्रिया का प्रयोग करें।'
+		tooltip: 'इसके अंतर्गत वे सभी साँचे आते हैं जो अब प्रयोग में नहीं हैं और जिनकी जगह उनसे बेहतर किसी साँचे ने ले ली है। यदि नए साँचे के बेहतर होने पर विवाद हो, अथवा साँचा प्रयोग में हो तो हटाने हेतु चर्चा प्रक्रिया का प्रयोग करें।',
+		subgroup: {
+				name: 'better_template',
+				type: 'input',
+				label: 'बेहतर साँचा: '
+			},
 	}
 ];
 
-Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
-	var result = [];
-	if (!multiple) {
-		result.push({
-			label: 'विशिष्ट कारण' + (Morebits.userIsInGroup('sysop') ? ' (हटाने का विशेष कारण)' : ' {'+'{शीह}} साँचे का प्रयोग करते हुए'),
-			value: 'कारण',
-			tooltip: '{'+'{शीह}} "शीघ्र हटाएँ" का लघु रूप है। ऐसे नामांकन में भी शीघ्र हटाने का कोई मापदंड लागू होना चाहिये। यदि कोई मापदंड लागू नहीं होता, तो पृष्ठ हटाने हेतु चर्चा का प्रयोग करें।'
-		});
-	}
-	result.push({
+Twinkle.speedy.generalList = [
+	{
+		label: 'विशिष्ट कारण' + (Morebits.userIsInGroup('sysop') ? ' (हटाने का विशेष कारण)' : ' {'+'{शीह}} साँचे का प्रयोग करते हुए'),
+		value: 'कारण',
+		tooltip: '{'+'{शीह}} "शीघ्र हटाएँ" का लघु रूप है। ऐसे नामांकन में भी शीघ्र हटाने का कोई मापदंड लागू होना चाहिये। यदि कोई मापदंड लागू नहीं होता, तो पृष्ठ हटाने हेतु चर्चा का प्रयोग करें।',
+		subgroup: {
+			name: 'reason_1',
+			type: 'input',
+			label: 'कारण: ',
+			size: 60
+		},
+		hideWhenMultiple: true
+	},
+	{
 		label: 'व1. अर्थहीन नाम अथवा सम्पूर्णतया अर्थहीन सामग्री वाले पृष्ठ',
 		value: 'अर्थहीन',
 		tooltip: 'इसमें वे पृष्ठ आते हैं जिनका नाम अर्थहीन है; अथवा जिनमें सामग्री अर्थहीन है, चाहे उसका नाम अर्थहीन न हो।'
-	});
-	result.push({
+	},
+	{
 		label: 'व2. परीक्षण पृष्ठ',
 		value: 'परीक्षण',
 		tooltip: 'इसमें वे पृष्ठ आते हैं जिन्हें परीक्षण के लिये बनाया गया है, अर्थात यह जानने के लिये कि सचमुच सदस्य वहाँ बदलाव कर सकता है या नहीं। इस मापदंड के अंतर्गत सदस्यों के उपपृष्ठ नहीं आते।'
-	});
-	result.push({
+	},
+	{
 		label: 'व3. साफ़ बर्बरता',
 		value: 'बर्बरता',
 		tooltip: 'इस मापदंड के अंतर्गत ऐसे पृष्ठ आते हैं जिनपर केवल बर्बरता हो। इसमें केवल वही पृष्ठ आते हैं जिनके इतिहास में बर्बरता मुक्त कोई भी अवतरण न हो।'
-	});
-	result.push({
+	},
+	{
 		label: 'व4. साफ़ धोखा',
 		value: 'धोखा',
 		tooltip: 'इस मापदंड के अंतर्गत वे पृष्ठ आते हैं जिनपर साफ़ दिखाई दे रहा धोखा हो।'
-	});
-	result.push({
+	},
+	{
 		label: 'व5. ख़ाली पृष्ठ',
 		value: 'खाली',
 		tooltip: 'इसमें वे सभी पृष्ठ आते हैं जिनमें कोई सामग्री नहीं है, और न ही किसी पुराने अवतरण में थी।'
-	});
-	if (!multiple) {
-		result.push({
-			label: 'व6. साफ़ कॉपीराइट उल्लंघन',
-			value: 'कॉपीराइट',
-			tooltip: 'इस मापदंड में वे सभी पृष्ठ आते हैं जो साफ़ तौर पर कॉपीराइट उल्लंघन हैं और जिनके इतिहास में उल्लंघन से मुक्त कोई भी अवतरण नहीं है। इसमें वे पृष्ठ भी आते हैं जिनपर डाली गई सामग्री का कॉपीराइट स्वयं उसी सदस्य के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है। इस मापदंड का प्रयोग तभी किया जाना चाहिये यदि पृष्ठ व6ल, व6फ़, अथवा व6स के अंतर्गत न आता हो।'
-		});
+	},
+	{
+		label: 'व6. साफ़ कॉपीराइट उल्लंघन',
+		value: 'कॉपीराइट',
+		tooltip: 'इस मापदंड में वे सभी पृष्ठ आते हैं जो साफ़ तौर पर कॉपीराइट उल्लंघन हैं और जिनके इतिहास में उल्लंघन से मुक्त कोई भी अवतरण नहीं है। इसमें वे पृष्ठ भी आते हैं जिनपर डाली गई सामग्री का कॉपीराइट स्वयं उसी सदस्य के पास है और सदस्य ने उसका पहला प्रकाशन किसी मुक्त लाइसेंस के अंतर्गत नहीं किया है। इस मापदंड का प्रयोग तभी किया जाना चाहिये यदि पृष्ठ व6ल, व6फ़, अथवा व6स के अंतर्गत न आता हो।',
+		subgroup: {
+				name: 'copyvio_url',
+				type: 'input',
+				label: 'स्रोत यू॰आर॰एल: ',
+				tooltip: 'कृपया स्रोत यू॰आर॰एल बताएँ, http अथवा https समेत।',
+				size: 60
+			},
+		hideWhenMultiple: true
 	}
-	return result;
-};
+];
 
 Twinkle.speedy.normalizeHash = {
 	'कारण': 'शीह',
@@ -762,36 +938,21 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var code, i;
+			var code, parameters, i;
 			if (params.normalizeds.length > 1)
 			{
-				params.inputs = {};
 				code = "{{शीह-अनेक";
-				var breakFlag = false;
 				$.each(params.normalizeds, function(index, norm) {
 					code += "|" + norm;
-					params.input = Twinkle.speedy.getParameters(params.values[index], norm, statelem);
-					if (!params.input) {
-						breakFlag = true;
-						return false;  // the user aborted
-					}
-					$.extend(params.inputs, params.input);
-					for (i in params.input) {
-						if (typeof params.input[i] === 'string') {
-							code += "|" + params.input[i];
+					parameters = params.templateParams[index] || [];
+					for (i in parameters) {
+						if (typeof parameters[i] === 'string') {
+							code += "|" + parameters[i];
 						}
 					}
 				});
-				if (breakFlag) {
-					return;
-				}
-			}
-			else
-			{
-				params.input = Twinkle.speedy.getParameters(params.values[0], params.normalizeds[0], statelem);
-				if (!params.input) {
-					return;  // the user aborted
-				}
+			} else {
+				parameters = params.templateParams[0] || [];
 				code = "{{शीह-";
 				if (params.value === 'talk') {
 					code+= "कारण|हटाए गए पृष्ठ का वार्ता पृष्ठ";
@@ -799,9 +960,9 @@ Twinkle.speedy.callbacks = {
 				else {
 				code+= params.values[0];
 				}
-				for (i in params.input) {
-					if (typeof params.input[i] === 'string') {
-						code += "|" + params.input[i];
+				for (i in parameters) {
+					if (typeof parameters[i] === 'string') {
+						code += "|" + parameters[i];
 					}
 				}
 			}
@@ -839,7 +1000,13 @@ Twinkle.speedy.callbacks = {
 				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 				editsummary += ')।';
 			} else if (params.normalizeds[0] === 'शीह') {
-				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"' + params.input.dbreason + '\"।';
+				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"';
+				for (i in parameters) {
+					if (typeof parameters[i] === 'string') {
+						editsummary += parameters[i];
+					}
+				}
+				editsummary += '\"।';
 			} else if (params.values[0] === 'talk') {
 				editsummary =  'शीघ्र हटाने का नामांकन (हटाए गए पृष्ठ का वार्ता पृष्ठ)';
 			} else {
@@ -854,7 +1021,7 @@ Twinkle.speedy.callbacks = {
 			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 		},
 		tagComplete: function(pageobj) {
-			var params = pageobj.getCallbackParameters();
+			var params = pageobj.getCallbackParameters(), parameters;
 
 			// Notification to first contributor
 			if (params.usertalk) {
@@ -878,15 +1045,22 @@ Twinkle.speedy.callbacks = {
 					{
 						case 'कारण':
 							notifytext += "कारण|" + Morebits.pageNameNorm;
+							parameters = params.templateParams[0] || [];
+							for (var i in parameters) {
+								if (typeof parameters[i] === 'string' && parameters[i]!=='') {
+									notifytext += '|' + parameters[i];
+								}
+							}
 							break;
 						case 'talk':
 							notifytext += "कारण|" + Morebits.pageNameNorm + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 							break;
 						default:
 							notifytext += params.normalizeds[0] + "|" + Morebits.pageNameNorm;
-							for (var i in params.input) {
-								if (typeof params.input[i] === 'string' && i!=='name' && params.normalizeds[0]!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
-									notifytext += '|' + params.input[i];
+							parameters = params.templateParams[0] || [];
+							for (var i in parameters) {
+								if (typeof parameters[i] === 'string' && params.normalizeds[0]!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && parameters[i]!=='') {
+									notifytext += '|' + parameters[i];
 								}
 							}
 							break;
@@ -896,31 +1070,14 @@ Twinkle.speedy.callbacks = {
 					notifytext += 'अनेक' + '|' + mw.config.get('wgPageName');
 					$.each(params.normalizeds, function(index, norm) {
 						notifytext += "|" + norm;
-						switch (norm) {
-							case 'शीह':
-								notifytext += "|" + params.inputs.dbreason;
-								break;
-							case 'व6':
-							case 'व6ल':
-							case 'व6फ़':
-							case 'व6स':
-								notifytext += "|" + params.inputs.source;
-								break;
-							case 'ल4':
-								notifytext += "|" + params.inputs.art;
-								break;
-							case 'फ़2':
-								notifytext += "|" + params.inputs.cfile;
-								break;
-							case 'फ़5':
-								notifytext += "|" + params.inputs.altfile;
-								break;
-							case 'सा1':
-								notifytext += "|" + params.inputs.template;
-								break;
-							default:
-								break;
+//						if (['शीह', 'व6', 'व6ल', 'व6फ़', 'व6स', 'ल4', 'फ़2', 'फ़5', 'सा1'].indexOf(norm) !== -1) {
+						parameters = params.templateParams[index] || [];
+						for (i in parameters) {
+							if (typeof parameters[i] === 'string') {
+								notifytext += "|" + parameters[i];
+							}
 						}
+//						}
 					});
 				}
 				notifytext +="}}~~~~";
@@ -1002,86 +1159,112 @@ Twinkle.speedy.callbacks = {
 	}
 };
 
-// prompts user for parameters to be passed into the speedy deletion tag
-Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
-{
-	var parameters = {};
-	switch( normalized ) {
-		case 'शीह':
-			var dbrationale = prompt('कृपया शीघ्र हटाने के लिये कारण दें।   \n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
-			if (!dbrationale || !dbrationale.replace(/^\s*/, "").replace(/\s*$/, ""))
-			{
-				statelem.error( 'कारण बताना आवश्यक है।  नामांकन रोक दिया गया है।' );
-				return null;
-			}
-//			parameters.name = "कारण";
-			parameters.dbreason = dbrationale;
-			break;
-		case 'व6':
-		case 'व6ल':
-		case 'व6फ़':
-		case 'व6स':
-			var url = prompt( 'कृपया स्रोत यू॰आर॰एल बताएँ, http समेत', "" );
-			
-			if (url === "" || !url)
-			{
-				statelem.error( 'आपने स्रोत यू॰आर॰एल नहीं दिया है। नामांकन रोक दिया गया है।' );
-				return null;
-			}
-			else if (url.indexOf("http") !== 0)
-			{
-				statelem.error( 'आपने जो स्रोत यू॰आर॰एल दिया है, वह http से नहीं शुरू होता। नामांकन रोक दिया गया है।' );
-				return null;
-			}
-//			parameters.name = "स्रोत यू॰आर॰एल";
-			parameters.source = url;
-			break;
-		case 'ल4':
-			var article = prompt( 'कृपया मूल लेख का नाम बताएँ', "");
-			var oarticle = new Morebits.wiki.page(article);
-			if (article === "" || !article)
-			{
-				statelem.error( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				return null;
-			}
-//			parameters.name = "मूल लेख";
-			parameters.art = article;
-			break;
-		case 'फ़2':
-			var cfile = prompt( 'कृपया कॉमन्स पर फ़ाइल का नाम बताएँ', "");
-			
-			if (cfile === "" || !cfile)
-			{
-				statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				return null;
-			}
-//			parameters.name = "कॉमन्स पर फ़ाइल";
-			parameters.cfile = cfile;
-			break;
-		case 'फ़5':
-			var alternative = prompt( 'कृपया मुक्त विकल्प का नाम बताएँ।', "");
-			
-			if (alternative === "" || !alternative)
-			{
-				statelem.error( 'आपने मुक्त विकल्प का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				return null;
-			}
-//			parameters.name = "मुक्त विकल्प";
-			parameters.altfile = alternative;
-			break;
-		case 'सा1':
-			var bettertemplate = prompt( 'कृपया बेहतर साँचे का नाम बताएँ:', "" );
-			if (bettertemplate === "" || !bettertemplate)
-			{
-				statelem.error( 'आपने बेहतर साँचे का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				return null;
-			}
-//			parameters.name = "बेहतर साँचा";
-			parameters.template = bettertemplate;
-			break;
-		default:
-			break;
-	}
+// validate subgroups in the form passed into the speedy deletion tag
+Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values) {
+	var parameters = [];
+
+	$.each(values, function(index, value) {
+		var currentParams = [];
+		switch (value) {
+			case 'कारण':
+				if (form["csd.reason_1"]) {
+					var dbrationale = form["csd.reason_1"].value;
+					if (!dbrationale || !dbrationale.trim()) {
+						alert( 'कारण बताना आवश्यक है।  नामांकन रोक दिया गया है।' );
+						parameters = null;
+						return false;
+					}
+					currentParams["1"] = dbrationale;
+				}
+				break;
+
+			case 'कॉपीराइट':
+			case 'कॉपीराइट लेख':
+			case 'कॉपीराइट फ़ाइल':
+			case 'कॉपीराइट सदस्य':
+				if (form["csd.copyvio_url"] && form["csd.copyvio_url"].value) {
+					copyvio_url = form["csd.copyvio_url"].value;
+					if (!copyvio_url || !copyvio_url.trim()) {
+						alert( 'आपने स्रोत यू॰आर॰एल नहीं दिया है। नामांकन रोक दिया गया है।' );
+						parameters = null;
+						return false;
+					}
+					if (copyvio_url.indexOf("http") !== 0) {
+						alert( 'आपने जो स्रोत यू॰आर॰एल दिया है, वह http से नहीं शुरू होता। नामांकन रोक दिया गया है।' );
+						parameters = null;
+						return false;
+					}
+					currentParams["1"] = copyvio_url;
+				}
+				break;
+
+			case 'प्रतिलिपि':
+				if (form["csd.copypaste_1"]) {
+					var copypaste = form["csd.copypaste_1"].value;
+					if (!copypaste || !copypaste.trim()) {
+						alert( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						parameters = null;
+						return false;
+					}
+					currentParams["1"] = copypaste;
+				}
+				break;
+
+			case 'कॉमन्स':
+				if (form["csd.nowcommons_filename"]) {
+					var filename = form["csd.nowcommons_filename"].value;
+					if (filename && filename !== Morebits.pageNameNorm) {
+						if (filename.indexOf("Image:") === 0
+							|| filename.indexOf("File:") === 0
+							|| filename.indexOf("चित्र:") === 0) {
+							currentParams["1"] = filename;
+						} else {
+							currentParams["1"] = "File:" + filename;
+						}
+					}
+					else {
+						alert( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						parameters = null;
+						return false;
+					}
+				}
+				break;
+
+			case 'मुक्त विकल्प':
+				if (form["csd.free_alternative_filename"]) {
+					var altfile = form["csd.free_alternative_filename"].value;
+					if (!altfile || !altfile.trim()) {
+						alert( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						parameters = null;
+						return false;
+					}
+					if (altfile.indexOf("Image:") === 0
+						|| altfile.indexOf("File:") === 0
+						|| altfile.indexOf("चित्र:") === 0) {
+						currentParams["1"] = altfile;
+					} else {
+						currentParams["1"] = "File:" + altfile;
+					}
+				}
+				break;
+
+			case 'पुराना साँचा':
+				if (form["csd.better_template"]) {
+					var bettertemplate = form["csd.better_template"].value;
+					if (!bettertemplate || !bettertemplate.trim()) {
+						alert( 'आपने बेहतर साँचे का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						parameters = null;
+						return false;
+					}
+					currentParams["1"] = bettertemplate;
+				}
+				break;
+
+			default:
+				break;
+		}
+		parameters.push(currentParams);
+	});
 	return parameters;
 };
 
@@ -1128,7 +1311,8 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
 	var form = (e.target.form ? e.target.form : e.target);
 
-	if (e.target.type === "checkbox") {
+	if (e.target.type === "checkbox" || e.target.type === "text" || 
+			e.target.type === "select") {
 		return;
 	}
 
@@ -1190,8 +1374,12 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		watch: watchPage,
 		usertalk: notifyuser,
 //		welcomeuser: welcomeuser,
-		lognomination: csdlog
+		lognomination: csdlog,
+		templateParams: Twinkle.speedy.getParameters( form, values )
 	};
+	if (!params.templateParams) {
+		return;
+	}
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
