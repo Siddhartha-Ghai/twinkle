@@ -833,7 +833,7 @@ Twinkle.tag.callbacks = {
 		    tags = [], groupableTags = [],
 
 		// Remove tags that become superfluous with this action
-			pageText = pageobj.getPageText().replace(/\{\{\s*(नया असमीक्षित लेख|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, ""),
+			pageText = pageobj.getPageText().replace(/\{\{\s*(नया असमीक्षित लेख|[Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, ""),
 
 		    i;
 		
