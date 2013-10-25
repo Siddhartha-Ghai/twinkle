@@ -1671,6 +1671,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		revertCurID: null,
 		revertUser: null,
 		fullyProtected: false,
+		suppressProtectWarning: false,
 		conflictRetries: 0,
 		retries: 0,
 		 // callbacks
@@ -1846,6 +1847,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
+	this.suppressProtectWarning = function() {
+		ctx.suppressProtectWarning = true;
+	};
+
 	this.exists = function() {
 		return ctx.pageExists;
 	};
@@ -1908,7 +1913,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		if (ctx.fullyProtected && !confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
+		if (ctx.fullyProtected && !ctx.suppressProtectWarning && 
+			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
 			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
 			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
 			ctx.statusElement.error("Edit to fully protected page was aborted.");
@@ -2442,7 +2448,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// extract protection info
 		if (Morebits.userIsInGroup('sysop')) {
 			var editprot = $(xml).find('pr[type="edit"]');
-			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !confirm('You are about to move the fully protected page "' + ctx.pageName +
+			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning && 
+				!confirm('You are about to move the fully protected page "' + ctx.pageName +
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
 				ctx.statusElement.error("Move of fully protected page was aborted.");
@@ -2494,7 +2501,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// extract protection info
 		var editprot = $(xml).find('pr[type="edit"]');
-		if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !confirm('You are about to delete the fully protected page "' + ctx.pageName +
+		if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
+			!confirm('You are about to delete the fully protected page "' + ctx.pageName +
 			(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 			'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
 			ctx.statusElement.error("Deletion of fully protected page was aborted.");

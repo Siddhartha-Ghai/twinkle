@@ -1175,6 +1175,7 @@ Twinkle.protect.callbacks = {
 		protectedPage.setEditSummary( summary );
 		protectedPage.setPageText( text );
 		protectedPage.setCreateOption( 'nocreate' );
+		protectedPage.suppressProtectWarning(); // no need to let admins know they are editing through protection
 		protectedPage.save();
 	},
 
