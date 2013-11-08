@@ -160,6 +160,18 @@ Twinkle.config.sections = [
 },
 
 {
+	title: "ARV",
+	preferences: [
+		{
+			name: "spiWatchReport",
+			label: "Add sockpuppet report pages to watchlist",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		}
+	]
+},
+
+{
 	title: "Revert and rollback",  // twinklefluff module
 	preferences: [
 		// TwinkleConfig.openTalkPage (array)
