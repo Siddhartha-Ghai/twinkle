@@ -108,6 +108,7 @@ Twinkle.protect.protectionLevel = null;
 Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
 	var xml = apiobj.getXML();
 	var result = [];
+	var current = [];
 
 	$(xml).find('pr, flagged').each(function(index, protectionEntry) {
 		var $protectionEntry = $(protectionEntry);
@@ -123,7 +124,7 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 			expiry = $protectionEntry.attr('expiry');
 			cascade = $protectionEntry.attr('cascade') === '';
 		}
-		
+		current.push({type: type, level: level, expiry: expiry, cascade: cascade});
 		var boldnode = document.createElement('b');
 		boldnode.textContent = type + ": " + level;
 		result.push(boldnode);
@@ -143,6 +144,7 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 		result.push(boldnode);
 	}
 	Twinkle.protect.protectionLevel = result;
+	Twinkle.protect.currentProtectionLevel = current;
 	apiobj.statelem.info(result);
 	window.setTimeout(function() { Morebits.wiki.actionCompleted.postfix = "completed"; }, 500);  // restore actionCompleted message
 };
@@ -619,6 +621,13 @@ Twinkle.protect.protectionTypesCreate = [
 		]
 	}
 ];
+
+Twinkle.protect.protectionWeight = {
+	sysop: 3,
+	templateeditor: 2,
+	autoconfirmed: 1,
+	all: 0
+};
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
 // Also note: stabilize = Pending Changes level
@@ -1277,10 +1286,23 @@ Twinkle.protect.callbacks = {
 			Morebits.string.formatReasonText(params.reason) ) : ".'''" ) + " ~~~~";
 
 		var reg;
-		if ( params.category === 'unprotect' ) {
-			reg = /(\n==\s*सुरक्षा हटाने हेतु वर्तमान अनुरोध\s*==\s*)/;
-		} else {
+
+		// If either protection type results in a increased status, then post it under increase
+		// else we post it under decrease
+		var increase = false;
+
+		$.each(Twinkle.protect.currentProtectionLevel, function(i,v){
+			if( Twinkle.protect.protectionWeight[Twinkle.protect.protectionPresetsInfo[params.category][v.type]] >
+				Twinkle.protect.protectionWeight[v.level] )	{
+				increase = true;
+				return false;
+			}
+		});
+
+		if ( increase || Twinkle.protect.currentProtectionLevel.length === 0 ) {
 			reg = /(\n==\s*सुरक्षित करने हेतु वर्तमान अनुरोध\s*==\s*)/;
+		} else {
+			reg = /(\n==\s*सुरक्षा हटाने हेतु वर्तमान अनुरोध\s*==\s*)/;
 		}
 		var originalTextLength = text.length;
 		text = text.replace( reg, "$1" + newtag + "\n");
