@@ -306,7 +306,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText('{{हहेच लेख|कारण=' + params.reason + "}}\n" + text);
-			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[विकिपीडिया:पृष्ठ हटाने हेतु चर्चा/लेख/" + mw.config.get('wgTitle') + "|चर्चा पृष्ठ]]।" + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[वि:पृष्ठ हटाने हेतु चर्चा/लेख/" + mw.config.get('wgTitle') + "|चर्चा पृष्ठ]]।" + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
