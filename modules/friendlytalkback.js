@@ -51,6 +51,10 @@ Twinkle.talkback.callback = function( ) {
 						value: "other"
 					},
 					{
+						label: "\"Please see\"",
+						value: "see"
+					},
+					{
 						label: "सूचनापट पर",
 						value: "notice"
 					}
@@ -230,6 +234,22 @@ var callback_change_target = function( e ) {
 					value: prev_section
 				});
 			break;
+		case "see":
+			work_area.append({
+					type:"input",
+					name:"page",
+					label:"पृष्ठ का पूरा नाम",
+					tooltip:"उस पृष्ठ का पूरा नाम जहाँ चर्चा हो रही है। उदाहरण: 'विकिपीडिया वार्ता:Twinkle'",
+					value: prev_page
+				});
+			work_area.append({
+					type:"input",
+					name:"section",
+					label:"सम्बंधित अनुभाग (वैकल्पिक)",
+					tooltip:"उस अनुभाग का नाम जहाँ चर्चा चल रही है।",
+					value: prev_section
+				});
+			break;
 	}
 
 	if (value !== "notice") {
@@ -254,7 +274,7 @@ var callback_evaluate = function( e ) {
 	var section = e.target.section.value;
 	var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[ mw.config.get("wgNamespaceIds").user_talk ] + ":" + mw.config.get('wgRelevantUserName');
 
-	if( tbtarget === "usertalk" || tbtarget === "other" ) {
+	if( tbtarget === "usertalk" || tbtarget === "other" || tbtarget === "see" ) {
 		page = e.target.page.value;
 		
 		if( tbtarget === "usertalk" ) {
@@ -291,6 +311,13 @@ var callback_evaluate = function( e ) {
 			text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
 			text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=विकिपीडिया:प्रबंधक सूचनापट}} --~~~~";
 			talkpage.setEditSummary( "प्रबंधक सूचनापट पर चर्चा का नोटिस" + Twinkle.getPref("summaryAd") );
+	} else if ( tbtarget === "see" ) {
+		text = "\n\n{{subst:Please see|location=" + tbPageName;
+		if (section) {
+			text += "#" + section;
+		}
+		text += "|more=" + message.trim() + "}}";
+		talkpage.setEditSummary("कृपया [[" + tbPageName + "#" + section + "]] पर चर्चा देखें" + Twinkle.getPref("summaryAd"));
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n\n{{सन्देश|";
