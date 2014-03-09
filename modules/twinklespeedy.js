@@ -442,7 +442,7 @@ Twinkle.speedy.callbacks = {
 
 			params.input = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);	
 			
-			if(!Twinkle.speedy.cont) {
+			if(!params.input) {
 			return;
 			}
 			
@@ -624,7 +624,7 @@ Twinkle.speedy.callbacks = {
 			params.input = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);
 			}
 
-			if(!Twinkle.speedy.cont) {
+			if(!params.input) {
 			return;
 			}
 			
@@ -745,7 +745,7 @@ Twinkle.speedy.callbacks = {
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('nocreate');
-			if (!params.usertalk && !params.lognomination && !Twinkle.speedy.cont) {
+			if (!params.usertalk && !params.lognomination) {
 			return;}
 			pageobj.save();
 		},
@@ -797,10 +797,6 @@ Twinkle.speedy.callbacks = {
 			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को शीघ्र हटाने का नामांकन।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			usertalkpage.setFollowRedirect(true);
-
-			if(!Twinkle.speedy.cont) {
-				return;
-			}
 
 			usertalkpage.append();
 
@@ -870,9 +866,6 @@ Twinkle.speedy.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary("[[" + mw.config.get('wgPageName') + "]] के शीघ्र हटाने के नामांकन का लॉग।" + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
-			if (!Twinkle.speedy.cont) {
-				return;
-			}
 			pageobj.save();
 		}
 	}
@@ -882,14 +875,13 @@ Twinkle.speedy.callbacks = {
 Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
 {
 	var parameters = {};
-	Twinkle.speedy.cont = true;
 	switch( normalized ) {
 		case 'शीह':
 			var dbrationale = prompt('कृपया शीघ्र हटाने के लिये कारण दें।   \n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
 			if (!dbrationale || !dbrationale.replace(/^\s*/, "").replace(/\s*$/, ""))
 			{
 				statelem.error( 'कारण बताना आवश्यक है।  नामांकन रोक दिया गया है।' );
-				Twinkle.speedy.cont = false;
+				return null;
 			}
 			parameters.name = "कारण";
 			parameters.dbreason = dbrationale;
@@ -900,15 +892,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 		case 'व6स':
 			var url = prompt( 'कृपया स्रोत यू॰आर॰एल बताएँ, http समेत', "" );
 			
-			if (url === "")
+			if (url === "" || !url)
 			{
 				statelem.error( 'आपने स्रोत यू॰आर॰एल नहीं दिया है। नामांकन रोक दिया गया है।' );
-				Twinkle.speedy.cont = false;
+				return null;
 			}
-			else if (url.indexOf("http")!==0)
+			else if (url.indexOf("http") !== 0)
 			{
 				statelem.error( 'आपने जो स्रोत यू॰आर॰एल दिया है, वह http से नहीं शुरू होता। नामांकन रोक दिया गया है।' );
-				Twinkle.speedy.cont = false;
+				return null;
 			}
 			parameters.name = "स्रोत यू॰आर॰एल";
 			parameters.source = url;
@@ -916,16 +908,16 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 		case 'ल4':
 			var article = prompt( 'कृपया मूल लेख का नाम बताएँ', "");
 			var oarticle = new Morebits.wiki.page(article);
-			if (article === "")
+			if (article === "" || !article)
 			{
 				statelem.error( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				Twinkle.speedy.cont = false;
+				return null;
 			}
 			oarticle.load(function loadsuccess() {
 			if (!oarticle.exists())
 				{
 					statelem.error( 'आपने जो नाम दिया है, इस नाम का कोई लेख नहीं है। नामांकन रोक दिया गया है।' );
-					Twinkle.speedy.cont = false;
+					return null;
 				}
 			});
 			parameters.name = "मूल लेख";
@@ -934,10 +926,10 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 		case 'फ़2':
 			var cfile = prompt( 'कृपया कॉमन्स पर फ़ाइल का नाम बताएँ', "");
 			
-			if (cfile === "")
+			if (cfile === "" || !cfile)
 			{
 				statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				Twinkle.speedy.cont = false;
+				return null;
 			}
 			parameters.name = "कॉमन्स पर फ़ाइल";
 			parameters.cfile = cfile;
@@ -945,20 +937,20 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 		case 'फ़5':
 			var alternative = prompt( 'कृपया मुक्त विकल्प का नाम बताएँ।', "");
 			
-			if (alternative === "")
+			if (alternative === "" || !alternative)
 			{
 				statelem.error( 'आपने मुक्त विकल्प का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				Twinkle.speedy.cont = false;
+				return null;
 			}
 			parameters.name = "मुक्त विकल्प";
 			parameters.altfile = alternative;
 			break;
 		case 'सा1':
 			var bettertemplate = prompt( 'कृपया बेहतर साँचे का नाम बताएँ:', "" );
-			if (bettertemplate === "")
+			if (bettertemplate === "" || !bettertemplate)
 			{
 				statelem.error( 'आपने बेहतर साँचे का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				Twinkle.speedy.cont = false;
+				return null;
 			}
 			parameters.name = "बेहतर साँचा";
 			parameters.template = bettertemplate;
@@ -1168,11 +1160,14 @@ Twinkle.speedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 		{
 			var parameters = Twinkle.speedy.getParameters(value, normalized, Morebits.status);
 			Twinkle.speedy.dbmultipleparams.push(normalized);
+			if (parameters)
+			{
 			$.each(parameters, function addparams(prop, val) {
 				if (typeof val === 'string' && prop!== 'name') {
 					Twinkle.speedy.dbmultipleparams.push(val);
 				}
 			});
+			}
 		}
 		form.style.display = "none"; // give the user a cue that the dialog is being changed
 		setTimeout(function() {
