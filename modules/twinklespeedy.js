@@ -629,6 +629,16 @@ Twinkle.speedy.callbacks = {
 	},
 
 	user: {
+		lookupCreator: function(pageobj) {
+			pageobj.lookupCreator(Twinkle.speedy.callbacks.user.getCreator);
+		},
+		getCreator: function(pageobj) {
+			var params = pageobj.getCallbackParameters();
+			params.initialContrib = pageobj.getCreator();
+			params.self = (params.initialContrib === mw.config.get('wgUserName')) ? true : false;
+			pageobj.setCallbackParameters(params);
+			Twinkle.speedy.callbacks.user.main(pageobj);
+		},
 		main: function(pageobj) {
 			var statelem = pageobj.getStatusElement();
 
@@ -641,7 +651,7 @@ Twinkle.speedy.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			
 			if(params.normalizeds.indexOf('स1') === -1) {
-				if(Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
+				if(params.self && Twinkle.getPref('NotifySelfSpeedy')) { //???
 					if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
 						statelem.error("नामांकन रद्द कर दिया गया है।");
 						return;
@@ -649,9 +659,9 @@ Twinkle.speedy.callbacks = {
 				}
 			}
 			
-			statelem.status( 'Checking for tags on the page...' );
+			statelem.status( 'पृष्ठ को मौजूदा टैगों के लिए जाँचा जा रहा है...' );
 			// check for existing deletion tags
-			var tag = /(\{\{(शीह|हटाएँ)-[a-zA-Z0-9\u0900-\u097F]*\}\})/.exec( text );
+			var tag = /(\{\{(शीह|हटाएँ|शीह-.*?|हटाएँ-.*?)(?:\s*\||\s*\}\}))/.exec( text );
 			if( tag ) {
 				statelem.error( [ Morebits.htmlNode( 'strong', tag[1] ) , " पहले से पृष्ठ पर है।" ] );
 				return;
@@ -706,7 +716,7 @@ Twinkle.speedy.callbacks = {
 					}
 				}
 			}
-			if (Twinkle.speedy.self) {
+			if (params.self) {
 				code += "|स्वयं=हाँ";
 			}
 			code += "}}";
@@ -715,15 +725,6 @@ Twinkle.speedy.callbacks = {
 			// patrol the page, if reached from Special:NewPages
 			if( Twinkle.getPref('markSpeedyPagesAsPatrolled') ) {
 				thispage.patrol();
-			}
-
-			// Notification to first contributor			
-			if (params.usertalk) {
-				Twinkle.speedy.callbacks.user.notifyuser (params);
-			}
-			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			else if (params.lognomination) {
-				Twinkle.speedy.callbacks.user.addToLog(params, null);
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.
@@ -756,96 +757,106 @@ Twinkle.speedy.callbacks = {
 				editsummary = "शीघ्र हटाने का नामांकन ([[वि:हटाना#" + params.normalizeds[0] + "|शीह " + params.normalizeds[0] + "]])।";
 			}
 
+			pageobj.setCallbackParameters(params);
 			pageobj.setPageText(code + "\n" + text);
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('nocreate');
-			pageobj.save();
+			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 		},
-		notifyuser: function (params) {
-			// don't notify users when their user talk page is nominated
-			if (Twinkle.speedy.initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-				Status.warn("सूचना साँचा नहीं जोड़ा जाएगा।"); 
-				return;
-			}
-			
-			if (Twinkle.speedy.self && Twinkle.getPref('NotifySelfSpeedy')) {
-				alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
-				return;
-			}
-			
-			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + Twinkle.speedy.initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + Twinkle.speedy.initialContrib + ")");
-			var notifytext = "\n\n{{subst:शीह सूचना-";
-			if (params.normalizeds.length === 1) {
-				// specialcase "db" and "talk"
-				switch (params.values[0])
-				{
-					case 'कारण':
-						notifytext += "कारण|" + mw.config.get('wgPageName');
-						break;
-					case 'talk':
-						notifytext += "कारण|" + mw.config.get('wgPageName') + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
-						break;
-					default:
-						notifytext += params.normalizeds[0] + "|" + mw.config.get('wgPageName');
-						for (var i in params.input) {
-							if (typeof params.input[i] === 'string' && i!=='name' && params.normalizeds[0]!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
-								notifytext += '|' + params.input[i];
-							}
-						}
-						break;
+		tagComplete: function(pageobj) {
+			var params = pageobj.getCallbackParameters();
+
+			// Notification to first contributor
+			if (params.usertalk) {
+//				Twinkle.speedy.callbacks.user.notifyuser (params);
+				// don't notify users when their user talk page is nominated
+				if (params.initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
+					Status.warn("सूचना साँचा नहीं जोड़ा जाएगा।"); 
+					return;
 				}
-			}
-			else {
-				notifytext += 'अनेक' + '|' + mw.config.get('wgPageName');
-				$.each(params.normalizeds, function(index, norm) {
-					notifytext += "|" + norm;
-					switch (norm) {
-						case 'शीह':
-							notifytext += "|" + params.inputs.dbreason;
+				
+				if (params.self && Twinkle.getPref('NotifySelfSpeedy')) {
+					alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
+					return;
+				}
+				
+				var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + params.initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + params.initialContrib + ")");
+				var notifytext = "\n\n{{subst:शीह सूचना-";
+				if (params.normalizeds.length === 1) {
+					// specialcase "db" and "talk"
+					switch (params.values[0])
+					{
+						case 'कारण':
+							notifytext += "कारण|" + mw.config.get('wgPageName');
 							break;
-						case 'व6':
-						case 'व6ल':
-						case 'व6फ़':
-						case 'व6स':
-							notifytext += "|" + params.inputs.source;
-							break;
-						case 'ल4':
-							notifytext += "|" + params.inputs.art;
-							break;
-						case 'फ़2':
-							notifytext += "|" + params.inputs.cfile;
-							break;
-						case 'फ़5':
-							notifytext += "|" + params.inputs.altfile;
-							break;
-						case 'सा1':
-							notifytext += "|" + params.inputs.template;
+						case 'talk':
+							notifytext += "कारण|" + mw.config.get('wgPageName') + "|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 							break;
 						default:
+							notifytext += params.normalizeds[0] + "|" + mw.config.get('wgPageName');
+							for (var i in params.input) {
+								if (typeof params.input[i] === 'string' && i!=='name' && params.normalizeds[0]!==('व6' || 'व6ल' || 'व6फ़' || 'व6स') && params.input[i]!=='') {
+									notifytext += '|' + params.input[i];
+								}
+							}
 							break;
 					}
-				});
+				}
+				else {
+					notifytext += 'अनेक' + '|' + mw.config.get('wgPageName');
+					$.each(params.normalizeds, function(index, norm) {
+						notifytext += "|" + norm;
+						switch (norm) {
+							case 'शीह':
+								notifytext += "|" + params.inputs.dbreason;
+								break;
+							case 'व6':
+							case 'व6ल':
+							case 'व6फ़':
+							case 'व6स':
+								notifytext += "|" + params.inputs.source;
+								break;
+							case 'ल4':
+								notifytext += "|" + params.inputs.art;
+								break;
+							case 'फ़2':
+								notifytext += "|" + params.inputs.cfile;
+								break;
+							case 'फ़5':
+								notifytext += "|" + params.inputs.altfile;
+								break;
+							case 'सा1':
+								notifytext += "|" + params.inputs.template;
+								break;
+							default:
+								break;
+						}
+					});
+				}
+				notifytext +="}}~~~~";
+
+				usertalkpage.setAppendText(notifytext);
+				usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को शीघ्र हटाने का नामांकन।" + Twinkle.getPref('summaryAd'));
+				usertalkpage.setCreateOption('recreate');
+				usertalkpage.setFollowRedirect(true);
+
+				usertalkpage.append();
+				// add this nomination to the user's userspace log, if the user has enabled it
+				if (params.lognomination) {
+					Twinkle.speedy.callbacks.user.addToLog(params, params.initialContrib);
+				}
 			}
-			notifytext +="}}~~~~";
-
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को शीघ्र हटाने का नामांकन।" + Twinkle.getPref('summaryAd'));
-			usertalkpage.setCreateOption('recreate');
-			usertalkpage.setFollowRedirect(true);
-
-			usertalkpage.append();
-
-			// add this nomination to the user's userspace log, if the user has enabled it
-			if (params.lognomination) {
-				Twinkle.speedy.callbacks.user.addToLog(params);
+			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
+			else if (params.lognomination) {
+				Twinkle.speedy.callbacks.user.addToLog(params, null);
 			}
 		},
-
 		// the params used are:
 		//   for CSD: params.values, params.normalizeds  (note: normalizeds is an array)
-		addToLog: function(params) {
+		addToLog: function(params, initialContrib) {
 			var wikipedia_page = new Morebits.wiki.page("सदस्य:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
+			params.logInitialContrib = initialContrib;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.speedy.callbacks.user.saveLog);
 		},
@@ -887,8 +898,8 @@ Twinkle.speedy.callbacks = {
 				text += "[[वि:हटाना#" + params.normalizeds[0] + "|शीह " + params.normalizeds[0] + "]] ({{tl|शीह-" + params.values[0] + "}})";
 			}
 
-			if (params.usertalk) {
-				text += "; {{सदस्य|1=" + Twinkle.speedy.initialContrib + "}} को सूचित किया";
+			if (params.logInitialContrib) {
+				text += "; {{सदस्य|1=" + params.logInitialContrib + "}} को सूचित किया";
 			}
 			text += " ~~~~~\n";
 
@@ -903,7 +914,7 @@ Twinkle.speedy.callbacks = {
 // prompts user for parameters to be passed into the speedy deletion tag
 Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
 {
-	var parameters = {}, oart;
+	var parameters = {};
 	switch( normalized ) {
 		case 'शीह':
 			var dbrationale = prompt('कृपया शीघ्र हटाने के लिये कारण दें।   \n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
@@ -940,17 +951,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			if (article === "" || !article)
 			{
 				statelem.error( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-				return null;
-			}
-			oarticle.load(function loadsuccess() {
-			if (!oarticle.exists())
-				{
-					statelem.error( 'आपने जो नाम दिया है, इस नाम का कोई लेख नहीं है। नामांकन रोक दिया गया है।' );
-					oart = null;
-					return null;
-				}
-			});
-			if (!oart) {
 				return null;
 			}
 //			parameters.name = "मूल लेख";
@@ -1112,11 +1112,5 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "पृष्ठ टैग हो रहा है");
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(function (params) {
-		wikipedia_page.lookupCreator(function() {
-			Twinkle.speedy.initialContrib = wikipedia_page.getCreator();
-			Twinkle.speedy.self = (Twinkle.speedy.initialContrib === mw.config.get('wgUserName')) ? true : false;
-			Twinkle.speedy.callbacks.user.main(params);
-		});
-	});
+	wikipedia_page.load(Twinkle.speedy.callbacks.user.lookupCreator);
 };
