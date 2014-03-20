@@ -460,32 +460,82 @@ Twinkle.speedy.callbacks = {
 			var thispage = new Morebits.wiki.page( mw.config.get('wgPageName'), "पृष्ठ हटाया जा रहा है" );
 			var presetreason = "[[वि:हटाना#" + params.normalized + "|" + params.normalized + "]]." + params.reason;
 			var statelem = thispage.getStatusElement();
-			var inputparams = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);	
+//			var inputparams = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);	
 			
-			if(!inputparams) {
-			return;
-			}
+//			if(!inputparams) {
+//			return;
+//			}
 			
 			// delete page
-			var reason;
+			var input, reason;
 			switch(params.normalized) {
 				case 'शीह':
-					reason = inputparams.name + params.dbreason;
+					input = prompt('कृपया शीघ्र हटाने के लिये कारण दें।\n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
+					if (!input || !input.replace(/^\s*/, "").replace(/\s*$/, ""))
+					{
+						statelem.error( 'कारण बताना आवश्यक है।  नामांकन रोक दिया गया है।' );
+						return null;
+					}
+					reason = 'कारण: ' + input;
 					break;
-				case 'talk':
-					reason = params.reason;
+				case 'व6':
+				case 'व6ल':
+				case 'व6फ़':
+				case 'व6स':
+					input = prompt( 'कृपया स्रोत यू॰आर॰एल बताएँ, http समेत', "" );
+					
+					if (input === "" || !input)
+					{
+						statelem.error( 'आपने स्रोत यू॰आर॰एल नहीं दिया है। नामांकन रोक दिया गया है।' );
+						return null;
+					}
+					else if (input.indexOf("http") !== 0)
+					{
+						statelem.error( 'आपने जो स्रोत यू॰आर॰एल दिया है, वह http से नहीं शुरू होता। नामांकन रोक दिया गया है।' );
+						return null;
+					}
+					reason = presetreason + "स्रोत यू॰आर॰एल: " + input;
+					break;
+				case 'ल4':
+					input = prompt( 'कृपया मूल लेख का नाम बताएँ', "");
+					if (input === "" || !input)
+					{
+						statelem.error( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						return null;
+					}
+					reason = presetreason + "मूल लेख: " + input;
+					break;
+				case 'फ़2':
+					input = prompt( 'कृपया कॉमन्स पर फ़ाइल का नाम बताएँ', "");
+					
+					if (input === "" || !input)
+					{
+						statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						return null;
+					}
+					reason = presetreason + "कॉमन्स पर फ़ाइल: " + input;
+					break;
+				case 'फ़5':
+					input = prompt( 'कृपया मुक्त विकल्प का नाम बताएँ।', "");
+					
+					if (input === "" || !input)
+					{
+						statelem.error( 'आपने मुक्त विकल्प का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						return null;
+					}
+					reason = presetreason + "मुक्त विकल्प: " + input;
+					break;
+				case 'सा1':
+					input = prompt( 'कृपया बेहतर साँचे का नाम बताएँ:', "" );
+					if (input === "" || !input)
+					{
+						statelem.error( 'आपने बेहतर साँचे का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
+						return null;
+					}
+					reason = presetreason + "बेहतर साँचा: " + input;
 					break;
 				default:
 					reason = presetreason;
-					inputparams.val = '';
-					$.each(inputparams, function(prop, val){
-					if (typeof val === 'string' && prop!== 'name' && prop!== 'val' && val!=="") {
-						inputparams.val += " " + val + " ";
-						}
-					});
-					if (inputparams.val!=='') {
-					reason+=inputparams.val;
-					}
 					break;
 			}
 
