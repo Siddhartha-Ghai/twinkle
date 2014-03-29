@@ -40,7 +40,7 @@ Twinkle.fluff = {
 
 		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
 			//Get the username these contributions are for
-			username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec($('#contentSub').find('a[title^="Special:Log"]').last().attr("href").replace(/_/g, "%20"))[1]);
+			username = decodeURIComponent(/wiki\/%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7:%E0%A4%B2%E0%A5%89%E0%A4%97\/(.+)$/.exec($('#contentSub').find('a[title^="विशेष:लॉग"]').last().attr("href").replace(/_/g, "%20"))[1]);
 			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 || 
 				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) || 
 				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
