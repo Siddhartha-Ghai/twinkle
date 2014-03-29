@@ -1197,9 +1197,9 @@ Twinkle.protect.callbacks = {
 			'14': 'lc',
 			'15': 'lct',
 			'100': 'lp',
-			'101': 'lpt',
-			'108': 'lb',
-			'109': 'lbt'
+			'101': 'lpt'//,
+//			'108': 'lb',
+//			'109': 'lbt'
 		};
 
 		var linkTemplate = ns2tag[ mw.config.get('wgNamespaceNumber') ];
