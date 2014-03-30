@@ -51,7 +51,7 @@ Twinkle.talkback.callback = function( ) {
 						value: "other"
 					},
 					{
-						label: "Noticeboard notification",
+						label: "सूचनापट पर",
 						value: "notice"
 					}
 				],
@@ -289,13 +289,12 @@ var callback_evaluate = function( e ) {
 	var text;
 	if ( tbtarget === "notice" && page === "an") {
 			text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
-			text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=विकिपीडिया:प्रबंधक सूचनापट}} ~~~~";
+			text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=विकिपीडिया:प्रबंधक सूचनापट}} --~~~~";
 			talkpage.setEditSummary( "प्रबंधक सूचनापट पर चर्चा का नोटिस" + Twinkle.getPref("summaryAd") );
-			break;
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{सन्देश|";
-		text += tbPageName;
+		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n\n{{सन्देश|";
+		text += ( tbtarget === "notice" && page === "vp") ? 'विकिपीडिया:चौपाल' : tbPageName;
 
 		if( section ) {
 			text += "|" + section;
@@ -309,7 +308,8 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		talkpage.setEditSummary("सन्देश [[" + (tbtarget === "other" ? "" : "सदस्य वार्ता:") + tbPageName +
+		talkpage.setEditSummary("सन्देश [[" + ((tbtarget === "other" || tbtarget === "notice") ? "" : "सदस्य वार्ता:") +
+			(( tbtarget === "notice" && page === "vp") ? 'विकिपीडिया:चौपाल' : tbPageName) +
 			(section ? ("#" + section) : "") + "]] पर" + Twinkle.getPref("summaryAd"));
 	}
 
