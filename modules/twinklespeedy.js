@@ -209,7 +209,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 
 Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
 	var namespace = mw.config.get('wgNamespaceNumber');
-	var form = form;
 
 	// first figure out what mode we're in
 	var mode = Twinkle.speedy.mode.userSingleSubmit;
@@ -308,7 +307,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	var submitSubgroupHandler = function(e) {
 		Twinkle.speedy.callback.evaluateUser(e);
 		e.stopPropagation();
-	}
+	};
 
 	return $.map(list, function(critElement) {
 		var criterion = $.extend({}, critElement);
@@ -373,7 +372,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 
 		return criterion;
 	});
-}
+};
 
 Twinkle.speedy.talkList = [
 	{

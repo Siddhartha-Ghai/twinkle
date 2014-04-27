@@ -129,7 +129,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 	var oldreasontextbox = form.getElementsByTagName('textarea')[0];
 	var oldreason = (oldreasontextbox ? oldreasontextbox.value : '');
-	
+
 	var appendReasonBox = function twinklexfdAppendReasonBox() {
 		work_area.append( {
 			type: 'textarea',
@@ -314,7 +314,6 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		discussionPage: function(pageobj) {
-			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच लेख नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
@@ -508,7 +507,6 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		discussionPage: function(pageobj) {
-			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच साँचा नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
@@ -690,11 +688,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.append();
 		}
 	}
-
-
 };
-
-
 
 Twinkle.xfd.callback.evaluate = function(e) {
 	var type = e.target.category.value;
