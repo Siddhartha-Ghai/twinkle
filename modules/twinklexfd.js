@@ -30,14 +30,7 @@ Twinkle.xfd.currentRationale = null;
 // error callback on Morebits.status.object
 Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 	if (Twinkle.xfd.currentRationale) {
-		var p = document.createElement("p");
-		p.textContent = "आपका दिया हटाने का कारण निम्नलिखित है। यदि आप चाहें तो ट्विंकल की नई ह॰हे॰च विंडो में कॉपी कर के पुनः प्रयास कर सकते हैं:";
-		var pre = document.createElement("pre");
-		pre.className = "toccolours";
-		pre.style.marginTop = "0";
-		pre.textContent = Twinkle.xfd.currentRationale;
-		p.appendChild(pre);
-		Morebits.status.root.appendChild(p);
+		Morebits.status.printUserText(Twinkle.xfd.currentRationale, "आपका दिया हटाने का कारण निम्नलिखित है। यदि आप चाहें तो ट्विंकल की नई ह॰हे॰च विंडो में कॉपी कर के पुनः प्रयास कर सकते हैं:");
 		// only need to print the rationale once
 		Twinkle.xfd.currentRationale = null;
 	}
