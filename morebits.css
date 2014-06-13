@@ -168,35 +168,6 @@ div.morebits-previewbox .mw-editsection
 
 /* Portlet */
 
-.skin-vector div div.extraMenu h5 {
-margin-bottom: 0px;
-padding-top: 0px;
-padding-bottom: 0.05em;
-}
-
-.skin-vector div div.extraMenu h5 span {
-	background-position: 90% 50%;
-}
-
-.skin-vector div div.extraMenu h5>span {
-display: none;
-}
-
-.skin-vector div.extraMenu h5 a {
-	padding-left: .4em;
-	padding-right: .4em;
-	width: auto;
-}
-
-.skin-vector div.extraMenu h5 a span {
-	display: inline-block;
-	font-size: .8em;
-	height: 1.6em;
-	font-weight: normal;
-	padding-top: 1.25em;
-	margin-right: 14px;
-}
-
 .skin-modern #mw_contentwrapper div.portlet {
 	overflow: hidden;
 	height: 1.5em;
