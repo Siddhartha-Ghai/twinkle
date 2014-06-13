@@ -35,17 +35,38 @@ Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
-	var Window = new Morebits.simpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 600, 440 );
 	Window.setTitle( "कड़ियाँ" + (mw.config.get('wgNamespaceNumber') === 6 ? " और फ़ाइल प्रयोग" : "") + " हटाएँ" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
 
 	var form = new Morebits.quickForm( Twinkle.unlink.callback.evaluate );
+
+	// prepend some basic documentation
+	var node1 = Morebits.htmlNode("code", "[[" + Morebits.pageNameNorm + "|कड़ी पाठ]]")
+	var node2 = Morebits.htmlNode("code", "कड़ी पाठ");
+	node1.style.fontFamily = node2.style.fontFamily = "monospace";
+	node1.style.fontStyle = node2.style.fontStyle = "normal";
 	form.append( {
-		type: 'textarea',
+		type: 'div',
+		style: 'margin-bottom: 0.5em',
+		label: [ 
+			'यह उपकरण अन्य पृष्ठों पर मौजूद इस पृष्ठ की सभी कड़ियों ("backlinks") को हटाने का विकल्प प्रदान करता है' + 
+				(mw.config.get('wgNamespaceNumber') === 6 ? ", और/या इस फ़ाइल की कड़ियों को <!-- --> में डालकर फ़ाइल के सभी प्रयोग छुपाने का विकल्प प्रदान करता है।" : "") + 
+				". उदाहरणतः ",
+			node1,
+			" बन जाएगा ",
+			node2,
+			"। ध्यान से प्रयोग कीजियेगा।"
+		]
+	} );
+
+	form.append( {
+		type: 'input',
 		name: 'reason',
 		label: 'कारण: ',
-		value: (presetReason ? presetReason : '')
+		value: (presetReason ? presetReason : ''),
+		size: 60
 	} );
 
 	var query;
@@ -112,7 +133,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 
 	var reason = event.target.reason.value;
 	if (!reason) {
-		alert("You must specify a reason for unlinking.");
+		alert("कड़ियाँ हटाने के लिए कारण देना अनिवार्य है।");
 		return;
 	}
 
@@ -175,11 +196,25 @@ Twinkle.unlink.callbacks = {
 							label: "पहले " + list.length.toString() + " फ़ाइल प्रयोग नीचे सूचीबद्ध हैं।"
 						});
 					}
-					apiobj.params.form.append( {
+					apiobj.params.form.append({
+						type: 'button',
+						label: "Select All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "imageusage")).prop('checked', true);
+						}
+					});
+					apiobj.params.form.append({
+						type: 'button',
+						label: "Deselect All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "imageusage")).prop('checked', false);
+						}
+					});
+					apiobj.params.form.append({
 						type: 'checkbox',
 						name: 'imageusage',
 						list: list
-					} );
+					});
 					havecontent = true;
 				}
 			}
@@ -207,7 +242,21 @@ Twinkle.unlink.callbacks = {
 						label: "यहाँ की कड़ियों वाले पहले" + list.length.toString() + "पृष्ठ नीचे सूचीबद्ध हैं।"
 					});
 				}
-				apiobj.params.form.append( {
+				apiobj.params.form.append({
+					type: 'button',
+					label: "Select All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "backlinks")).prop('checked', true);
+						}
+				});
+				apiobj.params.form.append({
+					type: 'button',
+					label: "Deselect All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "backlinks")).prop('checked', false);
+						}
+				});
+				apiobj.params.form.append({
 					type: 'checkbox',
 					name: 'backlinks',
 					list: list

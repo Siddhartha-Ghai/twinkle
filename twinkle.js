@@ -76,7 +76,7 @@ Twinkle.defaultConfig.twinkle = {
 	speedyLogPageName: "शीह लॉग",
 	noLogOnSpeedyNomination: [ "स1" ],
 	 // Unlink
-	unlinkNamespaces: [ "0", "100" ],
+	unlinkNamespaces: [ "0", "10", "100" ],
 	 // Warn
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
