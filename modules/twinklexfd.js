@@ -330,6 +330,11 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 			var initialContrib = pageobj.getCreator();
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("आपको सूचित किया जाता है कि इस पृष्ठ का निर्माण आपने (" + initialContrib + ") किया था। आपके वार्ता पृष्ठ पर सूचना नहीं जोड़ी जाएगी।");
+				return;
+			}
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
 			var notifytext = "\n{{subst:हहेच लेख सूचना|पृष्ठ=" + mw.config.get('wgTitle') + "|कारण=" + params.reason + "}}~~~~";
 			usertalkpage.setAppendText(notifytext);
@@ -440,6 +445,11 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("आपको सूचित किया जाता है कि इस पृष्ठ का निर्माण आपने (" + initialContrib + ") किया था। आपके वार्ता पृष्ठ पर सूचना नहीं जोड़ी जाएगी।");
+				return;
+			}
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
 			var notifytext = "\n{{subst:हहेच श्रेणी सूचना|पृष्ठ=" + mw.config.get('wgTitle') + "|प्रकार=" + params.type + '|कारण=' + params.reason;
 			switch (params.type) {
@@ -524,6 +534,10 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("आपको सूचित किया जाता है कि इस पृष्ठ का निर्माण आपने (" + initialContrib + ") किया था। आपके वार्ता पृष्ठ पर सूचना नहीं जोड़ी जाएगी।");
+				return;
+			}
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
 			var notifytext = "\n{{subst:हहेच साँचा सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
@@ -594,6 +608,10 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("आपको सूचित किया जाता है कि इस पृष्ठ का निर्माण आपने (" + initialContrib + ") किया था। आपके वार्ता पृष्ठ पर सूचना नहीं जोड़ी जाएगी।");
+				return;
+			}
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
 			var notifytext = "\n{{subst:हहेच फ़ाइल सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
@@ -662,6 +680,10 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("आपको सूचित किया जाता है कि इस पृष्ठ का निर्माण आपने (" + initialContrib + ") किया था। आपके वार्ता पृष्ठ पर सूचना नहीं जोड़ी जाएगी।");
+				return;
+			}
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
 			var notifytext = "\n{{subst:हहेच अन्य सूचना|पृष्ठ=" + Morebits.pageNameNorm + '|कारण=' + params.reason + "}}~~~~";
 
