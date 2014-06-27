@@ -319,6 +319,9 @@ Twinkle.addPortletLink = function( task, text, id, tooltip )
 			ev.preventDefault();
 		});
 	}
+	if ( $.collapsibleTabs ) {
+		$.collapsibleTabs.handleResize();
+	}
 	return link;
 };
 
@@ -426,10 +429,6 @@ Twinkle.load = function () {
 	if ( Twinkle.getPref( "dialogLargeFont" ) ) {
 		mw.util.addCSS( ".morebits-dialog-content, .morebits-dialog-footerlinks { font-size: 100% !important; } " +
 			".morebits-dialog input, .morebits-dialog select, .morebits-dialog-content button { font-size: inherit !important; }" );
-	}
-	
-	if ( $.collapsibleTabs ) {
-		$.collapsibleTabs.handleResize();
 	}
 };
 
