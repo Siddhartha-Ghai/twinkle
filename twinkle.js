@@ -428,7 +428,7 @@ Twinkle.load = function () {
 			".morebits-dialog input, .morebits-dialog select, .morebits-dialog-content button { font-size: inherit !important; }" );
 	}
 	
-	if ( typeof $.collapsibleTabs !== 'undefined' ) {
+	if ( $.collapsibleTabs ) {
 		$.collapsibleTabs.handleResize();
 	}
 };
