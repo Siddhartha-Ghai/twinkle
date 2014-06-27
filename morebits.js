@@ -2184,7 +2184,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		if (fnCanUseMwUserToken('delete')) {
-			fnProcessDelete();
+			fnProcessDelete.call(this, this);
 		} else {
 			var query = {
 				action: 'query',
