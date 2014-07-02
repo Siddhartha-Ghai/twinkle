@@ -106,40 +106,13 @@ Twinkle.unlink.callback = function(presetReason) {
 };
 
 Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
-	Twinkle.unlink.backlinksdone = 0;
-	Twinkle.unlink.imageusagedone = 0;
-
-	function processunlink(pages, imageusage) {
-		var statusIndicator = new Morebits.status((imageusage ? 'फ़ाइल प्रयोग हटाया जा रहा है' : 'कड़ियाँ हटाई जा रही हैं'), '0%');
-		var total = pages.length;  // removing doubling of this number - no apparent reason for it
-
-		Morebits.wiki.addCheckpoint();
-
-		if( !pages.length ) {
-			statusIndicator.info( '100% (सम्पूर्ण)' );
-			Morebits.wiki.removeCheckpoint();
-			return;
-		}
-
-		// get an edit token
-		var params = { reason: reason, imageusage: imageusage, globalstatus: statusIndicator, current: 0, total: total };
-		for (var i = 0; i < pages.length; ++i)
-		{
-			var myparams = $.extend({}, params);
-			var articlepage = new Morebits.wiki.page(pages[i], '"' + pages[i] + '"' + ' पृष्ठ से कड़ियाँ हटाई जा रही हैं');
-			articlepage.setCallbackParameters(myparams);
-			articlepage.setBotEdit(true);  // unlink considered a floody operation
-			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
-		}
-	}
-
 	var reason = event.target.reason.value;
 	if (!reason) {
 		alert("कड़ियाँ हटाने के लिए कारण देना अनिवार्य है।");
 		return;
 	}
 
-	var backlinks, imageusage;
+	var backlinks = [], imageusage = [];
 	if( event.target.backlinks ) {
 		backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
 	}
@@ -149,18 +122,23 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( event.target );
-	Morebits.wiki.addCheckpoint();
-	if (backlinks) {
-		processunlink(backlinks, false);
-	}
-	if (imageusage) {
-		processunlink(imageusage, true);
-	}
-	Morebits.wiki.removeCheckpoint();
-};
 
-Twinkle.unlink.backlinksdone = 0;
-Twinkle.unlink.imageusagedone = 0;
+	var pages = Morebits.array.uniq(backlinks.concat(imageusage));
+
+	var unlinker = new Morebits.batchOperation("कड़ियाँ" + (imageusage ? " व फ़ाइल प्रयोग हटाये जा रहे हैं" : " हटाई जा रही हैं") );
+	unlinker.setOption("preserveIndividualStatusLines", true);
+	unlinker.setPageList(pages);
+	var params = { reason: reason, unlinker: unlinker };
+	unlinker.run(function(pageName) {
+		var wikipedia_page = new Morebits.wiki.page(pageName, "'" + pageName + "' पृष्ठ से कड़ियाँ हटाई जा रही हैं" );
+		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
+		var innerParams = $.extend({}, params);
+		innerParams.doBacklinks = backlinks && backlinks.indexOf(pageName) !== -1;
+		innerParams.doImageusage = imageusage && imageusage.indexOf(pageName) !== -1;
+		wikipedia_page.setCallbackParameters(innerParams);
+		wikipedia_page.load(Twinkle.unlink.callbacks.unlinkBacklinks);
+	});
+};
 
 Twinkle.unlink.callbacks = {
 	display: {
@@ -228,7 +206,7 @@ Twinkle.unlink.callbacks = {
 					var title = backlinks[i].getAttribute('title');
 					list.push( { label: title, value: title, checked: true } );
 				}
-				apiobj.params.form.append( { type:'header', label: 'Backlinks' } );
+				apiobj.params.form.append( { type:'header', label: 'कड़ियाँ (Backlinks)' } );
 				namespaces = [];
 				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
 					namespaces.push(Morebits.wikipedia.namespacesFriendly[v]);
@@ -283,54 +261,51 @@ Twinkle.unlink.callbacks = {
 		}
 	},
 	unlinkBacklinks: function twinkleunlinkCallbackUnlinkBacklinks(pageobj) {
-		var text, oldtext;
-		text = oldtext = pageobj.getPageText();
+		var oldtext = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
+		var wikiPage = new Morebits.wikitext.page(oldtext);
 
-		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.removeLink(Morebits.pageNameNorm);
-		text = wikiPage.getText();
-		if (text === oldtext) {
-			// Nothing to do, return
-			Twinkle.unlink.callbacks.success(pageobj);
-			Morebits.wiki.actionCompleted();
+		var removedBacklinks = false, removedImageusage = false;
+		var summaryText = "", warningString = false;
+		var text;
+
+		// remove image usages
+		if (params.doImageusage) {
+			wikiPage.commentOutImage(mw.config.get('wgTitle'), 'प्रयोग हटाया गया');
+			text = wikiPage.getText();
+			// did we actually make any changes?
+			if (text === oldtext) {
+				warningString = "फ़ाइल प्रयोग नहीं मिला";
+			} else {
+				summaryText = "फ़ाइल प्रयोग हटाया जा रहा है";
+				oldtext = text;
+			}
+		}
+
+		// remove backlinks
+		if (params.doBacklinks) {
+			wikiPage.removeLink(Morebits.pageNameNorm);
+			text = wikiPage.getText();
+			// did we actually make any changes?
+			if (text === oldtext) {
+				warningString = (warningString ? "कड़ियाँ अथवा फ़ाइल प्रयोग नहीं मिला" : "कड़ियाँ नहीं मिली");
+			} else {
+				summaryText = (summaryText ? ("फ़ाइल प्रयोग व ") : "") + "कड़ियाँ हटाई जा रही हैं";
+				oldtext = text;
+			}
+		}
+
+		if (warningString) {
+			// nothing to do!
+			pageobj.getStatusElement().error( warningString );
+			params.unlinker.workerFailure(pageobj);
 			return;
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("\"" + Morebits.pageNameNorm + "\" पृष्ठ की कड़ियाँ हटाई जा रही हैं। कारण: " + params.reason + "।" + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("\"" + Morebits.pageNameNorm + "\": " + summaryText + "कारण: " + params.reason + "।" + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
-		pageobj.save(Twinkle.unlink.callbacks.success);
-	},
-	unlinkImageInstances: function twinkleunlinkCallbackUnlinkImageInstances(pageobj) {
-		var text, oldtext;
-		text = oldtext = pageobj.getPageText();
-		var params = pageobj.getCallbackParameters();
-
-		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out');
-		text = wikiPage.getText();
-		if (text === oldtext) {
-			// Nothing to do, return
-			Twinkle.unlink.callbacks.success(pageobj);
-			Morebits.wiki.actionCompleted();
-			return;
-		}
-
-		pageobj.setPageText(text);
-		pageobj.setEditSummary("\"" + Morebits.pageNameNorm + "\" फ़ाइल का प्रयोग हटाया जा रहा है। कारण: " + params.reason + "।" + Twinkle.getPref('summaryAd'));
-		pageobj.setCreateOption('nocreate');
-		pageobj.save(Twinkle.unlink.callbacks.success);
-	},
-	success: function twinkleunlinkCallbackSuccess(pageobj) {
-		var params = pageobj.getCallbackParameters();
-		var total = params.total;
-		var now = parseInt( 100 * (params.imageusage ? ++(Twinkle.unlink.imageusagedone) : ++(Twinkle.unlink.backlinksdone))/total, 10 ) + '%';
-		params.globalstatus.update( now );
-		if((params.imageusage ? Twinkle.unlink.imageusagedone : Twinkle.unlink.backlinksdone) >= total) {
-			params.globalstatus.info( now + ' (सम्पूर्ण)' );
-			Morebits.wiki.removeCheckpoint();
-		}
+		pageobj.save(params.unlinker.workerSuccess, params.unlinker.workerFailure);
 	}
 };
 })(jQuery);
