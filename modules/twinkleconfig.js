@@ -35,7 +35,7 @@ Twinkle.config.commonSets = {
 		"ल1": "ल1", "ल2": "ल2", "ल4": "ल4",
 		"फ़1": "फ़1", "फ़2": "फ़2", "फ़3": "फ़3", "फ़4": "फ़4", "फ़5": "फ़5", "फ़6": "फ़6",
 		"सा1": "सा1",
-		"स1": "स1", "स2": "स2"  // db-multiple is not listed here because it is treated differently within twinklespeedy
+		"स1": "स1", "स2": "स2", "स3": "स3"  // db-multiple is not listed here because it is treated differently within twinklespeedy
 	},
 	csdCriteriaDisplayOrder: [
 		"शीह",
@@ -43,7 +43,7 @@ Twinkle.config.commonSets = {
 		"ल1", "ल2", "ल4", "व6ल",
 		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
 		"सा1",
-		"स1", "स2", "व6स"
+		"स1", "स2", "स3", "व6स"
 	],
 	csdCriteriaNotificationDisplayOrder: [
 		"शीह",
@@ -51,7 +51,7 @@ Twinkle.config.commonSets = {
 		"ल1", "ल2", "ल4", "व6ल",
 		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
 		"सा1",
-		"स1", "स2", "व6स"
+		"स1", "स2", "स3", "व6स"
 	],
 	namespacesNoSpecial: {
 		"0": "लेख",
