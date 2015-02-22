@@ -307,6 +307,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		discussionPage: function(pageobj) {
+			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच लेख नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
@@ -500,6 +501,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		discussionPage: function(pageobj) {
+			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच साँचा नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
