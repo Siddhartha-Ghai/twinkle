@@ -93,12 +93,6 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 				}
 			);
 
-			form.append( { type: 'div', id: 'tagWorkArea' } );
-
-			if( Twinkle.getFriendlyPref('customTagList').length ) {
-				form.append( { type: 'header', label: 'Custom tags' } );
-				form.append( { type: 'checkbox', name: 'articleTags', list: Twinkle.getFriendlyPref('customTagList') } );
-			}
 			break;
 
 		case 'file':
