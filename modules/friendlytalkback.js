@@ -318,8 +318,8 @@ var callback_evaluate = function( e ) {
 		}
 		text += "|more=" + message.trim() + "}}";
 		talkpage.setEditSummary("कृपया [[" + tbPageName + "#" + section + "]] पर चर्चा देखें" + Twinkle.getPref("summaryAd"));
-	} else {
-		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
+	} else {  // tbtarget one of mytalk, usertalk, other
+		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n\n{{सन्देश|";
 		text += ( tbtarget === "notice" && page === "vp") ? 'विकिपीडिया:चौपाल' : tbPageName;
 
@@ -335,9 +335,12 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		talkpage.setEditSummary("सन्देश [[" + ((tbtarget === "other" || tbtarget === "notice") ? "" : "सदस्य वार्ता:") +
-			(( tbtarget === "notice" && page === "vp") ? 'विकिपीडिया:चौपाल' : tbPageName) +
-			(section ? ("#" + section) : "") + "]] पर" + Twinkle.getPref("summaryAd"));
+		var editSummary = "सन्देश [[";
+		if (tbtarget === "other" && !/^\s*(सदस्य वार्ता|User talk):/i.test(tbPageName)) {
+			editSummary += "सदस्य वार्ता:";
+		}
+		editSummary += (( tbtarget === "notice" && page === "vp") ? 'विकिपीडिया:चौपाल' : tbPageName) + (section ? ("#" + section) : "") + "]] पर";
+		talkpage.setEditSummary(editSummary + Twinkle.getPref("summaryAd"));
 	}
 
 	talkpage.setAppendText( text );
