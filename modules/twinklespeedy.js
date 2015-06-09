@@ -297,7 +297,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	var wantSubgroups = Twinkle.speedy.mode.wantSubgroups(mode);
 	var hasSubmitButton = Twinkle.speedy.mode.hasSubmitButton(mode);
 
-	var openSubgroupHandler = function(e) { 
+	var openSubgroupHandler = function(e) {
 		$(e.target.form).find('input').prop('disabled', true);
 		$(e.target.form).children().css('color', 'gray');
 		$(e.target).parent().css('color', 'black').find('input').prop('disabled', false);
@@ -350,7 +350,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 
 		if (criterion.subgroup && !hasSubmitButton) {
 			if ($.isArray(criterion.subgroup)) {
-				criterion.subgroup.push({ 
+				criterion.subgroup.push({
 					type: 'button',
 					name: 'submit',
 					label: 'Submit Query',
@@ -1318,7 +1318,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
 	var form = (e.target.form ? e.target.form : e.target);
 
-	if (e.target.type === "checkbox" || e.target.type === "text" || 
+	if (e.target.type === "checkbox" || e.target.type === "text" ||
 			e.target.type === "select") {
 		return;
 	}
