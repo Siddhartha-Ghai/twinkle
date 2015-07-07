@@ -270,6 +270,11 @@ Twinkle.xfd.callbacks = {
 
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
+			// Mark the page as patrolled, if wanted
+			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+				pageobj.patrol();
+			}
+
 			// Starting discussion page
 			var wikipedia_page = new Morebits.wiki.page('विकिपीडिया:पृष्ठ हटाने हेतु चर्चा/लेख/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 			wikipedia_page.setCallbackParameters(params);
@@ -361,6 +366,11 @@ Twinkle.xfd.callbacks = {
 		taggingCategory: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
+
+			// Mark the page as patrolled, if wanted
+			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+				pageobj.patrol();
+			}
 
 			var added_data = "{{हहेच श्रेणी|प्रकार=" + params.type + '|कारण=' + params.reason;
 			var editsummary = "";
@@ -494,6 +504,11 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
+			// Mark the page as patrolled, if wanted
+			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+				pageobj.patrol();
+			}
+
 			pageobj.setPageText((params.noinclude ? "<noinclude>{{हहेच साँचा" : "{{हहेच साँचा") + '|कारण=' + params.reason + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
 			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[वि:पृष्ठ हटाने हेतु चर्चा/साँचे/" + mw.config.get('wgTitle') + "|नामांकन पृष्ठ]]।" + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
@@ -565,6 +580,11 @@ Twinkle.xfd.callbacks = {
 		taggingImage: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
+
+			// Mark the page as patrolled, if wanted
+			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+				pageobj.patrol();
+			}
 
 			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
@@ -639,6 +659,11 @@ Twinkle.xfd.callbacks = {
 		taggingPage: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
+
+			// Mark the page as patrolled, if wanted
+			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+				pageobj.patrol();
+			}
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>{{हहेच अन्य" : "{{हहेच अन्य") + '|कारण=' + params.reason + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
 			pageobj.setEditSummary("हटाने हेतु चर्चा के लिये नामांकन; देखें [[वि:पृष्ठ हटाने हेतु चर्चा/अन्य/" + Morebits.pageNameNorm + "|नामांकन पृष्ठ]]।" + Twinkle.getPref('summaryAd'));

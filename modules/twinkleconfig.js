@@ -529,6 +529,12 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
+		},
+
+		{
+			name: "markXfdPagesAsPatrolled",
+			label: "हटाने हेतु चर्चा के लिए नामांकित करते समय पृष्ठ को जाँचा हुआ (patrolled) चिन्हित करें (यदि संभव हो)",
+			type: "boolean"
 		}
 	]
 },
