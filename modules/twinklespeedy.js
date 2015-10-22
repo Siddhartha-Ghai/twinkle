@@ -779,10 +779,9 @@ Twinkle.speedy.callbacks = {
 			if (params.deleteRedirects) {
 				var query = {
 					'action': 'query',
-					'list': 'backlinks',
-					'blfilterredir': 'redirects',
-					'bltitle': mw.config.get('wgPageName'),
-					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+					'titles': mw.config.get('wgPageName'),
+					'prop': 'redirects',
+					'rdlimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 				};
 				var wikipedia_api = new Morebits.wiki.api( 'पुनर्प्रेषणों की सूची प्राप्त की जा रही है...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
 					new Morebits.status( 'पुनर्प्रेषण पृष्ठ हटाए जा रहे हैं' ) );
@@ -877,7 +876,7 @@ Twinkle.speedy.callbacks = {
 		},
 		deleteRedirectsMain: function( apiobj ) {
 			var xmlDoc = apiobj.getXML();
-			var $snapshot = $(xmlDoc).find('backlinks bl');
+			var $snapshot = $(xmlDoc).find('redirects rd');
 			var total = $snapshot.length;
 			var statusIndicator = apiobj.statelem;
 
