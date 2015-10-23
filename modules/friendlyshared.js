@@ -20,7 +20,7 @@ Twinkle.shared = function friendlyshared() {
 	}
 };
 
-Twinkle.shared.callback = function friendlysharedCallback( uid ) {
+Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow( 600, 420 );
 	Window.setTitle( "साझा आइ॰पी॰ पता टैगिंग" );
 	Window.setScriptName( "Twinkle" );

@@ -288,8 +288,9 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 	outerDiv.appendChild( h5 );
 
+	var innerDiv = null;
 	if ( type === "menu" ) {
-		var innerDiv = document.createElement( "div" );
+		innerDiv = document.createElement( "div" );
 		innerDiv.className = innerDivClass;
 		outerDiv.appendChild(innerDiv);
 	}
@@ -390,10 +391,8 @@ Twinkle.load = function () {
 	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
 		specialPageWhitelist.indexOf( mw.config.get('wgCanonicalSpecialPageName') ) === -1 );
 
-	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower,
-	// so don't load there either.
-	var isOldIE = ( $.client.profile().name === 'msie' &&
-		$.client.profile().versionNumber < 9 );
+		// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
+		var isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
