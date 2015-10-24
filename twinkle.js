@@ -95,9 +95,7 @@ Twinkle.defaultConfig.twinkle = {
 	batchdeleteChunks: 50,
 	batchMax: 5000,
 	batchProtectChunks: 50,
-	batchundeleteChunks: 50,
-	deliChunks: 500,
-	deliMax: 5000,
+	batchundeleteChunks: 50
 };
 
 // now some skin dependent config.
@@ -424,7 +422,6 @@ Twinkle.load = function () {
 	Twinkle.config.init();
 	Twinkle.fluff.init();
 	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.delimages();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();
 		Twinkle.batchundelete();

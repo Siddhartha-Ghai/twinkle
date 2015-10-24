@@ -720,16 +720,6 @@ Twinkle.config.sections = [
 		{
 			name: "batchUndeleteMinCutOff",
 			type: "integer"
-		},
-		// twinkledelimages.js: How many files should be processed at a time
-		{
-			name: "deliChunks",
-			type: "integer"
-		},
-		// twinkledelimages.js: How many files should be processed maximum
-		{
-			name: "deliMax",
-			type: "integer"
 		}
 	]
 }
