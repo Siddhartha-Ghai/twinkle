@@ -40,22 +40,28 @@ Twinkle.speedy.dialog = null;
 
 // The speedy criteria list can be in one of several modes
 Twinkle.speedy.mode = {
-	sysopSubmit: 1,  // radio buttons, no subgroups, submit when "Submit" button is clicked
+	sysopSingleSubmit: 1,  // radio buttons, no subgroups, submit when "Submit" button is clicked
 	sysopRadioClick: 2,  // radio buttons, no subgroups, submit when a radio button is clicked
-	userMultipleSubmit: 3,  // check boxes, subgroups, "Submit" button already pressent
-	userMultipleRadioClick: 4,  // check boxes, subgroups, need to add a "Submit" button
-	userSingleSubmit: 5,  // radio buttons, subgroups, submit when "Submit" button is clicked
-	userSingleRadioClick: 6,  // radio buttons, subgroups, submit when a radio button is clicked
+	sysopMultipleSubmit: 3, // check boxes, subgroups, "Submit" button already present
+	sysopMultipleRadioClick: 4, // check boxes, subgroups, need to add a "Submit" button
+	userMultipleSubmit: 5,  // check boxes, subgroups, "Submit" button already pressent
+	userMultipleRadioClick: 6,  // check boxes, subgroups, need to add a "Submit" button
+	userSingleSubmit: 7,  // radio buttons, subgroups, submit when "Submit" button is clicked
+	userSingleRadioClick: 8,  // radio buttons, subgroups, submit when a radio button is clicked
 
 	// are we in "delete page" mode?
 	// (sysops can access both "delete page" [sysop] and "tag page only" [user] modes)
 	isSysop: function twinklespeedyModeIsSysop(mode) {
-		return mode === Twinkle.speedy.mode.sysopSubmit ||
-			mode === Twinkle.speedy.mode.sysopRadioClick;
+		return mode === Twinkle.speedy.mode.sysopSingleSubmit ||
+			mode === Twinkle.speedy.mode.sysopMultipleSubmit ||
+			mode === Twinkle.speedy.mode.sysopRadioClick ||
+			mode === Twinkle.speedy.mode.sysopMultipleRadioClick;
 	},
 	// do we have a "Submit" button once the form is created?
 	hasSubmitButton: function twinklespeedyModeHasSubmitButton(mode) {
-		return mode === Twinkle.speedy.mode.sysopSubmit ||
+		return mode === Twinkle.speedy.mode.sysopSingleSubmit ||
+			mode === Twinkle.speedy.mode.sysopMultipleSubmit ||
+			mode === Twinkle.speedy.mode.sysopMultipleRadioClick ||
 			mode === Twinkle.speedy.mode.userMultipleSubmit ||
 			mode === Twinkle.speedy.mode.userMultipleRadioClick ||
 			mode === Twinkle.speedy.mode.userSingleSubmit;
@@ -63,12 +69,10 @@ Twinkle.speedy.mode = {
 	// is db-multiple the outcome here?
 	isMultiple: function twinklespeedyModeIsMultiple(mode) {
 		return mode === Twinkle.speedy.mode.userMultipleSubmit ||
-			mode === Twinkle.speedy.mode.userMultipleRadioClick;
+			mode === Twinkle.speedy.mode.sysopMultipleSubmit ||
+			mode === Twinkle.speedy.mode.userMultipleRadioClick ||
+			mode === Twinkle.speedy.mode.sysopMultipleRadioClick;
 	},
-	// do we want subgroups? (if not we have to use prompt())
-	wantSubgroups: function twinklespeedyModeWantSubgroups(mode) {
-		return !Twinkle.speedy.mode.isSysop(mode);
-	}
 };
 
 // Prepares the speedy deletion dialog and displays it
@@ -103,6 +107,9 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 							// enable/disable redirects checkbox
 							cForm.redirects.disabled = cChecked;
 							cForm.redirects.checked = !cChecked;
+							// enable/disable delete multiple
+							cForm.delmultiple.disabled = cChecked;
+							cForm.delmultiple.checked = false;
 
 							// enable/disable notify checkbox
 							cForm.notify.disabled = !cChecked;
@@ -153,6 +160,22 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
+		form.append( {
+			type: 'checkbox',
+			list: [
+				{
+					label: 'अनेक मापदंडों के अंतर्गत पृष्ठ हटायें',
+					value: 'delmultiple',
+					name: 'delmultiple',
+					tooltip: "इस विकल्प का प्रयोग कर के आप पृष्ठ को विभिन्न मापदंडों के अंतर्गत हटा सकते हैं।",
+					disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
+					event: function( event ) {
+						Twinkle.speedy.callback.modeChanged( event.target.form );
+						event.stopPropagation();
+					}
+				}
+			]
+		} );
 		form.append( { type: 'header', label: 'टैग संबंधी विकल्प' } );
 	}
 
@@ -205,6 +228,19 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.display();
 
 	Twinkle.speedy.callback.modeChanged( result );
+
+	// if sysop, check if CSD is already on the page and fill in custom rationale
+	if (Morebits.userIsInGroup('sysop') && $("#delete-reason").length) {
+		var customOption = $("input[name=csd][value=कारण]")[0];
+
+		if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
+			// force listeners to re-init
+			customOption.click();
+			customOption.parentNode.appendChild(customOption.subgroup);
+		}
+
+		customOption.subgroup.querySelector('input').value = decodeURIComponent($("#delete-reason").text()).replace(/\+/g, ' ');
+	}
 };
 
 Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
@@ -213,7 +249,11 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	// first figure out what mode we're in
 	var mode = Twinkle.speedy.mode.userSingleSubmit;
 	if (form.tag_only && !form.tag_only.checked) {
-		mode = Twinkle.speedy.mode.sysopSubmit;
+		if (form.delmultiple.checked) {
+			mode = Twinkle.speedy.mode.sysopMultipleSubmit;
+		} else {
+			mode = Twinkle.speedy.mode.sysopSingleSubmit;
+		}
 	} else {
 		if (form.multiple.checked) {
 			mode = Twinkle.speedy.mode.userMultipleSubmit;
@@ -230,7 +270,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			name: 'work_area'
 		} );
 
-	if (mode === Twinkle.speedy.mode.userMultipleRadioClick) {
+	if (mode === Twinkle.speedy.mode.userMultipleRadioClick || mode === Twinkle.speedy.mode.sysopMultipleRadioClick) {
+		var evaluateType = Twinkle.speedy.mode.isSysop(mode) ? 'evaluateSysop' : 'evaluateUser';
+
 		work_area.append( {
 				type: 'div',
 				label: 'जब मापदंड चुन लिए हों तो यह बटन दबाएँ:'
@@ -240,13 +282,18 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				name: 'submit-multiple',
 				label: 'Submit Query',
 				event: function( event ) {
-					Twinkle.speedy.callback.evaluateUser( event );
+					Twinkle.speedy.callback[evaluateType]( event );
 					event.stopPropagation();
 				}
 			} );
 	}
 
 	var radioOrCheckbox = (Twinkle.speedy.mode.isMultiple(mode) ? 'checkbox' : 'radio');
+
+	if (Twinkle.speedy.mode.isSysop(mode) && !Twinkle.speedy.mode.isMultiple(mode)) {
+		work_area.append( { type: 'header', label: 'विशिष्ट कारण' } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.customRationale, mode) } );
+	}
 
 	if (namespace % 2 === 1 && namespace !== 3) {
 		// show db-talk on talk pages, but not user talk pages
@@ -283,8 +330,13 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			break;
 	}
 
+	// custom rationale lives under general criteria when tagging
+	var generalCriteria = Twinkle.speedy.generalList;
+	if(!Twinkle.speedy.mode.isSysop(mode)) {
+		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
+	}
 	work_area.append( { type: 'header', label: 'वैश्विक मापदंड' } );
-	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.generalList, mode) });
+	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(generalCriteria, mode) });
 
 	var old_area = Morebits.quickForm.getElements(form, "work_area")[0];
 	form.replaceChild(work_area.render(), old_area);
@@ -294,7 +346,6 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	// mode switches
 	var isSysop = Twinkle.speedy.mode.isSysop(mode);
 	var multiple = Twinkle.speedy.mode.isMultiple(mode);
-	var wantSubgroups = Twinkle.speedy.mode.wantSubgroups(mode);
 	var hasSubmitButton = Twinkle.speedy.mode.hasSubmitButton(mode);
 
 	var openSubgroupHandler = function(e) {
@@ -305,16 +356,13 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		e.stopPropagation();
 	};
 	var submitSubgroupHandler = function(e) {
-		Twinkle.speedy.callback.evaluateUser(e);
+		var evaluateType = Twinkle.speedy.mode.isSysop(mode) ? 'evaluateSysop' : 'evaluateUser';
+		Twinkle.speedy.callback[evaluateType](e);
 		e.stopPropagation();
 	};
 
 	return $.map(list, function(critElement) {
 		var criterion = $.extend({}, critElement);
-
-		if (!wantSubgroups) {
-			criterion.subgroup = null;
-		}
 
 		if (multiple) {
 			if (criterion.hideWhenMultiple) {
@@ -373,6 +421,21 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		return criterion;
 	});
 };
+
+Twinkle.speedy.customRationale = [
+	{
+		label: 'विशिष्ट कारण' + (Morebits.userIsInGroup('sysop') ? ' (हटाने का विशेष कारण)' : ' {'+'{शीह}} साँचे का प्रयोग करते हुए'),
+		value: 'कारण',
+		tooltip: '{'+'{शीह}} "शीघ्र हटाएँ" का लघु रूप है। ऐसे नामांकन में भी शीघ्र हटाने का कोई मापदंड लागू होना चाहिये। यदि कोई मापदंड लागू नहीं होता, तो पृष्ठ हटाने हेतु चर्चा का प्रयोग करें।',
+		subgroup: {
+			name: 'reason_1',
+			type: 'input',
+			label: 'कारण: ',
+			size: 60
+		},
+		hideWhenMultiple: true
+	}
+];
 
 Twinkle.speedy.talkList = [
 	{
@@ -525,18 +588,6 @@ Twinkle.speedy.templateList = [
 
 Twinkle.speedy.generalList = [
 	{
-		label: 'विशिष्ट कारण' + (Morebits.userIsInGroup('sysop') ? ' (हटाने का विशेष कारण)' : ' {'+'{शीह}} साँचे का प्रयोग करते हुए'),
-		value: 'कारण',
-		tooltip: '{'+'{शीह}} "शीघ्र हटाएँ" का लघु रूप है। ऐसे नामांकन में भी शीघ्र हटाने का कोई मापदंड लागू होना चाहिये। यदि कोई मापदंड लागू नहीं होता, तो पृष्ठ हटाने हेतु चर्चा का प्रयोग करें।',
-		subgroup: {
-			name: 'reason_1',
-			type: 'input',
-			label: 'कारण: ',
-			size: 60
-		},
-		hideWhenMultiple: true
-	},
-	{
 		label: 'व1. अर्थहीन नाम अथवा सम्पूर्णतया अर्थहीन सामग्री वाले पृष्ठ',
 		value: 'अर्थहीन',
 		tooltip: 'इसमें वे पृष्ठ आते हैं जिनका नाम अर्थहीन है; अथवा जिनमें सामग्री अर्थहीन है, चाहे उसका नाम अर्थहीन न हो।'
@@ -610,155 +661,98 @@ Twinkle.speedy.normalizeHash = {
 	'talk': ''
 };
 
-// keep this synched with [[MediaWiki:Deletereason-dropdown]]
-// This generates the descriptive reason added to log summary after linking to the csd criteria
-// when sysops delete a page with twinkle
-Twinkle.speedy.reasonHash = {
-	'कारण': '',
-// General
-	'अर्थहीन': 'अर्थहीन नाम अथवा सम्पूर्णतया अर्थहीन सामग्री वाले पृष्ठ',
-	'परीक्षण': 'परीक्षण पृष्ठ',
-	'बर्बरता': 'साफ़ बर्बरता',
-	'धोखा': 'साफ़ धोखा',
-	'खाली': 'ख़ाली पृष्ठ',
-	'कॉपीराइट': 'साफ़ कॉपीराइट उल्लंघन',
-	'कॉपीराइट लेख': 'साफ़ कॉपीराइट उल्लंघन - लेख',
-	'कॉपीराइट फ़ाइल': 'साफ़ कॉपीराइट उल्लंघन - फ़ाइलें',
-	'कॉपीराइट सदस्य': 'साफ़ कॉपीराइट उल्लंघन - सदस्य पृष्ठ',
-	'प्रचार': 'साफ़ प्रचार',
-// Articles
-	'अन्य भाषा': 'पूर्णतया अन्य भाषा में लिखे पृष्ठ',
-	'प्रचार लेख': 'साफ़ प्रचार',
-	'प्रतिलिपि': 'प्रतिलिपि लेख',
-// Images and media
-	'लाइसेंस': '14 दिन से अधिक समय तक कोई लाइसेंस न होना',
-	'कॉमन्स': 'चित्र का विकिमीडिया कॉमन्स पर स्रोत और लाइसेंस जानकारी सहित उपलब्ध होना',
-	'अप्रयुक्त ग़ैर मुक्त': 'अप्रयुक्त ग़ैर मुक्त उचित उपयोग फ़ाइल',
-	'औचित्य': 'ग़ैर मुक्त उचित उपयोग उपयोग फ़ाइल जिसपर कोई उचित उपयोग औचित्य न दिया हो',
-	'मुक्त विकल्प': 'ग़ैर मुक्त फ़ाइलें जिनका मुक्त विकल्प उपलब्ध हो',
-	'फ़ालतू': 'फ़ालतू फ़ाइलें',
-// Templates
-	'पुराना साँचा': 'अप्रयुक्त साँचे जिनकी जगह किसी बेहतर साँचे ने ले ली है',
-// User pages
-	'सदस्य अनुरोध': 'सदस्य अनुरोध',
-	'अस्तित्वहीन': 'अस्तित्वहीन सदस्यों के सदस्य पृष्ठ अथवा उपपृष्ठ',
-	'वेब होस्ट': 'वेब होस्ट के रूप में विकिपीडिया का स्पष्ट दुरुपयोग',
-//other
-	'talk': 'हटाए गए पृष्ठ का वार्ता पृष्ठ'
-};
-
 Twinkle.speedy.callbacks = {
+	getTemplateCodeAndParams: function(params) {
+		var code, parameters, i;
+		if (params.normalizeds.length > 1) {
+			code = "{{शीह-अनेक";
+			$.each(params.normalizeds, function(index, norm) {
+				code += "|" + norm;
+				parameters = params.templateParams[index] || [];
+				for (var i in parameters) {
+					if (typeof parameters[i] === 'string') {
+						code += "|" + parameters[i];
+					}
+				}
+			});
+			code += "}}";
+		} else {
+			parameters = params.templateParams[0] || [];
+			code = "{{शीह-";
+			if (params.value === 'talk') {
+				code+= "कारण|हटाए गए पृष्ठ का वार्ता पृष्ठ";
+			}
+			else {
+			code += params.values[0];
+			}
+			for (i in parameters) {
+				if (typeof parameters[i] === 'string') {
+					code += "|" + parameters[i];
+				}
+			}
+			if (params.self) {
+				code += "|स्वयं=हाँ";
+			}
+			code += "}}";
+		}
+
+		return [code];
+	},
+
+	parseWikitext: function(wikitext, callback) {
+		var query = {
+			action: "parse",
+			prop: "text",
+			pst: "true",
+			text: wikitext,
+			title: mw.config.get("wgPageName")
+		};
+
+		var statusIndicator = new Morebits.status( 'हटाने के लॉग हेतु सारांश बनाया जा रहा है' );
+		var api = new Morebits.wiki.api( 'शीह साँचे से कारण प्राप्त किया जा रहा है', query, function(apiObj) {
+				statusIndicator.info( 'पूर्ण' );
+				callback(apiObj);
+			},  statusIndicator);
+		api.post();
+	},
+
 	sysop: {
 		main: function( params ) {
-			var thispage;
+			var reason;
 
-			Morebits.wiki.addCheckpoint();  // prevent actionCompleted from kicking in until user interaction is done
-			
-			// look up initial contributor. If prompting user for deletion reason, just display a link.
-			// Otherwise open the talk page directly
-			if( params.openusertalk ) {
-				thispage = new Morebits.wiki.page( mw.config.get('wgPageName') );  // a necessary evil, in order to clear incorrect status text
-				thispage.setCallbackParameters( params );
-				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
+			if (!params.normalizeds.length && params.normalizeds[0] === 'शीह') {
+				reason = prompt('कृपया शीघ्र हटाने के लिये कारण दें।\n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
+				Twinkle.speedy.callbacks.sysop.deletePage( reason, params );
+			} else {
+				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
+				Twinkle.speedy.callbacks.parseWikitext(code, function(apiobj) {
+					reason = decodeURIComponent($(apiobj.getXML().querySelector('text').childNodes[0].nodeValue).find('#delete-reason').text()).replace(/\+/g, ' ');
+					reason = prompt('कृपया शीघ्र हटाने के लिये कारण दें। स्वतः जनरेट किये गए कारण को स्वीकार करने के लिये OK दबायें।', reason);
+					Twinkle.speedy.callbacks.sysop.deletePage( reason, params );
+				});
 			}
-
-			var input, reason;
-			var presetreason = "[[वि:हटाना#" + params.normalized + "|" + params.normalized + "]]." + params.reason;
+		},
+		deletePage: function( reason, params ) {
 			var thispage = new Morebits.wiki.page( mw.config.get('wgPageName'), "पृष्ठ हटाया जा रहा है" );
-			var statelem = thispage.getStatusElement();
-//			var inputparams = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);	
-			
-//			if(!inputparams) {
-//			return;
-//			}
-			
-			// delete page
-			switch(params.normalized) {
-				case 'शीह':
-					input = prompt('कृपया शीघ्र हटाने के लिये कारण दें।\n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
 
-					if (!input || !input.replace(/^\s*/, "").replace(/\s*$/, ""))
-					{
-						statelem.error( 'कारण बताना आवश्यक है।  नामांकन रोक दिया गया है।' );
-						Morebits.wiki.removeCheckpoint();
-						return;
-					}
-					reason = 'कारण: ' + input;
-					break;
-				case 'व6':
-				case 'व6ल':
-				case 'व6फ़':
-				case 'व6स':
-					input = prompt( 'कृपया स्रोत यू॰आर॰एल बताएँ, http समेत', "" );
-					
-					if (input === "" || !input)
-					{
-						statelem.error( 'आपने स्रोत यू॰आर॰एल नहीं दिया है। नामांकन रोक दिया गया है।' );
-						return null;
-					}
-					else if (input.indexOf("http") !== 0)
-					{
-						statelem.error( 'आपने जो स्रोत यू॰आर॰एल दिया है, वह http से नहीं शुरू होता। नामांकन रोक दिया गया है।' );
-						Morebits.wiki.removeCheckpoint();
-						return;
-					}
-					reason = presetreason + " स्रोत यू॰आर॰एल: " + input;
-					break;
-				case 'ल4':
-					input = prompt( 'कृपया मूल लेख का नाम बताएँ', "");
-
-					if (input === "" || !input)
-					{
-						statelem.error( 'आपने मूल लेख का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						Morebits.wiki.removeCheckpoint();
-						return;
-					}
-					reason = presetreason + " मूल लेख: " + input;
-					break;
-				case 'फ़2':
-					input = prompt( 'कृपया कॉमन्स पर फ़ाइल का नाम बताएँ', "");
-					
-					if (input === "" || !input)
-					{
-						statelem.error( 'आपने कॉमन्स पर फ़ाइल का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						Morebits.wiki.removeCheckpoint();
-						return;
-					}
-					reason = presetreason + " कॉमन्स पर फ़ाइल: " + input;
-					break;
-				case 'फ़5':
-					input = prompt( 'कृपया मुक्त विकल्प का नाम बताएँ।', "");
-					
-					if (input === "" || !input)
-					{
-						statelem.error( 'आपने मुक्त विकल्प का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						Morebits.wiki.removeCheckpoint();
-						return;
-					}
-					reason = presetreason + " मुक्त विकल्प: " + input;
-					break;
-				case 'सा1':
-					input = prompt( 'कृपया बेहतर साँचे का नाम बताएँ:', "" );
-
-					if (input === "" || !input)
-					{
-						statelem.error( 'आपने बेहतर साँचे का नाम नहीं दिया है। नामांकन रोक दिया गया है।' );
-						Morebits.wiki.removeCheckpoint();
-						return;
-					}
-					reason = presetreason + " बेहतर साँचा: " + input;
-					break;
-				default:
-					reason = presetreason;
-					break;
+			if (reason === null) {
+				return Morebits.status.error("कारण पूछा गया था", "सदस्य द्वारा रद्द किया गया");
+			} else if (!reason || !reason.replace(/^\s*/, "").replace(/\s*$/, "")) {
+				return Morebits.status.error("कारण पूछा गया था", "आपके द्वारा कोई कारण नहीं दिया गया है। अतः पृष्ठ नहीं हटाया जाएगा।");
 			}
 
 			thispage.setEditSummary( reason + Twinkle.getPref('deletionSummaryAd') );
 			thispage.deletePage(function() {
-				statelem.info("done");
+				thispage.getStatusElement().info("पूर्ण");
 				Twinkle.speedy.callbacks.sysop.deleteTalk( params );
 			});
-			Morebits.wiki.removeCheckpoint();
+
+			// look up initial contributor. If prompting user for deletion reason, just display a link.
+			// Otherwise open the talk page directly
+			if( params.openusertalk ) {
+				thispage.setCallbackParameters( params );
+				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
+			}
 		},
 		deleteTalk: function( params ) {
 			// delete talk page
@@ -954,38 +948,10 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var code, parameters, i;
-			if (params.normalizeds.length > 1)
-			{
-				code = "{{शीह-अनेक";
-				$.each(params.normalizeds, function(index, norm) {
-					code += "|" + norm;
-					parameters = params.templateParams[index] || [];
-					for (i in parameters) {
-						if (typeof parameters[i] === 'string') {
-							code += "|" + parameters[i];
-						}
-					}
-				});
-			} else {
-				parameters = params.templateParams[0] || [];
-				code = "{{शीह-";
-				if (params.value === 'talk') {
-					code+= "कारण|हटाए गए पृष्ठ का वार्ता पृष्ठ";
-				}
-				else {
-				code+= params.values[0];
-				}
-				for (i in parameters) {
-					if (typeof parameters[i] === 'string') {
-						code += "|" + parameters[i];
-					}
-				}
-			}
-			if (params.self) {
-				code += "|स्वयं=हाँ";
-			}
-			code += "}}";
+			// given the params, builds the template
+			// returns => [<string> wikitext]
+			var buildData = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params),
+				code = buildData[0];
 
 			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			// patrol the page, if reached from Special:NewPages
@@ -1016,7 +982,7 @@ Twinkle.speedy.callbacks = {
 				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 				editsummary += ')।';
 			} else if (params.normalizeds[0] === 'शीह') {
-				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"';
+				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"' + params["1"];
 				for (i in parameters) {
 					if (typeof parameters[i] === 'string') {
 						editsummary += parameters[i];
@@ -1297,25 +1263,45 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 {
 	var form = (e.target.form ? e.target.form : e.target);
 
+	if (e.target.type === "checkbox" || e.target.type === "text" ||
+			e.target.type === "select") {
+		return;
+	}
+
 	var tag_only = form.tag_only;
 	if( tag_only && tag_only.checked ) {
 		Twinkle.speedy.callback.evaluateUser(e);
 		return;
 	}
 
-	var value = Twinkle.speedy.resolveCsdValues(e)[0];
-	if (!value) {
+	var values = Twinkle.speedy.resolveCsdValues(e);
+	if (!values) {
 		return;
 	}
-	var normalized = Twinkle.speedy.normalizeHash[ value ];
+
+	var normalizeds = values.map(function(value) {
+		return Twinkle.speedy.normalizeHash[ value ];
+	});
+
+	// analyse each criterion to determine whether to watch the page, prompt for summary, or open user talk page
+	var watchPage, openUserTalk;
+	normalizeds.forEach(function(norm) {
+		if (Twinkle.getPref("watchSpeedyPages").indexOf(norm) !== -1) {
+			watchPage = true;
+		}
+		if (Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf(norm) !== -1) {
+			openUserTalk = true;
+		}
+	});
+
 	var params = {
-		value: value,
-		normalized: normalized,
-		watch: Twinkle.getPref('watchSpeedyPages').indexOf( normalized ) !== -1,
-		reason: Twinkle.speedy.reasonHash[ value ],
-		openusertalk: Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf( normalized ) !== -1,
+		values: values,
+		normalizeds: normalizeds,
+		watch: watchPage,
+		openusertalk: openUserTalk,
 		deleteTalkPage: form.talkpage && form.talkpage.checked,
-		deleteRedirects: form.redirects.checked
+		deleteRedirects: form.redirects.checked,
+		templateParams: Twinkle.speedy.getParameters( form, values )
 	};
 
 	SimpleWindow.setButtonsEnabled( false );

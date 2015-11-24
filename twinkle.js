@@ -47,7 +47,7 @@ Twinkle.defaultConfig.twinkle = {
 	summaryAd: " ([[WP:TW|ट्विंकल]])",
 	deletionSummaryAd: " ([[WP:TW|ट्विंकल]])",
 	protectionSummaryAd: " ([[WP:TW|ट्विंकल]])",
-	userTalkPageMode: "window",
+	userTalkPageMode: "tab",
 	dialogLargeFont: false,
 	 // ARV
 	spiWatchReport: "yes",
@@ -69,7 +69,7 @@ Twinkle.defaultConfig.twinkle = {
 	notifyUserOnSpeedyDeletionNomination: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
 //	welcomeUserOnSpeedyDeletionNotification: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
 	openUserTalkPageOnSpeedyDelete: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
-	deleteTalkPageOnDelete: false,
+	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
 	deleteSysopDefaultToTag: false,
 	speedyWindowHeight: 500,
