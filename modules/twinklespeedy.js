@@ -1329,6 +1329,9 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		openUserTalk: form.openusertalk.checked,
 		templateParams: Twinkle.speedy.getParameters( form, values )
 	};
+	if(!params.templateParams) {
+		return;
+	}
 
 	SimpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
