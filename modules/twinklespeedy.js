@@ -739,9 +739,14 @@ Twinkle.speedy.callbacks = {
 
 		var statusIndicator = new Morebits.status( 'हटाने के लॉग हेतु सारांश बनाया जा रहा है' );
 		var api = new Morebits.wiki.api( 'शीह साँचे से कारण प्राप्त किया जा रहा है', query, function(apiObj) {
-				statusIndicator.info( 'पूर्ण' );
-				callback(apiObj);
-			},  statusIndicator);
+				var reason = decodeURIComponent($(apiObj.getXML().querySelector('text').childNodes[0].nodeValue).find('#delete-reason').text()).replace(/\+/g, ' ');
+				if (!reason) {
+					statusIndicator.warn( 'शीह साँचे से कारण प्राप्त करने में असफल' );
+				} else {
+					statusIndicator.info( 'पूर्ण' );
+				}
+				callback(reason);
+			}, statusIndicator);
 		api.post();
 	},
 
@@ -754,8 +759,7 @@ Twinkle.speedy.callbacks = {
 				Twinkle.speedy.callbacks.sysop.deletePage( reason, params );
 			} else {
 				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
-				Twinkle.speedy.callbacks.parseWikitext(code, function(apiobj) {
-					reason = decodeURIComponent($(apiobj.getXML().querySelector('text').childNodes[0].nodeValue).find('#delete-reason').text()).replace(/\+/g, ' ');
+				Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
 					reason = prompt('कृपया शीघ्र हटाने के लिये कारण दें। स्वतः जनरेट किये गए कारण को स्वीकार करने के लिये OK दबायें।', reason);
 					Twinkle.speedy.callbacks.sysop.deletePage( reason, params );
 				});
