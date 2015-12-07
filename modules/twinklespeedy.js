@@ -444,7 +444,9 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 				$('[name=openusertalk]').prop('checked',
 						Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf(normalizedCriterion) !== -1
 					);
-				return originalEvent(e);
+				if ( originalEvent ) {
+					return originalEvent(e);
+				}
 			};
 		}
 
