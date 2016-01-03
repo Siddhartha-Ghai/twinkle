@@ -102,11 +102,22 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			label:'Work area',
 			name: 'work_area'
 		} );
+
+	var previewlink = document.createElement( 'a' );
+	$(previewlink).click(function(){
+		Twinkle.xfd.callbacks.preview(result);  // |result| is defined below
+	});
+	previewlink.style.cursor = "pointer";
+	previewlink.textContent = 'झलक देखें';
+	form.append( { type: 'div', id: 'xfdpreview', label: [ previewlink ] } );
+	form.append( { type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' } );
+
 	form.append( { type:'submit' } );
 
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
+	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklexfd-previewbox').last()[0]);
 
 	// We must init the controls
 	var evt = document.createEvent( "Event" );
@@ -131,8 +142,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			value: oldreason,
 			tooltip: 'आप कारण में विकिपाठ का प्रयोग कर सकते हैं। ट्विंकल स्वचालित रूप से आपके हस्ताक्षर उपयुक्त स्थानों पर जोड़ देगा।'
 		} );
-		// TODO possible future "preview" link here
 	};
+
+	form.previewer.closePreview();
 
 	switch( value ) {
 	case 'लेख':
@@ -244,6 +256,118 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
+	getDiscussionWikitext: function(params) {
+		var text = "";
+
+		switch(params.xfdtype) {
+			case 'लेख':
+				text += "{{subst:हहेच लेख नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n";
+				break;
+			case 'श्रेणियाँ':
+				text += "{{subst:हहेच श्रेणी नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "|प्रकार=" + params.type;
+				switch (params.type) {
+					case 'विलय':
+						text += '|दूसरी श्रेणी=' + params.target;
+						break;
+					case 'स्थानान्तरण':
+						text += '|नया नाम=' + params.target;
+						break;
+					case 'हटाना': //falls through
+					default:
+						break;
+				}
+				text += "}}\n";
+				break;
+			case 'साँचे':
+				text += "{{subst:हहेच साँचा नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n";
+				break;
+			case 'फ़ाइलें':
+				text += "{{subst:हहेच फ़ाइल नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n";
+				break;
+			case 'अन्य':
+				text += "{{subst:हहेच अन्य नामांकन|कारण=" + params.reason + "|पृष्ठ=" + Morebits.pageNameNorm + "}}\n";
+				break;
+			default:
+				break;
+		}
+		return text;
+	},
+	showPreview: function(form, params) {
+		var templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(params);
+		form.previewer.beginRender(templatetext, "Wikipedia:Null");
+	},
+	preview: function(form) {
+		var templatetext;
+		var params = {
+			reason: form.xfdreason.value
+		};
+		if (form.xfdcat) {
+			params.type = form.xfdcat.value;
+		}
+		if (form.xfdtarget) {
+			params.target = form.xfdtarget.value;
+		}
+		params.xfdtype = form.category.value;
+		Twinkle.xfd.callbacks.showPreview(form, params);
+	},
+	discussionPage: function(pageobj) {
+		var text = pageobj.getPageText();
+		var params = pageobj.getCallbackParameters();
+		var editsummary = "[[" + mw.config.get('wgPageName') + "]] ";
+
+		switch(params.xfdtype) {
+			case 'लेख':
+				editsummary += "लेख";
+				break;
+			case 'श्रेणियाँ':
+				editsummary += "श्रेणी पृष्ठ को";
+				switch (params.type) {
+					case 'विलय':
+						editsummary += 'विलय करने';
+						break;
+					case 'स्थानान्तरण':
+						editsummary += 'स्थानांतरित करने';
+						break;
+					case 'हटाना': //falls through
+					default:
+						editsummary += 'हटाने';
+						break;
+				}
+				editsummary += 'का नामांकन ';
+				break;
+			case 'साँचे':
+				editsummary += "साँचे";
+				break;
+			case 'फ़ाइलें':
+				editsummary += "फ़ाइल";
+				break;
+			case 'अन्य':
+				editsummary += "पृष्ठ";
+				break;
+			default:
+				break;
+		}
+		if(params.xfdtype !== 'श्रेणियाँ') {
+			editsummary += " को हटाने का नामांकन ";
+		}
+		pageobj.setPageText(text + "\n\n"+ Twinkle.xfd.callbacks.getDiscussionWikitext(params));
+		pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+
+		switch (Twinkle.getPref('xfdWatchDiscussion')) {
+			case 'yes':
+				pageobj.setWatchlist(true);
+				break;
+			case 'no':
+				pageobj.setWatchlistFromPreferences(false);
+				break;
+			default:
+				pageobj.setWatchlistFromPreferences(true);
+				break;
+		}
+		pageobj.setCreateOption('recreate');
+		pageobj.save();
+		Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+	},
 	afd: {
 		// Tagging needs to happen before everything else: this means we can check if there is an AfD tag already on the page
 		taggingArticle: function(pageobj) {
@@ -278,7 +402,7 @@ Twinkle.xfd.callbacks = {
 			// Starting discussion page
 			var wikipedia_page = new Morebits.wiki.page('विकिपीडिया:पृष्ठ हटाने हेतु चर्चा/लेख/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
+			wikipedia_page.load(Twinkle.xfd.callbacks.discussionPage);
 
 			// Notification to first contributor
 			if (params.usertalk) {
@@ -310,27 +434,6 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
-		},
-		discussionPage: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			pageobj.setPageText(text + "\n\n{{subst:हहेच लेख नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
-			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] लेख को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
-			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		userNotification: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
@@ -410,48 +513,6 @@ Twinkle.xfd.callbacks = {
 			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 			pageobj.save();
 		},
-		discussionPage: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-			var editsummary = "[[" + mw.config.get('wgPageName') + "]] श्रेणी पृष्ठ को";
-			
-			var newtext = text + "\n\n{{subst:हहेच श्रेणी नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "|प्रकार=" + params.type;
-
-			switch (params.type) {
-				case 'विलय':
-					newtext += '|दूसरी श्रेणी=' + params.target;
-					editsummary += 'विलय करने';
-					break;
-				case 'स्थानान्तरण':
-					newtext += '|नया नाम=' + params.target;
-					editsummary += 'स्थानांतरित करने';
-					break;
-				case 'हटाना': //falls through
-				default:
-					editsummary += 'हटाने';
-					break;
-			}
-			editsummary += 'का नामांकन';
-			newtext += "}}\n";
-
-			pageobj.setEditSummary( editsummary + Twinkle.getPref('summaryAd'));
-			pageobj.setPageText(newtext);
-
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
-			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
@@ -524,27 +585,6 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
-		},
-		discussionPage: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			pageobj.setPageText(text + "\n\n{{subst:हहेच साँचा नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
-			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] साँचे को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
-			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -681,27 +721,6 @@ Twinkle.xfd.callbacks = {
 			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
 			pageobj.save();
 		},
-		discussionPage: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			pageobj.setPageText(text + "\n\n{{subst:हहेच अन्य नामांकन|कारण=" + params.reason + "|पृष्ठ=" + Morebits.pageNameNorm + "}}\n");
-			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] पृष्ठ को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
-			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
@@ -765,8 +784,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	case 'लेख':
 //		Morebits.wiki.addCheckpoint();
-		params = { usertalk:usertalk, reason:reason };
-		
+		params = { usertalk: usertalk, reason: reason, xfdtype: type };
+
 		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/लेख/' + mw.config.get('wgTitle');
 		Morebits.wiki.actionCompleted.notice = "नामांकन सम्पूर्ण, चर्चा पृष्ठ खोला जा रहा है";
 
@@ -787,7 +806,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			xfdtarget = '';
 		}
 
-		params = { reason: reason, target: xfdtarget, type: xfdcat };
+		params = { reason: reason, target: xfdtarget, type: xfdcat, xfdtype: type };
 
 		// Tagging category
 		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "श्रेणी पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
@@ -797,7 +816,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		// Starting discussion page
 		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/श्रेणियाँ/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
-		nompage.load(Twinkle.xfd.callbacks.cfd.discussionPage);
+		nompage.load(Twinkle.xfd.callbacks.discussionPage);
 
 		// Updating data for the action completed event
 		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/श्रेणियाँ/' + mw.config.get('wgTitle');
@@ -816,7 +835,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	case 'साँचे': // TFD
 		Morebits.wiki.addCheckpoint();
 
-		params = { reason: reason, noinclude: noinclude };
+		params = { reason: reason, noinclude: noinclude, xfdtype: type };
 		// Tagging template
 		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "साँचे पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
@@ -826,7 +845,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		// Starting discussion page
 		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/साँचे/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
-		nompage.load(Twinkle.xfd.callbacks.tfd.discussionPage);
+		nompage.load(Twinkle.xfd.callbacks.discussionPage);
 
 		// Updating data for the action completed event
 		Morebits.wiki.actionCompleted.redirect =  'वि:पृष्ठ हटाने हेतु चर्चा/साँचे/' + mw.config.get('wgTitle');
@@ -845,7 +864,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	case 'फ़ाइलें': // FFD
 		Morebits.wiki.addCheckpoint();
 
-		params = { reason: reason };
+		params = { reason: reason, xfdtype: type };
 		// Tagging file
 		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "फ़ाइल विवरण पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setFollowRedirect(true);
@@ -855,7 +874,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		// Adding discussion
 		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgTitle'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
-		nompage.load(Twinkle.xfd.callbacks.ffd.discussionPage);
+		nompage.load(Twinkle.xfd.callbacks.discussionPage);
 
 		// Updating data for the action completed event
 		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/फ़ाइलें/' + mw.config.get('wgTitle');
@@ -874,7 +893,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	case 'अन्य': // MFD
 		Morebits.wiki.addCheckpoint();
 
-		params = { noinclude: noinclude, reason: reason };
+		params = { noinclude: noinclude, reason: reason, xfdtype: type };
 		// Tagging file
 		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "पृष्ठ पर नामांकन साँचा जोड़ा जा रहा है");
 		wikipedia_page.setFollowRedirect(true);
@@ -884,7 +903,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		// Adding discussion
 		nompage = new Morebits.wiki.page('वि:पृष्ठ हटाने हेतु चर्चा/अन्य/' + mw.config.get('wgPageName'), "नामांकन चर्चा पृष्ठ पर नामांकन जोड़ा जा रहा है");
 		nompage.setCallbackParameters(params);
-		nompage.load(Twinkle.xfd.callbacks.mfd.discussionPage);
+		nompage.load(Twinkle.xfd.callbacks.discussionPage);
 
 		// Updating data for the action completed event
 		Morebits.wiki.actionCompleted.redirect = 'वि:पृष्ठ हटाने हेतु चर्चा/अन्य/' + mw.config.get('wgPageName');
