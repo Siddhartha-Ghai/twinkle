@@ -1033,7 +1033,7 @@ Morebits.string = {
 	formatReasonText: function( str ) {
 		var result = str.toString().trimRight();
 		var unbinder = new Morebits.unbinder(result);
-		unbinder.unbind("<nowiki>", "</nowiki>");
+		unbinder.unbind("<no" + "wiki>", "</no" + "wiki>");
 		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
 		return unbinder.rebind();
 	}
