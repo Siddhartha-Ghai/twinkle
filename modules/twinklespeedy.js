@@ -128,9 +128,17 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( { type: 'header', label: 'हटाने सम्बंधित विकल्प' } );
+
+		var deleteOptions = form.append( {
+				type: 'div',
+				name: 'delete_options'
+			} );
+		deleteOptions.append( {
+				type: 'header',
+				label: 'हटाने सम्बंधित विकल्प'
+			} );
 		if (mw.config.get('wgNamespaceNumber') % 2 === 0 && (mw.config.get('wgNamespaceNumber') !== 2 || (/\//).test(mw.config.get('wgTitle')))) {  // hide option for user pages, to avoid accidentally deleting user talk page
-			form.append( {
+			deleteOptions.append( {
 				type: 'checkbox',
 				list: [
 					{
@@ -147,7 +155,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				]
 			} );
 		}
-		form.append( {
+		deleteOptions.append( {
 				type: 'checkbox',
 				list: [
 					{
@@ -163,7 +171,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( {
+		deleteOptions.append( {
 			type: 'checkbox',
 			list: [
 				{
@@ -179,7 +187,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				}
 			]
 		} );
-		form.append( {
+		deleteOptions.append( {
 				type: 'checkbox',
 				list: [
 					{
@@ -192,10 +200,21 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( { type: 'header', label: 'टैग संबंधी विकल्प' } );
 	}
 
-	form.append( {
+	var tagOptions = form.append( {
+			type: 'div',
+			name: 'tag_options'
+		} );
+
+	if( Morebits.userIsInGroup( 'sysop' ) ) {
+		tagOptions.append( {
+				type: 'header',
+				label: 'टैग संबंधी विकल्प'
+			} );
+	}
+
+	tagOptions.append( {
 			type: 'checkbox',
 			list: [
 				{
@@ -212,7 +231,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				}
 			]
 		} );
-	form.append( {
+	tagOptions.append( {
 			type: 'checkbox',
 			list: [
 				{
@@ -259,10 +278,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	}
 };
 
-Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
-	var namespace = mw.config.get('wgNamespaceNumber');
-
-	// first figure out what mode we're in
+Twinkle.speedy.callback.getMode = function twinklespeedyCallbackGetMode(form) {
 	var mode = Twinkle.speedy.mode.userSingleSubmit;
 	if (form.tag_only && !form.tag_only.checked) {
 		if (form.delmultiple.checked) {
@@ -279,6 +295,23 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 	if (Twinkle.getPref('speedySelectionStyle') === 'radioClick') {
 		mode++;
+	}
+
+	return mode;
+};
+
+Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
+	var namespace = mw.config.get('wgNamespaceNumber');
+
+	// first figure out what mode we're in
+	var mode = Twinkle.speedy.callback.getMode(form);
+
+	if (Twinkle.speedy.mode.isSysop(mode)) {
+		$("[name=delete_options]").show();
+		$("[name=tag_options]").hide();
+	} else {
+		$("[name=delete_options]").hide();
+		$("[name=tag_options]").show();
 	}
 
 	var work_area = new Morebits.quickForm.element( {
@@ -410,6 +443,10 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			if (criterion.hideSubgroupWhenUser) {
 				criterion.subgroup = null;
 			}
+		}
+
+		if (mw.config.get('wgIsRedirect') && criterion.hideWhenRedirect) {
+			return null;
 		}
 
 		if (criterion.subgroup && !hasSubmitButton) {
