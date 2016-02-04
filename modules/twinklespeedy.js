@@ -1059,7 +1059,7 @@ Twinkle.speedy.callbacks = {
 				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 				editsummary += ')।';
 			} else if (params.normalizeds[0] === 'शीह') {
-				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"' + params["1"];
+				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"' + params.templateParams[0]["1"];
 				for (i in parameters) {
 					if (typeof parameters[i] === 'string') {
 						editsummary += parameters[i];
