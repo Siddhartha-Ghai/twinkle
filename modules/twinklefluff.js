@@ -521,13 +521,26 @@ Twinkle.fluff.callbacks = {
 
 	},
 	complete: function (apiobj) {
-		var $edit = $(apiobj.getXML()).find('edit');
+		// TODO Most of this is copy-pasted from Morebits.wiki.page#fnSaveSuccess. Unify it
+		var xml = apiobj.getXML();
+		var $edit = $(xml).find('edit');
 		var blacklist = $edit.attr('spamblacklist');
 		if (blacklist) {
 			var code = document.createElement('code');
 			code.style.fontFamily = "monospace";
 			code.appendChild(document.createTextNode(blacklist));
 			apiobj.statelem.error(['रोलबैक नहीं किया जा सका क्योंकि यू.आर.एल. ', code, ' ब्लैकलिस्ट में है।']);
+		} else if ( $(xml).find('captcha').length > 0 ) {
+			apiobj.statelem.error("रोलबैक नहीं किया जा सका क्योंकि सर्वर कैप्चा की माँग कर रहा है।");
+		} else if ( $edit.attr('code') === 'abusefilter-disallowed' ) {
+			apiobj.statelem.error('सम्पादन को दुरूपयोग छननी सम्पादक के निम्न नियम द्वारा रोका गया: "' + $edit.attr('info').substring(17) + '"');
+		} else if ( $edit.attr('info').indexOf('Hit AbuseFilter:') === 0 ) {
+			var div = document.createElement('div');
+			div.className = "toccolours";
+			div.style.fontWeight = "normal";
+			div.style.color = "black";
+			div.innerHTML = $edit.attr('warning');
+			apiobj.statelem.error([ 'दुरूपयोग छननी सम्पादक द्वारा निम्न चेतावनी दी गयी है: ', div, 'यदि आप अब भी रोलबैक करना चाहते हैं तो कृपया इस पेज को रीलोड करें (F5 या Ctrl+R) और पुनः रोलबैक करें। यह चेतावनी दूसरी बार नहीं आएगी।' ]);
 		} else if ($edit.attr('nochange') === '') {
 			apiobj.statelem.warn("रोलबैक उपरान्त पृष्ठ रोलबैक से पूर्व के सामान है। कुछ करने की आवश्यकता नहीं है।");
 		} else {
