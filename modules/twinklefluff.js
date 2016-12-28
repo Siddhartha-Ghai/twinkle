@@ -534,7 +534,7 @@ Twinkle.fluff.callbacks = {
 			apiobj.statelem.error("रोलबैक नहीं किया जा सका क्योंकि सर्वर कैप्चा की माँग कर रहा है।");
 		} else if ( $edit.attr('code') === 'abusefilter-disallowed' ) {
 			apiobj.statelem.error('सम्पादन को दुरूपयोग छननी सम्पादक के निम्न नियम द्वारा रोका गया: "' + $edit.attr('info').substring(17) + '"');
-		} else if ( $edit.attr('info').indexOf('Hit AbuseFilter:') === 0 ) {
+		} else if ( $edit.attr('info') && $edit.attr('info').indexOf('Hit AbuseFilter:') === 0 ) {
 			var div = document.createElement('div');
 			div.className = "toccolours";
 			div.style.fontWeight = "normal";
