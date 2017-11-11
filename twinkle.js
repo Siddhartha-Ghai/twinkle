@@ -17,7 +17,7 @@
  * every Wikipedian in between. Visit [[WP:TW]] for more information.
  */
 
-//<nowiki>
+/* global Morebits */
 
 ( function ( window, document, $, undefined ) { // Wrap with anonymous function
 
@@ -43,17 +43,20 @@ Twinkle.defaultConfig = {};
  * For help on the actual preferences, see the comments in twinkleconfig.js.
  */
 Twinkle.defaultConfig.twinkle = {
-	 // General
+	// General
 	summaryAd: " ([[WP:TW|ट्विंकल]])",
 	deletionSummaryAd: " ([[WP:TW|ट्विंकल]])",
 	protectionSummaryAd: " ([[WP:TW|ट्विंकल]])",
 	userTalkPageMode: "tab",
 	dialogLargeFont: false,
-	 // ARV
+
+	// ARV
 	spiWatchReport: "yes",
-	 // Block
+
+	// Block
 	blankTalkpageOnIndefBlock: false,
-	 // Fluff (revert and rollback)
+
+	// Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,
 	markRevertedPagesAsMinor: [ "vand" ],
@@ -61,10 +64,12 @@ Twinkle.defaultConfig.twinkle = {
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	showRollbackLinks: [ "diff", "others" ],
-	 // CSD
+
+	// CSD
 	watchSpeedyPages: [ "व3", "व4", "व6", "व6ल", "व6स", "व6फ़" ],
 	speedySelectionStyle: "buttonClick",
 	markSpeedyPagesAsPatrolled: true,
+
 	// these next two should probably be identical by default
 	notifyUserOnSpeedyDeletionNomination: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
 //	welcomeUserOnSpeedyDeletionNotification: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
@@ -77,20 +82,24 @@ Twinkle.defaultConfig.twinkle = {
 	logSpeedyNominations: false,
 	speedyLogPageName: "शीह लॉग",
 	noLogOnSpeedyNomination: [ "स1" ],
-	 // Unlink
+
+	// Unlink
 	unlinkNamespaces: [ "0", "10", "100" ],
-	 // Warn
+
+	// Warn
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
 	watchWarnings: true,
 	customWarningList: [],
-	 // XfD
+
+	// XfD
 	xfdWatchDiscussion: "default",
 	xfdWatchList: "no",
 	xfdWatchPage: "default",
 	xfdWatchUser: "default",
 	markXfdPagesAsPatrolled: true,
-	 // Hidden preferences
+
+	// Hidden preferences
 	revertMaxRevisions: 50,
 	batchdeleteChunks: 50,
 	batchMax: 5000,
@@ -114,7 +123,7 @@ if ( mw.config.get( "skin" ) === "vector" ) {
 }
 
 Twinkle.defaultConfig.friendly = {
-	 // Tag
+	// Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
 	watchMergeDiscussions: true,
@@ -122,7 +131,8 @@ Twinkle.defaultConfig.friendly = {
 	markTaggedPagesAsPatrolled: true,
 	tagArticleSortOrder: "cat",
 	customTagList: [],
-	 // Welcome
+
+	// Welcome
 	topWelcomes: false,
 	watchWelcomes: true,
 	welcomeHeading: "स्वागत",
@@ -133,12 +143,14 @@ Twinkle.defaultConfig.friendly = {
 	quickWelcomeTemplate: "welcome",
 	maskTemplateInSummary: true,
 	customWelcomeList: [],
-	 // Talkback
+
+	// Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: "सन्देश",
 	adminNoticeHeading: "Notice",
-	 // Shared
+
+	// Shared
 	markSharedIPAsMinor: true
 };
 
@@ -443,5 +455,3 @@ Twinkle.load = function () {
 };
 
 } ( window, document, jQuery )); // End wrap with anonymous function
-
-// </nowiki>

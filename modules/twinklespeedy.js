@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -800,7 +797,7 @@ Twinkle.speedy.callbacks = {
 			var reason;
 
 			if (!params.normalizeds.length && params.normalizeds[0] === 'शीह') {
-				reason = prompt('कृपया शीघ्र हटाने के लिये कारण दें।\n\"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:\"', "");
+				reason = prompt('कृपया शीघ्र हटाने के लिये कारण दें।\n"यह पृष्ठ शीघ्र हटाने योग्य है क्योंकि:"', "");
 				Twinkle.speedy.callbacks.sysop.deletePage( reason, params );
 			} else {
 				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
@@ -1060,13 +1057,13 @@ Twinkle.speedy.callbacks = {
 				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 				editsummary += ')।';
 			} else if (params.normalizeds[0] === 'शीह') {
-				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: \"' + params.templateParams[0]["1"];
+				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: "' + params.templateParams[0]["1"];
 				for (i in parameters) {
 					if (typeof parameters[i] === 'string') {
 						editsummary += parameters[i];
 					}
 				}
-				editsummary += '\"।';
+				editsummary += '"।';
 			} else if (params.values[0] === 'talk') {
 				editsummary =  'शीघ्र हटाने का नामांकन (हटाए गए पृष्ठ का वार्ता पृष्ठ)';
 			} else {
@@ -1472,6 +1469,3 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.lookupCreator);
 };
 })(jQuery);
-
-
-//</nowiki>

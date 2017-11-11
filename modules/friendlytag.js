@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -538,7 +535,7 @@ Twinkle.tag.spellingList = [
 		value: 'R from abbreviation' 
 	},
 	{
-		label: '{{R to list entry}}: \"छोटी चीज़ों कि सूची\" प्रकार के लेख को पुनर्निर्देशन(ऐसे विषयों के लिये जो अपने-आप में सम्पूर्ण लेख जितने उल्लेखनीय नहीं हैं)',
+		label: '{{R to list entry}}: "छोटी चीज़ों कि सूची" प्रकार के लेख को पुनर्निर्देशन(ऐसे विषयों के लिये जो अपने-आप में सम्पूर्ण लेख जितने उल्लेखनीय नहीं हैं)',
 		value: 'R to list entry' 
 	},
 	{
@@ -638,7 +635,7 @@ Twinkle.tag.administrativeList = [
 		value: 'R from shortcut' 
 	},
 	{
-		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the \"metadata\" section on some image description pages)',
+		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the "metadata" section on some image description pages)',
 		value: 'R from EXIF' 
 	}/*,
 	{
@@ -845,8 +842,8 @@ Twinkle.tag.groupHash = [
 Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
 		var params = pageobj.getCallbackParameters(),
-		    tagRe, tagText = '', summaryText = '',
-		    tags = [], groupableTags = [],
+			tagRe, tagText = '', summaryText = '',
+			tags = [], groupableTags = [],
 
 		// Remove tags that become superfluous with this action
 			pageText = pageobj.getPageText().replace(/\{\{\s*(नया असमीक्षित लेख|[Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, ""),
@@ -1020,7 +1017,7 @@ Twinkle.tag.callbacks = {
 		}
 		// avoid truncated summaries
 		if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
-			summaryText = summaryText.replace(/\[\[[^\|]+\|([^\]]+)\]\]/g, "$1");
+			summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, "$1");
 		}
 
 		pageobj.setPageText(pageText);
@@ -1233,6 +1230,3 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

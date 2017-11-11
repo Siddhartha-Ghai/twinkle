@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -428,6 +425,3 @@ Twinkle.batchprotect.callbacks = {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

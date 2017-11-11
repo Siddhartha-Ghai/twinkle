@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -297,7 +294,6 @@ Twinkle.xfd.callbacks = {
 		form.previewer.beginRender(templatetext, "Wikipedia:Null");
 	},
 	preview: function(form) {
-		var templatetext;
 		var params = {
 			reason: form.xfdreason.value
 		};
@@ -801,7 +797,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		Morebits.wiki.addCheckpoint();
 
 		if( xfdtarget ) {
-			xfdtarget = xfdtarget.replace( /^\:?(Category|श्रेणी)\:/i, '' );
+			xfdtarget = xfdtarget.replace( /^:?(Category|श्रेणी):/i, '' );
 		} else {
 			xfdtarget = '';
 		}
@@ -925,6 +921,3 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

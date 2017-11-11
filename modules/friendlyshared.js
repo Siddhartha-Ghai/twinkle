@@ -1,7 +1,4 @@
-//<nowiki>
-
-
-(function($){
+(function($){ // eslint-disable-line no-unused-vars
 
 
 /*
@@ -15,7 +12,7 @@
 
 Twinkle.shared = function friendlyshared() {
 	if( mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle')) ) {
-		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
+		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /"/, "\\\""); // only first part before any slashes
 		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, "साझा आइ॰पी॰", "friendly-shared", "साझा आइ॰पी॰ पता टैगिंग" );
 	}
 };
@@ -42,7 +39,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		}
 	} );
 
-	var org = form.append( { type:'field', label:'नीचे आइ॰पी॰ पते के स्वामी/संचालक का नाम, होस्ट-नाम तथा संपर्क-सूचना (यदि लागू हो तो) भरें, और \"Submit\" बटन पर क्लिक करें।' } );
+	var org = form.append( { type:'field', label:'नीचे आइ॰पी॰ पते के स्वामी/संचालक का नाम, होस्ट-नाम तथा संपर्क-सूचना (यदि लागू हो तो) भरें, और "Submit" बटन पर क्लिक करें।' } );
 	org.append( {
 			type: 'input',
 			name: 'organization',
@@ -180,6 +177,3 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
 };
 })(jQuery);
-
-
-//</nowiki>

@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -1469,6 +1466,3 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	wikipedia_page.load( Twinkle.warn.callbacks.main );
 };
 })(jQuery);
-
-
-//</nowiki>
