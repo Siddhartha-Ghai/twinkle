@@ -1000,7 +1000,7 @@ Twinkle.tag.callbacks = {
 				}
 			}
 
-			summaryText += ' {{[[';
+			summaryText += ' {{[[:';
 			if( tags[i] === 'वैश्वीकरण' ) {
 				summaryText += "साँचा:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
 			} else {
@@ -1037,7 +1037,7 @@ Twinkle.tag.callbacks = {
 
 				var talkpage = new Morebits.wiki.page("वार्ता:" + params.discussArticle, "वार्ता पृष्ठ पर कारण जोड़ा जा रहा है");
 				talkpage.setAppendText(talkpageText);
-				talkpage.setEditSummary('[[' + params.nonDiscussArticle + ']] ' + (tags.indexOf("विलय") !== -1 ? 'और' : 'को') + ' [[' + params.discussArticle + ']] ' + (tags.indexOf("विलय") !== -1 ? 'को' : 'में') + ' विलय करने का प्रस्ताव' + Twinkle.getPref('summaryAd'));
+				talkpage.setEditSummary('[[:' + params.nonDiscussArticle + ']] ' + (tags.indexOf("विलय") !== -1 ? 'और' : 'को') + ' [[:' + params.discussArticle + ']] ' + (tags.indexOf("विलय") !== -1 ? 'को' : 'में') + ' विलय करने का प्रस्ताव' + Twinkle.getPref('summaryAd'));
 				talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
 				talkpage.setCreateOption('recreate');
 				talkpage.append();

@@ -837,7 +837,7 @@ Twinkle.speedy.callbacks = {
 			if (params.deleteTalkPage &&
 			    document.getElementById( 'ca-talk' ).className !== 'new') {
 				var talkpage = new Morebits.wiki.page( Morebits.wikipedia.namespaces[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), "वार्ता पृष्ठ हटाया जा रहा है" );
-				talkpage.setEditSummary('हटाए गए पृष्ठ [[' + Morebits.pageNameNorm + "]] का वार्ता पृष्ठ। " + Twinkle.getPref('deletionSummaryAd'));
+				talkpage.setEditSummary('हटाए गए पृष्ठ [[:' + Morebits.pageNameNorm + "]] का वार्ता पृष्ठ। " + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
@@ -975,7 +975,7 @@ Twinkle.speedy.callbacks = {
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
 				var page = new Morebits.wiki.page(title, 'पुनर्प्रेषण हटाया जा रहा है: "' + title + '"');
-				page.setEditSummary('हटाए गए पृष्ठ [[' + Morebits.pageNameNorm + "]] को पुनर्निर्देश। " + Twinkle.getPref('deletionSummaryAd'));
+				page.setEditSummary('हटाए गए पृष्ठ [[:' + Morebits.pageNameNorm + "]] को पुनर्निर्देश। " + Twinkle.getPref('deletionSummaryAd'));
 				page.deletePage(onsuccess);
 			});
 		}
@@ -1143,7 +1143,7 @@ Twinkle.speedy.callbacks = {
 				notifytext +="}}~~~~";
 
 				usertalkpage.setAppendText(notifytext);
-				usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को शीघ्र हटाने का नामांकन।" + Twinkle.getPref('summaryAd'));
+				usertalkpage.setEditSummary("सूचना: [[:" + Morebits.pageNameNorm + "]] को शीघ्र हटाने का नामांकन।" + Twinkle.getPref('summaryAd'));
 				usertalkpage.setCreateOption('recreate');
 				usertalkpage.setFollowRedirect(true);
 
@@ -1212,7 +1212,7 @@ Twinkle.speedy.callbacks = {
 			appendText += " ~~~~~\n";
 
 			pageobj.setAppendText(appendText);
-			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] के शीघ्र हटाने के नामांकन का लॉग।" + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("[[:" + Morebits.pageNameNorm + "]] के शीघ्र हटाने के नामांकन का लॉग।" + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
 			pageobj.append();
 		}

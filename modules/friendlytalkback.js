@@ -311,7 +311,7 @@ var callback_evaluate = function( e ) {
 			text += "#" + section;
 		}
 		text += "|more=" + message.trim() + "}}";
-		talkpage.setEditSummary("कृपया [[" + tbPageName + (section ? ("#" + section) : "") + "]] पर चर्चा देखें" + Twinkle.getPref("summaryAd"));
+		talkpage.setEditSummary("कृपया [[:" + tbPageName + (section ? ("#" + section) : "") + "]] पर चर्चा देखें" + Twinkle.getPref("summaryAd"));
 	} else {  // tbtarget one of mytalk, usertalk, other
 		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n\n{{सन्देश|";
@@ -329,7 +329,7 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		var editSummary = "सन्देश [[";
+		var editSummary = "सन्देश [[:";
 		if (tbtarget !== "other" && !/^\s*(सदस्य वार्ता|User talk):/i.test(tbPageName)) {
 			editSummary += "सदस्य वार्ता:";
 		}

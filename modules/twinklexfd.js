@@ -312,7 +312,7 @@ Twinkle.xfd.callbacks = {
 	discussionPage: function(pageobj) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
-		var editsummary = "[[" + mw.config.get('wgPageName') + "]] ";
+		var editsummary = "[[:" + mw.config.get('wgPageName') + "]] ";
 
 		switch(params.xfdtype) {
 			case 'लेख':
@@ -445,7 +445,7 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Morebits.wiki.page('सदस्य वार्ता:' + initialContrib, "पृष्ठ निर्माता को सूचित किया जा रहा है (" + initialContrib + ")");
 			var notifytext = "\n{{subst:हहेच लेख सूचना|पृष्ठ=" + mw.config.get('wgTitle') + "|कारण=" + params.reason + "}}~~~~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("सूचना: [[:" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -596,7 +596,7 @@ Twinkle.xfd.callbacks = {
 			var notifytext = "\n{{subst:हहेच साँचा सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("सूचना: [[:" + mw.config.get('wgPageName') + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -648,7 +648,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\n{{subst:हहेच फ़ाइल नामांकन|कारण=" + params.reason + "|पृष्ठ=" + mw.config.get('wgTitle') + "}}\n");
-			pageobj.setEditSummary("[[" + Morebits.pageNameNorm + "]] फ़ाइल को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("[[:" + Morebits.pageNameNorm + "]] फ़ाइल को हटाने का नामांकन " + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -675,7 +675,7 @@ Twinkle.xfd.callbacks = {
 			var notifytext = "\n{{subst:हहेच फ़ाइल सूचना|पृष्ठ=" + mw.config.get('wgTitle') + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("सूचना: [[:" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -731,7 +731,7 @@ Twinkle.xfd.callbacks = {
 			var notifytext = "\n{{subst:हहेच अन्य सूचना|पृष्ठ=" + Morebits.pageNameNorm + '|कारण=' + params.reason + "}}~~~~";
 
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("सूचना: [[" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("सूचना: [[:" + Morebits.pageNameNorm + "]] को हटाने हेतु चर्चा के लिये नामांकित किया गया है।" + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':

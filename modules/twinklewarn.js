@@ -1420,9 +1420,9 @@ Twinkle.warn.callbacks = {
 			if ( messageData.suppressArticleInSummary !== true && params.article ) {
 				if ( params.sub_group === "uw-agf-sock" ||
 						params.sub_group === "uw-socksuspect" ) {  // these templates require a username
-					summary += " of [[User:" + params.article + "]]";
+					summary += " of [[:User:" + params.article + "]]";
 				} else {
-					summary += " on [[" + params.article + "]]";
+					summary += " on [[:" + params.article + "]]";
 				}
 			}
 		}

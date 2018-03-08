@@ -1635,7 +1635,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		"// End of twinkleoptions.js\n";
 
 	pageobj.setPageText(text);
-	pageobj.setEditSummary("ट्विंकल वरीयताएँ संजोयी जा रही हैं। स्वचालित सम्पादन: [[" + Morebits.pageNameNorm + "]] से। ([[WP:TW|TW]])");
+	pageobj.setEditSummary("ट्विंकल वरीयताएँ संजोयी जा रही हैं। स्वचालित सम्पादन: [[:" + Morebits.pageNameNorm + "]] से। ([[WP:TW|ट्विंकल]])");
 	pageobj.setCreateOption("recreate");
 	pageobj.save(Twinkle.config.saveSuccess);
 };
