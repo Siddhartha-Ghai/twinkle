@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){ // eslint-disable-line no-unused-vars
 
 
@@ -177,3 +180,6 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
 };
 })(jQuery);
+
+
+//</nowiki>

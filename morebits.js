@@ -1,3 +1,4 @@
+//<nowiki>
 /**
  * morebits.js
  * ===========
@@ -3449,7 +3450,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 					start = lastIndex;
 					finish = index - 1;
 				}
-				
+
 				for (i = start; i <= finish; i++) {
 					cbs[i].checked = endState;
 				}
@@ -3897,3 +3898,5 @@ if ( typeof arguments === "undefined" ) {  // typeof is here for a reason...
 	window.Status = Morebits.status;
 	window.QueryString = Morebits.queryString;
 }
+
+//</nowiki>

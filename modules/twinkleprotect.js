@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -1410,3 +1413,6 @@ Twinkle.protect.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>
