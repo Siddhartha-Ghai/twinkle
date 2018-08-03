@@ -14,7 +14,7 @@
  */
 
 Twinkle.unlink = function twinkleunlink() {
-	if( mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Sandbox' ) {
+	if( mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'विकिपीडिया:प्रयोगस्थल' ) {
 		return;
 	}
 	Twinkle.addPortletLink( Twinkle.unlink.callback, "कड़ीतोड़", "tw-unlink", "अन्य पृष्ठों से इस पृष्ठ की कड़ियाँ हटाएँ" );
