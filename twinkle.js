@@ -47,7 +47,7 @@ Twinkle.defaultConfig.twinkle = {
 	summaryAd: " ([[WP:TW|ट्विंकल]])",
 	deletionSummaryAd: " ([[WP:TW|ट्विंकल]])",
 	protectionSummaryAd: " ([[WP:TW|ट्विंकल]])",
-	userTalkPageMode: "tab",
+	userTalkPageMode: "window",
 	dialogLargeFont: false,
 	 // ARV
 	spiWatchReport: "yes",
@@ -61,34 +61,24 @@ Twinkle.defaultConfig.twinkle = {
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	showRollbackLinks: [ "diff", "others" ],
-	 // DI (twinkleimage)
-	notifyUserOnDeli: true,
-	deliWatchPage: "default",
-	deliWatchUser: "default",
-	 // PROD
-	watchProdPages: true,
-	prodReasonDefault: "",
-	logProdPages: false,
-	prodLogPageName: "PROD log",
 	 // CSD
+	watchSpeedyPages: [ "व3", "व4", "व6", "व6ल", "व6स", "व6फ़" ],
 	speedySelectionStyle: "buttonClick",
-	watchSpeedyPages: [ "g3", "g5", "g10", "g11", "g12" ],
 	markSpeedyPagesAsPatrolled: true,
 	// these next two should probably be identical by default
-	notifyUserOnSpeedyDeletionNomination:    [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
-	welcomeUserOnSpeedyDeletionNotification: [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
-	promptForSpeedyDeletionSummary: [],
-	openUserTalkPageOnSpeedyDelete: [ "db", "g1", "g2", "g3", "g4", "g5", "g10", "g11", "g12", "a1", "a3", "a7", "a9", "a10", "a11", "f3", "f7", "f9", "u3", "u5", "t2", "p1" ],
-	deleteTalkPageOnDelete: true,
+	notifyUserOnSpeedyDeletionNomination: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
+	welcomeUserOnSpeedyDeletionNotification: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
+	openUserTalkPageOnSpeedyDelete: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
+	deleteTalkPageOnDelete: false,
 	deleteRedirectsOnDelete: true,
 	deleteSysopDefaultToTag: false,
 	speedyWindowHeight: 500,
 	speedyWindowWidth: 800,
 	logSpeedyNominations: false,
-	speedyLogPageName: "CSD log",
-	noLogOnSpeedyNomination: [ "u1" ],
+	speedyLogPageName: "शीह लॉग",
+	noLogOnSpeedyNomination: [ "स1" ],
 	 // Unlink
-	unlinkNamespaces: [ "0", "10", "100", "118" ],
+	unlinkNamespaces: [ "0", "10", "100" ],
 	 // Warn
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
@@ -99,14 +89,14 @@ Twinkle.defaultConfig.twinkle = {
 	xfdWatchList: "no",
 	xfdWatchPage: "default",
 	xfdWatchUser: "default",
-	markXfdPagesAsPatrolled: true,
 	 // Hidden preferences
 	revertMaxRevisions: 50,
 	batchdeleteChunks: 50,
 	batchMax: 5000,
 	batchProtectChunks: 50,
 	batchundeleteChunks: 50,
-	proddeleteChunks: 50
+	deliChunks: 500,
+	deliMax: 5000,
 };
 
 // now some skin dependent config.
@@ -136,20 +126,19 @@ Twinkle.defaultConfig.friendly = {
 	 // Welcome
 	topWelcomes: false,
 	watchWelcomes: true,
-	welcomeHeading: "Welcome",
+	welcomeHeading: "स्वागत",
 	insertHeadings: true,
 	insertUsername: true,
 	insertSignature: true,  // sign welcome templates, where appropriate
 	quickWelcomeMode: "norm",
 	quickWelcomeTemplate: "welcome",
+	maskTemplateInSummary: true,
 	customWelcomeList: [],
-	customWelcomeSignature: true,
 	 // Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: "Talkback",
+	talkbackHeading: "सन्देश",
 	adminNoticeHeading: "Notice",
-	mailHeading: "You've got mail!",
 	 // Shared
 	markSharedIPAsMinor: true
 };
@@ -298,9 +287,8 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 	outerDiv.appendChild( h5 );
 
-	var innerDiv = null;
 	if ( type === "menu" ) {
-		innerDiv = document.createElement( "div" );
+		var innerDiv = document.createElement( "div" );
 		innerDiv.className = innerDivClass;
 		outerDiv.appendChild(innerDiv);
 	}
@@ -309,7 +297,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	(innerDiv || outerDiv).appendChild( ul );
 
 	return outerDiv;
-};
+}
 
 
 /**
@@ -366,7 +354,7 @@ $.ajax({
 		}
 
 		try {
-			var options = JSON.parse( optionsText );
+			var options = $.parseJSON( optionsText );
 
 			// Assuming that our options evolve, we will want to transform older versions:
 			//if ( options.optionsVersion === undefined ) {
@@ -395,46 +383,36 @@ $.ajax({
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
 Twinkle.load = function () {
-	// Don't activate on special pages other than those on the whitelist so that
-	// they load faster, especially the watchlist.
-	var specialPageWhitelist = [ 'Contributions', 'DeletedContributions', 'Prefixindex' ];
-	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
-		specialPageWhitelist.indexOf( mw.config.get('wgCanonicalSpecialPageName') ) === -1 );
+	    // Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
+	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1
+	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Contributions"
+	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
 
-	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower,
-	// so don't load there either.
-	var isOldIE = ( $.client.profile().name === 'msie' &&
-		$.client.profile().versionNumber < 9 );
+	    // Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
+	    isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
 		return;
 	}
 
-	// Prevent clickjacking
-	if ( window.top !== window.self ) {
-		return;
-	}
-
 	// Set custom Api-User-Agent header, for server-side logging purposes
 	Morebits.wiki.api.setApiUserAgent( 'Twinkle/2.0 (' + mw.config.get( 'wgDBname' ) + ')' );
 
-	// Load the modules in the order that the tabs should appear
+	// Load the modules in the order that the tabs should appears
 	// User/user talk-related
 	Twinkle.arv();
 	Twinkle.warn();
-	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.block();
-	}
 	Twinkle.welcome();
 	Twinkle.shared();
 	Twinkle.talkback();
+	if ( Morebits.userIsInGroup('sysop') ) {
+		Twinkle.block();
+	}
 	// Deletion
 	Twinkle.speedy();
-	Twinkle.prod();
 	Twinkle.xfd();
-	Twinkle.image();
-	// Maintenance
+	// maintenance
 	Twinkle.protect();
 	Twinkle.tag();
 	// Misc. ones last
@@ -443,13 +421,13 @@ Twinkle.load = function () {
 	Twinkle.config.init();
 	Twinkle.fluff.init();
 	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.deprod();
+		Twinkle.delimages();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();
 		Twinkle.batchundelete();
 	}
 	// Run the initialization callbacks for any custom modules
-	Twinkle.initCallbacks.forEach(function ( func ) { func(); });
+	$( Twinkle.initCallbacks ).each(function ( k, v ) { v(); });
 	Twinkle.addInitCallback = function ( func ) { func(); };
 
 	// Increases text size in Twinkle dialogs, if so configured
