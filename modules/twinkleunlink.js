@@ -303,7 +303,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("\"" + Morebits.pageNameNorm + "\": " + summaryText + "कारण: " + params.reason + "।" + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("\"" + Morebits.pageNameNorm + "\": " + summaryText + " कारण: " + params.reason + "।" + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(params.unlinker.workerSuccess, params.unlinker.workerFailure);
 	}

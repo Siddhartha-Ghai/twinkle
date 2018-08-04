@@ -226,7 +226,7 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'intoken': 'edit'
 	};
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main );
+	var wikipedia_api = new Morebits.wiki.api( 'पुराने अवतरणों का डाटा प्राप्त किया जा रहा है', query, Twinkle.fluff.callbacks.main );
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -245,7 +245,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 		'intoken': 'edit',
 		'format': 'xml'
 	};
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision.main );
+	var wikipedia_api = new Morebits.wiki.api( 'पुराने अवतरणों का डाटा प्राप्त किया जा रहा है', query, Twinkle.fluff.callbacks.toRevision.main );
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
 };
