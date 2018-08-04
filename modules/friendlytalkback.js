@@ -23,7 +23,7 @@ Twinkle.talkback = function() {
 };
 
 Twinkle.talkback.callback = function( ) {
-	if( mw.config.get('wgRelevantUserName') === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
+	if( mw.config.get('wgRelevantUserName') === mw.config.get("wgUserName") && !confirm("क्या आप सच में अपने आप को सन्देश देना चाहते हैं?") ){
 		return;
 	}
 
@@ -336,7 +336,7 @@ var callback_evaluate = function( e ) {
 		}
 
 		var editSummary = "सन्देश [[";
-		if (tbtarget === "other" && !/^\s*(सदस्य वार्ता|User talk):/i.test(tbPageName)) {
+		if (tbtarget !== "other" && !/^\s*(सदस्य वार्ता|User talk):/i.test(tbPageName)) {
 			editSummary += "सदस्य वार्ता:";
 		}
 		editSummary += (( tbtarget === "notice" && page === "vp") ? 'विकिपीडिया:चौपाल' : tbPageName) + (section ? ("#" + section) : "") + "]] पर";
