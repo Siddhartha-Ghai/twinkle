@@ -44,9 +44,9 @@ Twinkle.defaultConfig = {};
  */
 Twinkle.defaultConfig.twinkle = {
 	 // General
-	summaryAd: " ([[WP:TW|TW]])",
-	deletionSummaryAd: " ([[WP:TW|TW]])",
-	protectionSummaryAd: " ([[WP:TW|TW]])",
+	summaryAd: " ([[WP:TW|ट्विंकल]])",
+	deletionSummaryAd: " ([[WP:TW|ट्विंकल]])",
+	protectionSummaryAd: " ([[WP:TW|ट्विंकल]])",
 	userTalkPageMode: "window",
 	dialogLargeFont: false,
 	 // ARV
@@ -103,7 +103,7 @@ Twinkle.defaultConfig.twinkle = {
 if ( mw.config.get( "skin" ) === "vector" ) {
 	Twinkle.defaultConfig.twinkle.portletArea = "right-navigation";
 	Twinkle.defaultConfig.twinkle.portletId   = "p-twinkle";
-	Twinkle.defaultConfig.twinkle.portletName = "TW";
+	Twinkle.defaultConfig.twinkle.portletName = "ट्विंकल";
 	Twinkle.defaultConfig.twinkle.portletType = "menu";
 	Twinkle.defaultConfig.twinkle.portletNext = "p-search";
 } else {
