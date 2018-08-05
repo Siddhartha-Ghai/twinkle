@@ -52,14 +52,14 @@ Twinkle.fluff = {
 					var revNode = document.createElement('strong');
 					var revLink = document.createElement('a');
 					revLink.appendChild( spanTag( 'Black', '[' ) );
-					revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
+					revLink.appendChild( spanTag( 'SteelBlue', 'रोलबैक' ) );
 					revLink.appendChild( spanTag( 'Black', ']' ) );
 					revNode.appendChild(revLink);
 
 					var revVandNode = document.createElement('strong');
 					var revVandLink = document.createElement('a');
 					revVandLink.appendChild( spanTag( 'Black', '[' ) );
-					revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
+					revVandLink.appendChild( spanTag( 'Red', 'बर्बरता' ) );
 					revVandLink.appendChild( spanTag( 'Black', ']' ) );
 					revVandNode.appendChild(revVandLink);
 
@@ -120,7 +120,7 @@ Twinkle.fluff = {
 				Twinkle.fluff.revertToRevision(oldrev);
 			});
 			revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
-			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
+			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'यह संस्करण पुनर्स्थापित करें' ) );
 			revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
 
 			otitle.insertBefore( revertToRevision, otitle.firstChild );
@@ -139,7 +139,7 @@ Twinkle.fluff = {
 					Twinkle.fluff.revertToRevision(newrev);
 				});
 				revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
-				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
+				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'यह संस्करण पुनर्स्थापित करें' ) );
 				revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
 				ntitle.insertBefore( revertToRevision, ntitle.firstChild );
 
@@ -173,15 +173,15 @@ Twinkle.fluff = {
 				});
 
 				agfLink.appendChild( spanTag( 'Black', '[' ) );
-				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
+				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'रोलबैक (अच्छी नियत)' ) );
 				agfLink.appendChild( spanTag( 'Black', ']' ) );
 
 				vandLink.appendChild( spanTag( 'Black', '[' ) );
-				vandLink.appendChild( spanTag( 'Red', 'rollback (VANDAL)' ) );
+				vandLink.appendChild( spanTag( 'Red', 'रोलबैक (बर्बरता)' ) );
 				vandLink.appendChild( spanTag( 'Black', ']' ) );
 
 				normLink.appendChild( spanTag( 'Black', '[' ) );
-				normLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
+				normLink.appendChild( spanTag( 'SteelBlue', 'रोलबैक' ) );
 				normLink.appendChild( spanTag( 'Black', ']' ) );
 
 				agfNode.appendChild(agfLink);
@@ -267,17 +267,17 @@ Twinkle.fluff.callbacks = {
 			var revertToUser = $(xmlDoc).find('rev').attr('user');
 
 			if (revertToRevID !== self.params.rev) {
-				self.statitem.error( 'The retrieved revision does not match the requested revision.  Aborting.' );
+				self.statitem.error( 'प्राप्त संस्करण वांछित संस्करण से मेल नहीं खाता। कार्य रद्द।' );
 				return;
 			}
 
 			var optional_summary = prompt( "वापस लेने के लिये कोई कारण बताएँ:", "" );
 			if (optional_summary === null)
 			{
-				self.statelem.error( 'Aborted by user.' );
+				self.statelem.error( 'सदस्य द्वारा रद्द' );
 				return;
 			}
-			var summary = Twinkle.fluff.formatSummary("Reverted to revision " + revertToRevID + " by $USER", revertToUser, optional_summary);
+			var summary = Twinkle.fluff.formatSummary("$USER द्वारा सम्पादित संस्करण " + revertToRevID + " पर पूर्ववत किया", revertToUser, optional_summary);
 
 			var query = {
 				'action': 'edit',
@@ -293,9 +293,9 @@ Twinkle.fluff.callbacks = {
 			};
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-			Morebits.wiki.actionCompleted.notice = "Reversion completed";
+			Morebits.wiki.actionCompleted.notice = "प्रत्यावर्तन पूर्ण";
 
-			var wikipedia_api = new Morebits.wiki.api( 'Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
+			var wikipedia_api = new Morebits.wiki.api( 'पूर्ववत सामग्री सहेजी जा रही है', query, Twinkle.fluff.callbacks.complete, self.statelem);
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 
@@ -313,37 +313,37 @@ Twinkle.fluff.callbacks = {
 		var revs = $(xmlDoc).find('rev');
 
 		if( revs.length < 1 ) {
-			self.statelem.error( 'We have less than one additional revision, thus impossible to revert' );
+			self.statelem.error( 'हमारे पास एक से कम संस्करण हैं, अतः इनको पूर्ववत करना असम्भव है' );
 			return;
 		}
 		var top = revs[0];
 		if( lastrevid < self.params.revid ) {
-			Morebits.status.error( 'Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode( 'strong', lastrevid ), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
+			Morebits.status.error( 'Error', [ 'सर्वर से प्राप्त नवीनतम संस्करण आई.डी. ', Morebits.htmlNode( 'strong', lastrevid ), ' दर्शाए गए संस्करण की आई.डी. से कम है। संभव है कि वर्तमान संस्करण हटा दिया गया है, अथवा सर्वर धीमा चल रहा है, अथवा सर्वर से गलत डाटा प्राप्त हुआ है। आगे कार्यवाही नहीं की जाएगी।' ] );
 			return;
 		}
 		var index = 1;
 		if( self.params.revid !== lastrevid  ) {
-			Morebits.status.warn( 'Warning', [ 'Latest revision ', Morebits.htmlNode( 'strong', lastrevid ), ' doesn\'t equal our revision ', Morebits.htmlNode( 'strong', self.params.revid ) ] );
+			Morebits.status.warn( 'Warning', [ 'नवीनतम संस्करण: ', Morebits.htmlNode( 'strong', lastrevid ), ' हमारे संस्करण से मेल नहीं खाता है: ', Morebits.htmlNode( 'strong', self.params.revid ) ] );
 			if( lastuser === self.params.user ) {
 				switch( self.params.type ) {
 				case 'vand':
-					Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume vandalism, we continue to revert' ]);
+					Morebits.status.info( 'Info', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ) , ' द्वारा किया गया था। चूँकि हम इसे बर्बरता मान रहे हैं, इसे भी रोलबैक किया जायेगा।' ]);
 					break;
 				case 'agf':
-					Morebits.status.warn( 'Warning', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume good faith, we stop reverting, as the problem might have been fixed.' ]);
+					Morebits.status.warn( 'Warning', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ) , ' द्वारा किया गया था। चूँकि यह सदस्य अच्छी नियत से सम्पादन कर रहा है, रोलबैक नहीं किया जायेगा। संभव है कि सदस्य ने समस्या ठीक कर दी हो।' ]);
 					return;
 				default:
-					Morebits.status.warn( 'Notice', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , ', but we will stop reverting anyway.' ] );
+					Morebits.status.warn( 'Notice', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ) , ' द्वारा किया गया था। रोलबैक नहीं किया जायेगा।' ] );
 					return;
 				}
 			}
 			else if(self.params.type === 'vand' && 
 					Twinkle.fluff.whiteList.indexOf( top.getAttribute( 'user' ) ) !== -1 && revs.length > 1 &&
 					revs[1].getAttribute( 'pageId' ) === self.params.revid) {
-				Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
+				Morebits.status.info( 'Info', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', lastuser ), ' द्वारा किया गया था, जो एक विश्वसनीय बॉट है। इससे पिछला सम्पादन बर्बरता था, अतः रोलबैक किया जायेगा।' ] );
 				index = 2;
 			} else {
-				Morebits.status.error( 'Error', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', lastuser ), ', so it might have already been reverted, stopping  reverting.'] );
+				Morebits.status.error( 'Error', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', lastuser ), ' द्वारा किया गया था। संभव है कि रोलबैक पहले ही किया जा चूका हो, अतः रोलबैक नहीं किया जायेगा।'] );
 				return;
 			}
 
@@ -352,23 +352,23 @@ Twinkle.fluff.callbacks = {
 		if( Twinkle.fluff.whiteList.indexOf( self.params.user ) !== -1  ) {
 			switch( self.params.type ) {
 			case 'vand':
-				Morebits.status.info( 'Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
+				Morebits.status.info( 'Info', [ 'बर्बरता रोलबैक ', Morebits.htmlNode( 'strong', self.params.user ), ' पर चुना गया था। चूँकि यह एक विश्वसनीय बॉट है, हम ये मान रहे हैं कि आप इससे पिछले सदस्य के सम्पादन को रोलबैक करना चाहते हैं।' ] );
 				index = 2;
 				self.params.user = revs[1].getAttribute( 'user' );
 				break;
 			case 'agf':
-				Morebits.status.warn( 'Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, and since bots have no faith, AGF rollback will not proceed.' ] );
+				Morebits.status.warn( 'Notice', [ 'आप ', Morebits.htmlNode( 'strong', self.params.user ), ' के सम्पादन को अच्छी नियत मानते हुए रोलबैक करना चाहते हैं। यह सदस्य एक विश्वसनीय बॉट है। चूँकि बॉट की कोई नियत नहीं होती, रोलबैक नहीं किया जायेगा।' ] );
 				return;
 			case 'norm':
 				/* falls through */
 			default:
-				var cont = confirm( 'Normal revert was chosen, but the most recent edit was made by a whitelisted bot (' + self.params.user + '). Do you want to revert the revision before instead?' );
+				var cont = confirm( 'सामान्य रोलबैक चुना गया है। परन्तु नवीनतम सम्पादन एक विश्वसनीय बॉट  (' + self.params.user + ') द्वारा किया गया था। क्या आप उससे पिछले सम्पादन को रोलबैक करना चाहते हैं?' );
 				if( cont ) {
-					Morebits.status.info( 'Info', [ 'Normal revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, and per confirmation, we\'ll revert the previous revision instead.' ] );
+					Morebits.status.info( 'Info', [ 'सामान्य रोलबैक चुना गया है। नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ), ' द्वारा किया गया है जो एक विश्वसनीय बॉट है। आपके निर्देशानुसार इससे पिछले सम्पादन को रोलबैक किया जाएगा।' ] );
 					index = 2;
 					self.params.user = revs[1].getAttribute( 'user' );
 				} else {
-					Morebits.status.warn( 'Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, but per confirmation, revert on top revision will proceed.' ] );
+					Morebits.status.warn( 'Notice', [ 'सामान्य रोलबैक चुना गया है। नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ), ' द्वारा किया गया है जो एक विश्वसनीय बॉट है। आपके निर्देशानुसार इसे रोलबैक किया जायेगा।' ] );
 				}
 				break;
 			}
@@ -385,20 +385,20 @@ Twinkle.fluff.callbacks = {
 		}
 
 		if( ! found ) {
-			self.statelem.error( [ 'No previous revision found. Perhaps ', Morebits.htmlNode( 'strong', self.params.user ), ' is the only contributor, or that the user has made more than ' + Twinkle.getPref('revertMaxRevisions') + ' edits in a row.' ] );
+			self.statelem.error( [ 'कोई पूर्व संस्करण नहीं पाया गया। संभवतः ', Morebits.htmlNode( 'strong', self.params.user ), ' इस पृष्ठ के इकलौते सम्पादक हैं, अथवा उन्होंने एक साथ ' + Twinkle.getPref('revertMaxRevisions') + ' से अधिक सम्पादन किये हैं।' ] );
 			return;
 		}
 
 		if( ! count ) {
-			Morebits.status.error( 'Error', "We were to revert zero revisions. As that makes no sense, we'll stop reverting this time. It could be that the edit has already been reverted, but the revision ID was still the same." );
+			Morebits.status.error( 'Error', "शून्य संस्करणों को रोलबैक करने का प्रयत्न किया गया जो संभव नहीं है। संभवतः सम्पादन को रोलबैक किया जा चूका है।" );
 			return;
 		}
 
 		var good_revision = revs[ found ];
 		var userHasAlreadyConfirmedAction = false;
 		if (self.params.type !== 'vand' && count > 1) {
-			if ( !confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?') ) {
-				Morebits.status.info( 'Notice', 'Stopping reverting per user input' );
+			if ( !confirm( self.params.user + ' ने एक साथ ' + count + ' सम्पादन किये हैं। क्या आप उन सब को रोलबैक करना चाहते हैं?') ) {//note: need to check gender of the user here for proper grammar?
+				Morebits.status.info( 'Notice', 'आपके निर्देशानुसार रोलबैक रोक दिया गया है।' );
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
@@ -409,49 +409,48 @@ Twinkle.fluff.callbacks = {
 		self.params.goodid = good_revision.getAttribute( 'revid' );
 		self.params.gooduser = good_revision.getAttribute( 'user' );
 
-		self.statelem.status( [ ' revision ', Morebits.htmlNode( 'strong', self.params.goodid ), ' that was made ', Morebits.htmlNode( 'strong', count ), ' revisions ago by ', Morebits.htmlNode( 'strong', self.params.gooduser ) ] );
+		self.statelem.status( [ ' संस्करण ', Morebits.htmlNode( 'strong', self.params.goodid ), ' जो ', Morebits.htmlNode( 'strong', self.params.gooduser ), ' द्वारा ', Morebits.htmlNode( 'strong', count ), ' संस्करण पूर्व बनाया गया था' ] );
 
 		var summary, extra_summary;
 		switch( self.params.type ) {
 		case 'agf':
-			extra_summary = prompt( "An optional comment for the edit summary:", "" );
+			extra_summary = prompt( "सम्पादन समरी के लिए वैकल्पिक टिप्पणी:", "" );
 			if (extra_summary === null)
 			{
-				self.statelem.error( 'Aborted by user.' );
+				self.statelem.error( 'सदस्य द्वारा रद्द' );
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
 
-			summary = Twinkle.fluff.formatSummary("Reverted [[WP:AGF|good faith]] edits by $USER", self.params.user, extra_summary);
+			summary = Twinkle.fluff.formatSummary("$USER द्वारा अच्छी नियत से किये बदलाव पूर्ववत किये", self.params.user, extra_summary);
 			break;
 
 		case 'vand':
 
-			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
-				self.params.user + "|" + self.params.user + "]] ([[User talk:" + self.params.user + "|talk]]) identified as [[WP:VAND|vandalism]] to last revision by " +
-				self.params.gooduser + "." + Twinkle.getPref('summaryAd');
+			summary = Twinkle.fluff.formatSummary("$USER द्वारा किये गये " + self.params.count + " सम्पादन पूर्ववत किये। (बर्बरता)", self.params.user);
+//			self.params.gooduser + " द्वारा सम्पादित संस्करण पुनर्स्थापित किया।"; Removed because of editsummary length limit
 			break;
 
 		case 'norm':
 			/* falls through */
 		default:
 			if( Twinkle.getPref('offerReasonOnNormalRevert') ) {
-				extra_summary = prompt( "An optional comment for the edit summary:", "" );
+				extra_summary = prompt( "सम्पादन समरी के लिए वैकल्पिक टिप्पणी:", "" );
 				if (extra_summary === null)
 				{
-					self.statelem.error( 'Aborted by user.' );
+					self.statelem.error( 'सदस्य द्वारा रद्द' );
 					return;
 				}
 				userHasAlreadyConfirmedAction = true;
 			}
 
-			summary = Twinkle.fluff.formatSummary("Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') +
-				" by $USER", self.params.user, extra_summary);
+			summary = Twinkle.fluff.formatSummary("$USER द्वारा किये गए " + self.params.count + ' सम्पादन पूर्ववत किये',
+			self.params.user, extra_summary);
 			break;
 		}
 
-		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Reverting page: are you sure?")) {
-			self.statelem.error( 'Aborted by user.' );
+		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("कृपया पुष्टि करें कि रोलबैक किया जाना है अथवा नहीं।")) {
+			self.statelem.error( 'सदस्य द्वारा रद्द' );
 			return;
 		}
 
@@ -459,7 +458,7 @@ Twinkle.fluff.callbacks = {
 		if( (!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) && 
 				Twinkle.getPref('openTalkPage').indexOf( self.params.type ) !== -1 &&
 				mw.config.get('wgUserName') !== self.params.user ) {
-			Morebits.status.info( 'Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode( 'strong', self.params.user ) ] );
+			Morebits.status.info( 'Info', [ 'सदस्य वार्ता पृष्ठ सम्पादन हेतु खोला जा रहा है', Morebits.htmlNode( 'strong', self.params.user ) ] );
 			
 			query = {
 				'title': 'User talk:' + self.params.user,
@@ -514,9 +513,9 @@ Twinkle.fluff.callbacks = {
 		};
 
 		Morebits.wiki.actionCompleted.redirect = self.params.pagename;
-		Morebits.wiki.actionCompleted.notice = "Reversion completed";
+		Morebits.wiki.actionCompleted.notice = "प्रत्यावर्तन पूर्ण";
 
-		var wikipedia_api = new Morebits.wiki.api( 'Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
+		var wikipedia_api = new Morebits.wiki.api( 'पूर्ववत सामग्री सहेजी जा रहा है', query, Twinkle.fluff.callbacks.complete, self.statelem);
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
 
@@ -528,11 +527,11 @@ Twinkle.fluff.callbacks = {
 			var code = document.createElement('code');
 			code.style.fontFamily = "monospace";
 			code.appendChild(document.createTextNode(blacklist));
-			apiobj.statelem.error(['Could not rollback because the URL ', code, ' is on the spam blacklist.']);
+			apiobj.statelem.error(['रोलबैक नहीं किया जा सका क्योंकि यू.आर.एल. ', code, ' ब्लैकलिस्ट में है।']);
 		} else if ($edit.attr('nochange') === '') {
-			apiobj.statelem.warn("Revision we are reverting to is identical to current revision: Nothing to do");
+			apiobj.statelem.warn("रोलबैक उपरान्त पृष्ठ रोलबैक से पूर्व के सामान है। कुछ करने की आवश्यकता नहीं है।");
 		} else {
-			apiobj.statelem.info("done");
+			apiobj.statelem.info("पूर्ण हुआ");
 
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
@@ -542,7 +541,7 @@ Twinkle.fluff.callbacks = {
 					'token': apiobj.params.edittoken,
 					'comment': Twinkle.getPref('summaryAd').trim()
 				};
-				var wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
+				var wikipedia_api = new Morebits.wiki.api('आपके बदलाव स्वीकार किये जा रहे हैं', query);
 				wikipedia_api.post();
 			}
 		}
@@ -557,11 +556,11 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	// append user's custom reason with requisite punctuation
 	if (userString) {
 		result += ': ' + Morebits.string.toUpperCaseFirstChar(userString);
-		if (userString.search(/[.?!;]$/) === -1) {
-			result += '.';
+		if (userString.search(/[।.?!;]$/) === -1) {
+			result += '।';
 		}
 	} else {
-		result += '.';
+		result += '।';
 	}
 	result += Twinkle.getPref('summaryAd');
 
@@ -572,7 +571,7 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	var contribsLink = "[[Special:Contributions/" + userName + "|" + userName + "]]";
 	var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 	if (resultLen + contribsLen <= 255) {
-		var talkLink = " ([[User talk:" + userName + "|talk]])";
+		var talkLink = " ([[User talk:" + userName + "|वार्ता]])";
 		if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 255) {
 			result = result.replace("$USER", contribsLink + talkLink);
 		} else {
