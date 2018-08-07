@@ -31,7 +31,7 @@ Twinkle.config.commonEnums = {
 Twinkle.config.commonSets = {
 	csdCriteria: {
 		"शीह": "विशिष्ट कारण ({{शीह}})",
-		"व1": "व1", "व2": "व2", "व3": "व3", "व4": "व4", "व5": "व5", "व6": "व6", "व6ल": "व6ल", "व6फ़": "व6फ़", "व6स": "व6स",
+		"व1": "व1", "व2": "व2", "व3": "व3", "व4": "व4", "व5": "व5", "व6": "व6", "व6ल": "व6ल", "व6फ़": "व6फ़", "व6स": "व6स", "व7": "व7",
 		"ल1": "ल1", "ल2": "ल2", "ल4": "ल4",
 		"फ़1": "फ़1", "फ़2": "फ़2", "फ़3": "फ़3", "फ़4": "फ़4", "फ़5": "फ़5", "फ़6": "फ़6",
 		"सा1": "सा1",
@@ -39,7 +39,7 @@ Twinkle.config.commonSets = {
 	},
 	csdCriteriaDisplayOrder: [
 		"शीह",
-		"व1", "व2", "व3", "व4", "व5", "व6",
+		"व1", "व2", "व3", "व4", "व5", "व6", "व7",
 		"ल1", "ल2", "ल4", "व6ल",
 		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
 		"सा1",
@@ -47,7 +47,7 @@ Twinkle.config.commonSets = {
 	],
 	csdCriteriaNotificationDisplayOrder: [
 		"शीह",
-		"व1", "व2", "व3", "व4", "व5", "व6",
+		"व1", "व2", "व3", "व4", "व5", "व6", "व7",
 		"ल1", "ल2", "ल4", "व6ल",
 		"फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़",
 		"सा1",
@@ -187,22 +187,22 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Revert and rollback",  // twinklefluff module
+	title: "रोलबैक व पुनर्स्थापन",  // twinklefluff module
 	preferences: [
 		// TwinkleConfig.openTalkPage (array)
 		// What types of actions that should result in opening of talk page
 		{
 			name: "openTalkPage",
-			label: "Open user talk page after these types of reversions",
+			label: "इस प्रकार के रोलबैक उपरान्त सदस्य वार्ता पृष्ठ खोलें",
 			type: "set",
-			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+			setValues: { agf: "रोलबैक (अच्छी नियत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
 		},
 
 		// TwinkleConfig.openTalkPageOnAutoRevert (bool)
 		// Defines if talk page should be opened when calling revert from contrib page, because from there, actions may be multiple, and opening talk page not suitable. If set to true, openTalkPage defines then if talk page will be opened.
 		{
 			name: "openTalkPageOnAutoRevert",
-			label: "Open user talk page when invoking rollback from user contributions",
+			label: "सदस्य योगदान से रोलबैक का प्रयोग करते समय सदस्य वार्ता पृष्ठ खोलें",
 			helptip: "Often, you may be rolling back many pages at a time from a vandal's contributions page, so it would be unsuitable to open the user talk page. Hence, this option is off by default. When this is on, the desired options must be enabled in the previous setting for this to work.",
 			type: "boolean"
 		},
@@ -211,33 +211,33 @@ Twinkle.config.sections = [
 		// What types of actions that should result in marking edit as minor
 		{
 			name: "markRevertedPagesAsMinor",
-			label: "Mark as minor edit for these types of reversions",
+			label: "इस प्रकार के रोलबैक को छोटा बदलाव चिन्हित करें",
 			type: "set",
-			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+			setValues: { agf: "रोलबैक (अच्छी नियत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
 		},
 
 		// TwinkleConfig.watchRevertedPages (array)
 		// What types of actions that should result in forced addition to watchlist
 		{
 			name: "watchRevertedPages",
-			label: "Add pages to watchlist for these types of reversions",
+			label: "इस प्रकार के रोलबैक पर पृष्ठ अपनी ध्यानसूची में जोड़ें",
 			type: "set",
-			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+			setValues: { agf: "रोलबैक (अच्छी नियत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
 		},
 
 		// TwinkleConfig.offerReasonOnNormalRevert (boolean)
 		// If to offer a prompt for extra summary reason for normal reverts, default to true
 		{
 			name: "offerReasonOnNormalRevert",
-			label: "Prompt for reason for normal rollbacks",
-			helptip: "\"Normal\" rollbacks are the ones that are invoked from the middle [rollback] link.",
+			label: "सामान्य रोलबैक पर कारण पूछें",
+			helptip: "\"सामान्य\" रोलबैक वे रोलबैक हैं जो बीच में स्थित [रोलबैक] बटन के प्रयोग द्वारा किये जाते हैं।",
 			type: "boolean"
 		},
 
 		{
 			name: "confirmOnFluff",
-			label: "Provide a confirmation message before reverting",
-			helptip: "For users of pen or touch devices, and chronically indecisive people.",
+			label: "रोलबैक से पहले एक बार पूछें",
+			helptip: "यदि आप चाहते हैं कि रोलबैक करने से पहले एक बार आपसे पुनः पूछा जाए",
 			type: "boolean"
 		},
 
@@ -246,9 +246,9 @@ Twinkle.config.sections = [
 		// Note from TTO: |contribs| seems to be equal to |others| + |mine|, i.e. redundant, so I left it out heres
 		{
 			name: "showRollbackLinks",
-			label: "Show rollback links on these pages",
+			label: "इन पृष्ठों पर रोलबैक कड़ियाँ दिखाएँ",
 			type: "set",
-			setValues: { diff: "Diff pages", others: "Contributions pages of other users", mine: "My contributions page" }
+			setValues: { diff: "अंतर पृष्ठ", others: "अन्य सदस्यों के योगदान पृष्ठ", mine: "मेरा योगदान पृष्ठ" }
 		}
 	]
 },
@@ -270,9 +270,9 @@ Twinkle.config.sections = [
 	preferences: [
 		{
 			name: "speedySelectionStyle",
-			label: "When to go ahead and tag/delete the page",
+			label: "पृष्ठ को कब टैग किया जाए अथवा हटाया जाए",
 			type: "enum",
-			enumValues: { "buttonClick": 'When I click "Submit"', "radioClick": "As soon as I click an option" }
+			enumValues: { "buttonClick": 'जब मैं "Submit" बटन का प्रयोग करूँ', "radioClick": "जैसे ही मैं कोई मापदंड चुनूँ" }
 		},
 		// TwinkleConfig.watchSpeedyPages (array)
 		// Whether to add speedy tagged pages to watchlist
@@ -346,7 +346,7 @@ Twinkle.config.sections = [
 
 		{
 			name: "deleteRedirectsOnDelete",
-			label: "Check the \"also delete redirects\" box by default",
+			label: "'सभी पुनर्निर्देश भी हटाएँ' को डिफ़ॉल्ट रूप से टिक करें",
 			adminOnly: true,
 			type: "boolean"
 		},

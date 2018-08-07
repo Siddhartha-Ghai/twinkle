@@ -66,9 +66,9 @@ Twinkle.defaultConfig.twinkle = {
 	speedySelectionStyle: "buttonClick",
 	markSpeedyPagesAsPatrolled: true,
 	// these next two should probably be identical by default
-	notifyUserOnSpeedyDeletionNomination: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
-	welcomeUserOnSpeedyDeletionNotification: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
-	openUserTalkPageOnSpeedyDelete: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
+	notifyUserOnSpeedyDeletionNomination: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
+//	welcomeUserOnSpeedyDeletionNotification: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
+	openUserTalkPageOnSpeedyDelete: [ "शीह", "व1", "व2", "व3", "व4", "व5", "व6", "व7", "ल1", "ल2", "ल4", "व6ल", "फ़1", "फ़2", "फ़3", "फ़4", "फ़5", "फ़6", "व6फ़", "सा1", "स2", "स3", "व6स" ],
 	deleteTalkPageOnDelete: false,
 	deleteRedirectsOnDelete: true,
 	deleteSysopDefaultToTag: false,
@@ -278,7 +278,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 			e.preventDefault();
 
 			if ( !Twinkle.userAuthorized ) {
-				alert("Sorry, your account is too new to use Twinkle.");
+				alert("क्षमा करें, आपका खाता ट्विंकल प्रयोग करने के लिए बहुत नया है।");
 			}
 		});
 
@@ -338,7 +338,7 @@ $.ajax({
 	url: scriptpathbefore + "User:" + encodeURIComponent( mw.config.get("wgUserName")) + "/twinkleoptions.js" + scriptpathafter,
 	dataType: "text"
 })
-	.fail(function () {	mw.util.jsMessage( "Could not load twinkleoptions.js" ); })
+	.fail(function () {	mw.util.jsMessage( "twinkleoptions.js लोड नहीं हो सका" ); })
 	.done(function ( optionsText ) {
 
 		// Quick pass if user has no options
@@ -373,7 +373,7 @@ $.ajax({
 			}
 		}
 		catch ( e ) {
-			mw.util.jsMessage("Could not parse twinkleoptions.js");
+			mw.util.jsMessage("twinkleoptions.js पार्स नहीं हो सका");
 		}
 	})
 	.always(function () {

@@ -8,7 +8,7 @@
  ****************************************
  *** twinklespeedy.js: CSD module
  ****************************************
- * Mode of invocation:     Tab ("CSD")
+ * Mode of invocation:     Tab ("शीह")
  * Active on:              Non-special, existing pages
  * Config directives in:   TwinkleConfig
  *
@@ -193,7 +193,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	form.append( {
 			type: 'div',
 			name: 'work_area',
-			label: 'Failed to initialize the CSD module. Please try again, or tell the Twinkle developers about the issue.'
+			label: 'शीह मॉड्यूल शुरू होने में असफल रहा। कृपया पुनः प्रयास करें, या ट्विंकल के डेवेलपर्स को समस्या बतायें।'
 		} );
 
 	if( Twinkle.getPref( 'speedySelectionStyle' ) !== 'radioClick' ) {
@@ -233,7 +233,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	if (mode === Twinkle.speedy.mode.userMultipleRadioClick) {
 		work_area.append( {
 				type: 'div',
-				label: 'When finished choosing criteria, click:'
+				label: 'जब मापदंड चुन लिए हों तो यह बटन दबाएँ:'
 			} );
 		work_area.append( {
 				type: 'button',
@@ -447,9 +447,10 @@ Twinkle.speedy.articleList = [
 		value: 'अन्य भाषा',
 		tooltip: 'इसमें वे लेख आते हैं जो पूर्णतया हिन्दी के अलावा किसी और भाषा में लिखे हुए हैं, चाहे उनका नाम हिन्दी में हो या किसी और भाषा में।'
 	},
+//to be removed possibly per policy
 	{
 		label: 'ल2. साफ़ प्रचार',
-		value: 'प्रचार',
+		value: 'प्रचार लेख',
 		tooltip: 'इसमें वे सभी पृष्ठ आते हैं जिनमें केवल प्रचार है, चाहे वह किसी व्यक्ति-विशेष का हो, किसी समूह का, किसी प्रोडक्ट का, अथवा किसी कंपनी का। इसमें प्रचार वाले केवल वही लेख आते हैं जिन्हें ज्ञानकोष के अनुरूप बनाने के लिये शुरू से दोबारा लिखना पड़ेगा।'
 	},
 	{
@@ -572,6 +573,11 @@ Twinkle.speedy.generalList = [
 				size: 60
 			},
 		hideWhenMultiple: true
+	},
+	{
+		label: 'व7. साफ़ प्रचार',
+		value: 'प्रचार',
+		tooltip: 'इस मापदंड में वे सभी पृष्ठ आते हैं जिनमें केवल प्रचार है, चाहे वह किसी व्यक्ति-विशेष का हो, किसी समूह का, किसी प्रोडक्ट का, अथवा किसी कंपनी का। इसमें प्रचार वाले केवल वही लेख आते हैं जिन्हें ज्ञानकोश के अनुरूप बनाने के लिये शुरू से दोबारा लिखना पड़ेगा।'
 	}
 ];
 
@@ -587,8 +593,9 @@ Twinkle.speedy.normalizeHash = {
 	'कॉपीराइट लेख': 'व6ल',
 	'कॉपीराइट फ़ाइल': 'व6फ़',
 	'कॉपीराइट सदस्य': 'व6स',
+	'प्रचार': 'व7',
 	'अन्य भाषा': 'ल1',
-	'प्रचार': 'ल2',
+	'प्रचार लेख': 'ल2',
 	'प्रतिलिपि': 'ल4',
 	'लाइसेंस': 'फ़1',
 	'कॉमन्स': 'फ़2',
@@ -604,6 +611,8 @@ Twinkle.speedy.normalizeHash = {
 };
 
 // keep this synched with [[MediaWiki:Deletereason-dropdown]]
+// This generates the descriptive reason added to log summary after linking to the csd criteria
+// when sysops delete a page with twinkle
 Twinkle.speedy.reasonHash = {
 	'कारण': '',
 // General
@@ -616,9 +625,10 @@ Twinkle.speedy.reasonHash = {
 	'कॉपीराइट लेख': 'साफ़ कॉपीराइट उल्लंघन - लेख',
 	'कॉपीराइट फ़ाइल': 'साफ़ कॉपीराइट उल्लंघन - फ़ाइलें',
 	'कॉपीराइट सदस्य': 'साफ़ कॉपीराइट उल्लंघन - सदस्य पृष्ठ',
+	'प्रचार': 'साफ़ प्रचार',
 // Articles
 	'अन्य भाषा': 'पूर्णतया अन्य भाषा में लिखे पृष्ठ',
-	'प्रचार': 'साफ़ प्रचार',
+	'प्रचार लेख': 'साफ़ प्रचार',
 	'प्रतिलिपि': 'प्रतिलिपि लेख',
 // Images and media
 	'लाइसेंस': '14 दिन से अधिक समय तक कोई लाइसेंस न होना',
@@ -774,8 +784,8 @@ Twinkle.speedy.callbacks = {
 					'bltitle': mw.config.get('wgPageName'),
 					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 				};
-				var wikipedia_api = new Morebits.wiki.api( 'getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
-					new Morebits.status( 'Deleting redirects' ) );
+				var wikipedia_api = new Morebits.wiki.api( 'पुनर्प्रेषणों की सूची प्राप्त की जा रही है...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
+					new Morebits.status( 'पुनर्प्रेषण पृष्ठ हटाए जा रहे हैं' ) );
 				wikipedia_api.params = params;
 				wikipedia_api.post();
 			}
@@ -785,32 +795,32 @@ Twinkle.speedy.callbacks = {
 			if( mw.config.get('wgNamespaceNumber') === 6) {
 				$link = $('<a/>', {
 					'href': '#',
-					'text': 'click here to go to the Unlink tool',
+					'text': 'कड़ीतोड़ पर जाने के लिए यहाँ क्लिक करें',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
 					'click': function(){
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
-						Twinkle.unlink.callback("Removing usages of and/or links to deleted file " + Morebits.pageNameNorm);
+						Twinkle.unlink.callback("हटाई गयी फ़ाइल के सभी प्रयोग एवं/अथवा कड़ियाँ हटाई जा रही हैं: " + Morebits.pageNameNorm);
 					}
 				});
 				$bigtext = $('<span/>', {
-					'text': 'To orphan backlinks and remove instances of file usage',
+					'text': 'इस पृष्ठ की कड़ियाँ हटाने व फ़ाइल प्रयोग हटाने के लिए',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
 			} else {
 				$link = $('<a/>', {
 					'href': '#',
-					'text': 'click here to go to the Unlink tool',
+					'text': 'कड़ीतोड़ पर जाने के लिए यहाँ क्लिक करें',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
 					'click': function(){
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
-						Twinkle.unlink.callback("Removing links to deleted page " + Morebits.pageNameNorm);
+						Twinkle.unlink.callback("हटाए गए पृष्ठ कि कड़ियाँ हटाई जा रही हैं: " + Morebits.pageNameNorm);
 					}
 				});
 				$bigtext = $('<span/>', {
-					'text': 'To orphan backlinks',
+					'text': 'कड़ियाँ हटाने के लिए',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
@@ -833,18 +843,18 @@ Twinkle.speedy.callbacks = {
 				var $link, $bigtext;
 				$link = $('<a/>', {
 					'href': mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
-					'text': 'click here to open User talk:' + user,
+					'text': 'सदस्य वार्ता:' + user + ' पृष्ठ खोलने के लिए यहाँ क्लिक करें',
 					'target': '_blank',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
 				$bigtext = $('<span/>', {
-					'text': 'To notify the page creator',
+					'text': 'पृष्ठ निर्माता को सूचित करने हेतु',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
 			} else {
 				// open the initial contributor's talk page
-				var statusIndicator = new Morebits.status('Opening user talk page edit form for ' + user, 'opening...');
+				var statusIndicator = new Morebits.status('सदस्य ' + user, ' के वार्ता पृष्ठ को सम्पादन हेतु खोला जा रहा है...');
 
 				switch( Twinkle.getPref('userTalkPageMode') ) {
 				case 'tab':
@@ -862,7 +872,7 @@ Twinkle.speedy.callbacks = {
 					break;
 				}
 
-				statusIndicator.info( 'complete' );
+				statusIndicator.info( 'पूर्ण' );
 			}
 		},
 		deleteRedirectsMain: function( apiobj ) {
@@ -872,7 +882,7 @@ Twinkle.speedy.callbacks = {
 			var statusIndicator = apiobj.statelem;
 
 			if( !total ) {
-				statusIndicator.status("no redirects found");
+				statusIndicator.status("कोई पुनर्प्रेषण नहीं मिले");
 				return;
 			}
 
@@ -884,7 +894,7 @@ Twinkle.speedy.callbacks = {
 				statusIndicator.update( now );
 				apiobjInner.statelem.unlink();
 				if( current >= total ) {
-					statusIndicator.info( now + ' (completed)' );
+					statusIndicator.info( now + ' (पूर्ण)' );
 					Morebits.wiki.removeCheckpoint();
 				}
 			};
@@ -893,7 +903,7 @@ Twinkle.speedy.callbacks = {
 
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
-				var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
+				var page = new Morebits.wiki.page(title, 'पुनर्प्रेषण हटाया जा रहा है: "' + title + '"');
 				page.setEditSummary('हटाए गए पृष्ठ [[' + Morebits.pageNameNorm + "]] को पुनर्निर्देश। " + Twinkle.getPref('deletionSummaryAd'));
 				page.deletePage(onsuccess);
 			});
@@ -923,7 +933,7 @@ Twinkle.speedy.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			
 			if(params.normalizeds.indexOf('स1') === -1) {
-				if(params.self && Twinkle.getPref('NotifySelfSpeedy')) { //???
+				if(params.self && Twinkle.getPref('NotifySelfSpeedy')) {
 					if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
 						statelem.error("नामांकन रद्द कर दिया गया है।");
 						return;
@@ -1278,7 +1288,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 	var values = (e.target.form ? e.target.form : e.target).getChecked('csd');
 	if (values.length === 0) {
-		alert( "Please select a criterion!" );
+		alert( "कृपया मापदंड चुनें!" );
 		return null;
 	}
 	return values;
