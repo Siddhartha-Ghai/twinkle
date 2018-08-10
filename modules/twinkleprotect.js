@@ -1258,10 +1258,16 @@ Twinkle.protect.callbacks = {
 		if( params.tag === 'none' ) {
 			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {
-			if( params.noinclude ) {
+			if( Morebits.wiki.isPageRedirect() ) {
+				//Only tag if no {{rcat shell}} is found
+				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
+					text = text.replace(/(#REDIRECT |#पुनर्प्रेषित |#अनुप्रेषित )?(\[\[.*?\]\])(.*)/i, "#पुनर्प्रेषित $2$3\n\n{{" + tag + "}}");
+				} else {
+					Morebits.status.info("Redirect category shell present", "nothing to do");
+					return;
+				}
+			} else if( params.noinclude ) {
 				text = "<noinclude>{{" + tag + "}}</noinclude>" + text;
-			} else if( Morebits.wiki.isPageRedirect() ) {
-				text = text + "\n{{" + tag + "}}";
 			} else {
 				text = "{{" + tag + "}}\n" + text;
 			}
