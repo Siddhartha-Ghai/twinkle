@@ -1118,7 +1118,7 @@ Twinkle.speedy.callbacks = {
 		// the params used are:
 		//   for CSD: params.values, params.normalizeds  (note: normalizeds is an array)
 		addToLog: function(params, initialContrib) {
-			var wikipedia_page = new Morebits.wiki.page("सदस्य:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
+			var wikipedia_page = new Morebits.wiki.page("सदस्य:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('speedyLogPageName'), "आपकी शीह लॉग में प्रविष्टि जोड़ी जा रही है");
 			params.logInitialContrib = initialContrib;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.speedy.callbacks.user.saveLog);
