@@ -458,7 +458,7 @@ Twinkle.fluff.callbacks = {
 		if( (!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) && 
 				Twinkle.getPref('openTalkPage').indexOf( self.params.type ) !== -1 &&
 				mw.config.get('wgUserName') !== self.params.user ) {
-			Morebits.status.info( 'Info', [ 'सदस्य वार्ता पृष्ठ सम्पादन हेतु खोला जा रहा है', Morebits.htmlNode( 'strong', self.params.user ) ] );
+			Morebits.status.info( 'Info', [ 'सदस्य वार्ता पृष्ठ सम्पादन हेतु खोला जा रहा है ', Morebits.htmlNode( 'strong', self.params.user ) ] );
 			
 			query = {
 				'title': 'User talk:' + self.params.user,
