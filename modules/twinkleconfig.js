@@ -195,7 +195,7 @@ Twinkle.config.sections = [
 			name: "openTalkPage",
 			label: "इस प्रकार के रोलबैक उपरान्त सदस्य वार्ता पृष्ठ खोलें",
 			type: "set",
-			setValues: { agf: "रोलबैक (अच्छी नियत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
+			setValues: { agf: "रोलबैक (अच्छी नीयत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
 		},
 
 		// TwinkleConfig.openTalkPageOnAutoRevert (bool)
@@ -213,7 +213,7 @@ Twinkle.config.sections = [
 			name: "markRevertedPagesAsMinor",
 			label: "इस प्रकार के रोलबैक को छोटा बदलाव चिन्हित करें",
 			type: "set",
-			setValues: { agf: "रोलबैक (अच्छी नियत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
+			setValues: { agf: "रोलबैक (अच्छी नीयत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
 		},
 
 		// TwinkleConfig.watchRevertedPages (array)
@@ -222,7 +222,7 @@ Twinkle.config.sections = [
 			name: "watchRevertedPages",
 			label: "इस प्रकार के रोलबैक पर पृष्ठ अपनी ध्यानसूची में जोड़ें",
 			type: "set",
-			setValues: { agf: "रोलबैक (अच्छी नियत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
+			setValues: { agf: "रोलबैक (अच्छी नीयत)", norm: "सामान्य रोलबैक", vand: "रोलबैक (बर्बरता)", torev: "'यह संस्करण पुनर्स्थापित करें'" }
 		},
 
 		// TwinkleConfig.offerReasonOnNormalRevert (boolean)

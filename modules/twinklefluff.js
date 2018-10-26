@@ -173,7 +173,7 @@ Twinkle.fluff = {
 				});
 
 				agfLink.appendChild( spanTag( 'Black', '[' ) );
-				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'रोलबैक (अच्छी नियत)' ) );
+				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'रोलबैक (अच्छी नीयत)' ) );
 				agfLink.appendChild( spanTag( 'Black', ']' ) );
 
 				vandLink.appendChild( spanTag( 'Black', '[' ) );
@@ -330,7 +330,7 @@ Twinkle.fluff.callbacks = {
 					Morebits.status.info( 'Info', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ) , ' द्वारा किया गया था। चूँकि हम इसे बर्बरता मान रहे हैं, इसे भी रोलबैक किया जायेगा।' ]);
 					break;
 				case 'agf':
-					Morebits.status.warn( 'Warning', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ) , ' द्वारा किया गया था। चूँकि यह सदस्य अच्छी नियत से सम्पादन कर रहा है, रोलबैक नहीं किया जायेगा। संभव है कि सदस्य ने समस्या ठीक कर दी हो।' ]);
+					Morebits.status.warn( 'Warning', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ) , ' द्वारा किया गया था। चूँकि यह सदस्य अच्छी नीयत से सम्पादन कर रहा है, रोलबैक नहीं किया जायेगा। संभव है कि सदस्य ने समस्या ठीक कर दी हो।' ]);
 					return;
 				default:
 					Morebits.status.warn( 'Notice', [ 'नवीनतम सम्पादन ', Morebits.htmlNode( 'strong', self.params.user ) , ' द्वारा किया गया था। रोलबैक नहीं किया जायेगा।' ] );
@@ -357,7 +357,7 @@ Twinkle.fluff.callbacks = {
 				self.params.user = revs[1].getAttribute( 'user' );
 				break;
 			case 'agf':
-				Morebits.status.warn( 'Notice', [ 'आप ', Morebits.htmlNode( 'strong', self.params.user ), ' के सम्पादन को अच्छी नियत मानते हुए रोलबैक करना चाहते हैं। यह सदस्य एक विश्वसनीय बॉट है। चूँकि बॉट की कोई नियत नहीं होती, रोलबैक नहीं किया जायेगा।' ] );
+				Morebits.status.warn( 'Notice', [ 'आप ', Morebits.htmlNode( 'strong', self.params.user ), ' के सम्पादन को अच्छी नीयत मानते हुए रोलबैक करना चाहते हैं। यह सदस्य एक विश्वसनीय बॉट है। चूँकि बॉट की कोई नीयत नहीं होती, रोलबैक नहीं किया जायेगा।' ] );
 				return;
 			case 'norm':
 				/* falls through */
@@ -422,7 +422,7 @@ Twinkle.fluff.callbacks = {
 			}
 			userHasAlreadyConfirmedAction = true;
 
-			summary = Twinkle.fluff.formatSummary("$USER द्वारा अच्छी नियत से किये बदलाव पूर्ववत किये", self.params.user, extra_summary);
+			summary = Twinkle.fluff.formatSummary("$USER द्वारा अच्छी नीयत से किये बदलाव पूर्ववत किये", self.params.user, extra_summary);
 			break;
 
 		case 'vand':
