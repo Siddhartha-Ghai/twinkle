@@ -1,4 +1,4 @@
-Twinkle
+Twinkle [![Build Status](https://travis-ci.org/azatoth/twinkle.svg?branch=master)](https://travis-ci.org/azatoth/twinkle)
 =======
 
 Twinkle is a JavaScript library and application that gives Wikipedians a quick way of performing common maintenance tasks, such as nominating pages for deletion and cleaning up vandalism.
@@ -23,23 +23,41 @@ Other files not mentioned here are probably obsolete.
 Updating scripts on Wikipedia
 -----------------------------
 
-There are two ways to upload Twinkle scripts to Wikipedia or another destination.
+There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it [manually](#manual-synchronization) or with a [Perl script](#synchronization-using-syncpl).
 
-### Manual concatenation
+After the files are synced, [MediaWiki:Gadgets-definition][] should contain the following lines:
 
-**These instructions are outdated! Don't do what it says here or you'll probably blow things up.**
+    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,mediawiki.notify,jquery.ui.dialog,jquery.tipsy,moment|rights=autoconfirmed|type=general|peers=Twinkle-pagestyles]|morebits.js|morebits.css|Twinkle.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js|Twinkle.css
+    * Twinkle-pagestyles[hidden|skins=vector]|Twinkle-pagestyles.css
 
-To generate a concatenated Twinkle script, use the following `bash` command:
+`Twinkle-pagestyles` is a hidden [peer gadget](https://www.mediawiki.org/wiki/ResourceLoader/Migration_guide_(users)#Gadget_peers) of Twinkle. Before Twinkle has loaded, it adds space where the TW menu would go in the Vector skin, so that the top bar does not "jump".
 
-    awk 'FNR==1{print ""}{print}' twinkle.js modules/*.js > alltwinkle.js
+### Manual synchronization
 
-Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][]. The concatenation does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
+Each Twinkle module and dependency lives on the wiki as a separate file. The list of modules and what pages they should be on are as follows:
 
-If `morebits.js` and/or `morebits.css` need to be updated, they should be synched to [MediaWiki:Gadget-morebits.js][] and [MediaWiki:Gadget-morebits.css][].
-
-[MediaWiki:Gadgets-definition][] would then contain the following line:
-
-    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,jquery.ui.dialog,jquery.tipsy,moment|rights=autoconfirmed|type=general]|morebits.js|morebits.css|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js
+* `twinkle.js` &rarr; [MediaWiki:Gadget-Twinkle.js][]
+* `twinkle.css` &rarr; [MediaWiki:Gadget-Twinkle.css][]
+* `twinkle-pagestyles.css` &rarr; [MediaWiki:Gadget-Twinkle-pagestyles.css][]
+* `morebits.js` &rarr; [MediaWiki:Gadget-morebits.js][]
+* `morebits.css` &rarr; [MediaWiki:Gadget-morebits.css][]
+* `modules/twinklebatchundelete.js` &rarr; [MediaWiki:Gadget-twinklebatchundelete.js][]
+* `modules/twinklewarn.js` &rarr; [MediaWiki:Gadget-twinklewarn.js][]
+* `modules/twinklespeedy.js` &rarr; [MediaWiki:Gadget-twinklespeedy.js][]
+* `modules/friendlyshared.js` &rarr; [MediaWiki:Gadget-friendlyshared.js][]
+* `modules/twinklediff.js` &rarr; [MediaWiki:Gadget-twinklediff.js][]
+* `modules/twinkleunlink.js` &rarr; [MediaWiki:Gadget-twinkleunlink.js][]
+* `modules/friendlytag.js` &rarr; [MediaWiki:Gadget-friendlytag.js][]
+* `modules/friendlywelcome.js` &rarr; [MediaWiki:Gadget-friendlywelcome.js][]
+* `modules/twinklexfd.js` &rarr; [MediaWiki:Gadget-twinklexfd.js][]
+* `modules/twinklebatchdelete.js` &rarr; [MediaWiki:Gadget-twinklebatchdelete.js][]
+* `modules/twinklebatchprotect.js` &rarr; [MediaWiki:Gadget-twinklebatchprotect.js][]
+* `modules/twinkleconfig.js` &rarr; [MediaWiki:Gadget-twinkleconfig.js][]
+* `modules/twinklefluff.js` &rarr; [MediaWiki:Gadget-twinklefluff.js][]
+* `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
+* `modules/twinklearv.js` &rarr; [MediaWiki:Gadget-twinklearv.js][]
+* `modules/friendlytalkback.js` &rarr; [MediaWiki:Gadget-friendlytalkback.js][]
+* `modules/twinkleblock.js` &rarr; [MediaWiki:Gadget-twinkleblock.js][]
 
 ### Synchronization using `sync.pl`
 
@@ -91,14 +109,33 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
-[Twinkle documentation]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/doc
-[WP:TWPREFS]: https://en.wikipedia.org/wiki/WP:TWPREFS
-[MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
-[User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
-[MediaWiki:Gadget-morebits.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.js
-[MediaWiki:Gadget-morebits.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.css
-[MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
-[Git::Repository]: http://search.cpan.org/perldoc?Git%3A%3ARepository
-[MediaWiki::Bot]: http://search.cpan.org/perldoc?MediaWiki%3A%3ABot
-[App::cpanminus]: http://search.cpan.org/perldoc?App%3A%3Acpanminus
-[jq_style]: http://contribute.jquery.org/style-guide/js/
+[Twinkle documentation]: https://hi.wikipedia.org/wiki/Wikipedia:Twinkle/doc
+[WP:TWPREFS]: https://hi.wikipedia.org/wiki/Wikipedia:Twinkle/Preferences
+[MediaWiki:Gadget-Twinkle.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
+[MediaWiki:Gadget-Twinkle.css]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.css
+[MediaWiki:Gadget-Twinkle-pagestyles.css]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle-pagestyles.css
+[MediaWiki:Gadget-morebits.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-morebits.js
+[MediaWiki:Gadget-morebits.css]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-morebits.css
+[MediaWiki:Gadget-twinklebatchundelete.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklebatchundelete.js
+[MediaWiki:Gadget-twinklewarn.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklewarn.js
+[MediaWiki:Gadget-twinklespeedy.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklespeedy.js
+[MediaWiki:Gadget-friendlyshared.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-friendlyshared.js
+[MediaWiki:Gadget-twinklediff.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklediff.js
+[MediaWiki:Gadget-twinkleunlink.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinkleunlink.js
+[MediaWiki:Gadget-friendlytag.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-friendlytag.js
+[MediaWiki:Gadget-friendlywelcome.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-friendlywelcome.js
+[MediaWiki:Gadget-twinklexfd.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklexfd.js
+[MediaWiki:Gadget-twinklebatchdelete.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklebatchdelete.js
+[MediaWiki:Gadget-twinklebatchprotect.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklebatchprotect.js
+[MediaWiki:Gadget-twinkleconfig.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinkleconfig.js
+[MediaWiki:Gadget-twinklefluff.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklefluff.js
+[MediaWiki:Gadget-twinkleprotect.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinkleprotect.js
+[MediaWiki:Gadget-twinklearv.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinklearv.js
+[MediaWiki:Gadget-friendlytalkback.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-friendlytalkback.js
+[MediaWiki:Gadget-twinkleblock.js]: https://hi.wikipedia.org/wiki/MediaWiki:Gadget-twinkleblock.js
+[User:AzaToth/twinkle.js]: https://hi.wikipedia.org/wiki/User:AzaToth/twinkle.js
+[MediaWiki:Gadgets-definition]: https://hi.wikipedia.org/wiki/MediaWiki:Gadgets-definition
+[Git::Repository]: https://metacpan.org/pod/Git::Repository
+[MediaWiki::Bot]: https://metacpan.org/pod/MediaWiki::Bot
+[App::cpanminus]: https://metacpan.org/pod/App::cpanminus
+[jq_style]: https://contribute.jquery.org/style-guide/js/

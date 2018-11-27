@@ -337,7 +337,7 @@ $.ajax({
 	url: scriptpathbefore + "User:" + encodeURIComponent( mw.config.get("wgUserName")) + "/twinkleoptions.js" + scriptpathafter,
 	dataType: "text"
 })
-	.fail(function () {	mw.util.jsMessage( "twinkleoptions.js लोड नहीं हो सका" ); })
+	.fail(function () {	mw.notify( "twinkleoptions.js लोड नहीं हो सका" ); })
 	.done(function ( optionsText ) {
 
 		// Quick pass if user has no options
@@ -372,7 +372,7 @@ $.ajax({
 			}
 		}
 		catch ( e ) {
-			mw.util.jsMessage("twinkleoptions.js पार्स नहीं हो सका");
+			mw.notify( "twinkleoptions.js पार्स नहीं हो सका" );
 		}
 	})
 	.always(function () {
