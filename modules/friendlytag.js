@@ -538,40 +538,49 @@ Twinkle.tag.spellingList = [
 		value: 'R from abbreviation' 
 	},
 	{
+		label: '{{R from alternative spelling}}: अलग वर्तनी से पुनर्निर्देशन',
+		value: 'R from alternative spelling' 
+	},
+	{
 		label: '{{R to list entry}}: "छोटी चीज़ों कि सूची" प्रकार के लेख को पुनर्निर्देशन(ऐसे विषयों के लिये जो अपने-आप में सम्पूर्ण लेख जितने उल्लेखनीय नहीं हैं)',
 		value: 'R to list entry' 
 	},
 	{
-		label: '{{R to section}}: {{R to list entry}} जैसा, परंतु तब प्रयोग करें जब सूची अनुभाजित हो और पुनर्निर्देशन किसी अनुभाग को किया जा रहा हो',
-		value: 'R to section' 
+		label: '{{R from member}}: किसी समूह के सदस्य से उस समूह, संगठन अथवा टीम इत्यादि को पुनर्निर्देशन',
+		value: 'R from member' 
 	},
 	{
 		label: '{{R from misspelling}}: गलत वर्तनी अथवा टंकन में गलती से पुनर्निर्देशन',
 		value: 'R from misspelling' 
 	},
 	{
-		label: '{{R from alternative spelling}}: अलग वर्तनी से पुनर्निर्देशन',
-		value: 'R from alternative spelling' 
+		label: '{{R to section}}: {{R to list entry}} जैसा, परंतु तब प्रयोग करें जब सूची अनुभाजित हो और पुनर्निर्देशन किसी अनुभाग को किया जा रहा हो',
+		value: 'R to section' 
 	},
 	{
 		label: '{{R from plural}}: बहुवचन से एकवचन को पुनर्निर्देशन',
 		value: 'R from plural' 
-	},
-	{
-		label: '{{R from related word}}: सम्बंधित शब्द से पुनर्निर्देशन',
-		value: 'R from related word' 
 	},
 	/*{
 		label: '{{R with possibilities}}: redirect from a more specific title to a more general, less detailed article, hence something which can and should be expanded',
 		value: 'R with possibilities' 
 	},*/
 	{
-		label: '{{R from member}}: किसी समूह के सदस्य से उस समूह, संगठन अथवा टीम इत्यादि को पुनर्निर्देशन',
-		value: 'R from member' 
+		label: '{{R from related word}}: सम्बंधित शब्द से पुनर्निर्देशन',
+		value: 'R from related word' 
 	}
 ];
 
 Twinkle.tag.alternativeList = [
+/*,
+	{
+		label: '{{R from ASCII}}: redirect from a title in basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.)',
+		value: 'R from ASCII' 
+	},*/
+	{
+		label: '{{R from alternative language}}: किसी दूसरी भाषा के नाम से हिन्दी भाषा को पुनर्निर्देशन',
+		value: 'R from alternative language' 
+	},
 	{
 		label: '{{R from alternative name}}: किसी और नाम, तख़ल्लुस, निकनेम, अथवा पर्यायवाची से पुनर्निर्देशन',
 		value: 'R from alternative name' 
@@ -581,13 +590,13 @@ Twinkle.tag.alternativeList = [
 		value: 'R from full name' 
 	},
 	{
-		label: '{{R from surname}}: उपनाम से पुनर्निर्देशन',
-		value: 'R from surname' 
-	},
-	{
 		label: '{{R from historic name}}: किसी ऐसे नाम से पुनर्निर्देशन जो ऐतिहासिक रूप से जगह से जुड़ा हुआ है',
 		value: 'R from historic name',
 		tooltip: 'उदहारण: उत्तरांचल से उत्तराखण्ड, मद्रास से चेन्नई'
+	},
+	{
+		label: '{{R from name and country}}: देश सहित नाम से सिर्फ़ जगह के नाम को पुनर्निर्देशन',
+		value: 'R from name and country' 
 	},
 	{
 		label: '{{R from scientific name}}: वैज्ञानिक नाम से आम नाम को पुनर्निर्देशन',
@@ -598,17 +607,10 @@ Twinkle.tag.alternativeList = [
 		value: 'R to scientific name' 
 	},
 	{
-		label: '{{R from name and country}}: देश सहित नाम से सिर्फ़ जगह के नाम को पुनर्निर्देशन',
-		value: 'R from name and country' 
+		label: '{{R from surname}}: उपनाम से पुनर्निर्देशन',
+		value: 'R from surname' 
 	},
-	{
-		label: '{{R from alternative language}}: किसी दूसरी भाषा के नाम से हिन्दी भाषा को पुनर्निर्देशन',
-		value: 'R from alternative language' 
-	}/*,
-	{
-		label: '{{R from ASCII}}: redirect from a title in basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.)',
-		value: 'R from ASCII' 
-	},
+/*
 	{
 		label: '{{R from title without diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
 		value: 'R from title without diacritics'
@@ -617,9 +619,8 @@ Twinkle.tag.alternativeList = [
 
 Twinkle.tag.administrativeList = [
 	{
-		label: '{{R from merge}}: विलय किये गए पन्ने से पुनर्निर्देशन(सम्पादन इतिहास संरक्षित करने के लिये)',
-		value: 'R from merge',
-		tooltip: 'इसका प्रयोग तब करें जब दो सम्बन्धित विषयों के लेखों का विलय किया गया हो। एक ही विषय पर बने दो लेखों के लिये {{R from duplicated article}} का प्रयोग करें।'
+		label: '{{R to decade}}: वर्ष से दशक को पुनर्निर्देशन',
+		value: 'R to decade' 
 	},
 	{
 		label: '{{R to disambiguation page}}: बहुविकल्पी पन्ने को पुनर्निर्देशन',
@@ -630,17 +631,19 @@ Twinkle.tag.administrativeList = [
 		value: 'R from duplicated article' 
 	},
 	{
-		label: '{{R to decade}}: वर्ष से दशक को पुनर्निर्देशन',
-		value: 'R to decade' 
+		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the "metadata" section on some image description pages)',
+		value: 'R from EXIF' 
+	},
+	{
+		label: '{{R from merge}}: विलय किये गए पन्ने से पुनर्निर्देशन(सम्पादन इतिहास संरक्षित करने के लिये)',
+		value: 'R from merge',
+		tooltip: 'इसका प्रयोग तब करें जब दो सम्बन्धित विषयों के लेखों का विलय किया गया हो। एक ही विषय पर बने दो लेखों के लिये {{R from duplicated article}} का प्रयोग करें।'
 	},
 	{
 		label: '{{R from shortcut}}: विकिपीडिया शॉर्टकट से पुनर्निर्देशन',
 		value: 'R from shortcut' 
-	},
-	{
-		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the "metadata" section on some image description pages)',
-		value: 'R from EXIF' 
-	}/*,
+	}
+/*,
 	{
 		label: '{{R from school}}: redirect from a school article that had very little information',
 		value: 'R from school'
