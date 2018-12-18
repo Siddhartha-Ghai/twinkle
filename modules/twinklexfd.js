@@ -51,37 +51,39 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			tooltip: 'आपके लिये अपने-आप सबसे उपयुक्त चर्चा पृष्ठ चुना जाता है, परंतु आप चाहें तो किसी अन्य विकल्प का प्रयोग भी कर सकते हैं (ऐसा ना किया जाए तो बेहतर है)',
 			event: Twinkle.xfd.callback.change_category
 		} );
+	var namespace = mw.config.get('wgNamespaceNumber');
+	
 	categories.append( {
 			type: 'option',
 			label: 'लेख हटाने हेतु चर्चा',
-			selected: mw.config.get('wgNamespaceNumber') === 0,  // Main namespace
+			selected: namespace === 0,  // Main namespace
 			value: 'लेख'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'श्रेणियाँ हटाने, विलय अथवा स्थानांतरित करने हेतु चर्चा',
-			selected: mw.config.get('wgNamespaceNumber') === 14,  // Category namespace
+			selected: namespace === 14,  // Category namespace
 			value: 'श्रेणियाँ'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'साँचे हटाने हेतु चर्चा',
-			selected: mw.config.get('wgNamespaceNumber') === 10,  // Template namespace
+			selected: namespace === 10,  // Template namespace
 			value: 'साँचे'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'फ़ाइलें हटाने हेतु चर्चा',
-			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
+			selected: namespace === 6,  // File namespace
 			value: 'फ़ाइलें'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'अन्य पृष्ठ हटाने हेतु चर्चा',
-			selected: mw.config.get('wgNamespaceNumber') !== 0 && 
-						mw.config.get('wgNamespaceNumber') !== 6 && 
-						mw.config.get('wgNamespaceNumber') !== 10 && 
-						mw.config.get('wgNamespaceNumber') !== 14,  // Other namespaces
+			selected: namespace !== 0 && 
+						namespace !== 6 && 
+						namespace !== 10 && 
+						namespace !== 14,  // Other namespaces
 			value: 'अन्य'
 		} );
 	form.append( {
