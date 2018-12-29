@@ -475,7 +475,11 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		if ( isSysop ) {
 			var originalEvent = criterion.event;
 			criterion.event = function(e) {
-				if (multiple) return originalEvent(e);
+				if (multiple) {
+					if ( originalEvent ) {
+						return originalEvent(e);
+					}
+				}
 
 				var normalizedCriterion = Twinkle.speedy.normalizeHash[e.target.value];
 				$('[name=openusertalk]').prop('checked',
