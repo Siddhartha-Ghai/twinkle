@@ -763,7 +763,7 @@ Twinkle.speedy.callbacks = {
 					code += "|" + parameters[i];
 				}
 			}
-			if (params.self) {
+			if (params.selfcreated) {
 				code += "|स्वयं=हाँ";
 			}
 			code += "}}";
@@ -987,7 +987,7 @@ Twinkle.speedy.callbacks = {
 		getCreator: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 			params.initialContrib = pageobj.getCreator();
-			params.self = (params.initialContrib === mw.config.get('wgUserName')) ? true : false;
+			params.selfcreated = (params.initialContrib === mw.config.get('wgUserName')) ? true : false;
 			pageobj.setCallbackParameters(params);
 			Twinkle.speedy.callbacks.user.main(pageobj);
 		},
@@ -1003,7 +1003,7 @@ Twinkle.speedy.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			
 			if(params.normalizeds.indexOf('स1') === -1) {
-				if(params.self && Twinkle.getPref('NotifySelfSpeedy')) {
+				if(params.selfcreated && Twinkle.getPref('NotifySelfSpeedy')) {
 					if(!confirm('इस पृष्ठ के निर्माता आप ही हैं। क्या आप इसे शीघ्र हटाने हेतु नामांकित करना चाहते हैं?')) {
 						statelem.error("नामांकन रद्द कर दिया गया है।");
 						return;
@@ -1091,7 +1091,7 @@ Twinkle.speedy.callbacks = {
 					return;
 				}
 				
-				if (params.self && Twinkle.getPref('NotifySelfSpeedy')) {
+				if (params.selfcreated && Twinkle.getPref('NotifySelfSpeedy')) {
 					alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
 					return;
 				}
