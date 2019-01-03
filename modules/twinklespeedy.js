@@ -1001,7 +1001,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
+			var params = pageobj.getCallbackParameters(), parameters;
 			
 			if(params.normalizeds.indexOf('स1') === -1) {
 				if(params.selfcreated && Twinkle.getPref('NotifySelfSpeedy')) {
@@ -1061,11 +1061,6 @@ Twinkle.speedy.callbacks = {
 				editsummary += ')।';
 			} else if (params.normalizeds[0] === 'शीह') {
 				editsummary = '[[वि:हटाना#शीघ्र हटाना|शीघ्र हटाने]] का नामांकन। कारण: "' + params.templateParams[0]["1"];
-				for (i in parameters) {
-					if (typeof parameters[i] === 'string') {
-						editsummary += parameters[i];
-					}
-				}
 				editsummary += '"।';
 			} else if (params.values[0] === 'talk') {
 				editsummary =  'शीघ्र हटाने का नामांकन (हटाए गए पृष्ठ का वार्ता पृष्ठ)';
@@ -1094,6 +1089,10 @@ Twinkle.speedy.callbacks = {
 				
 				if (params.selfcreated && Twinkle.getPref('NotifySelfSpeedy')) {
 					alert('आपको सूचित किया जाता है कि आपके बनाए इस पृष्ठ को शीघ्र हटाने हेतु नामांकित किया गया है। आपके वार्ता पृष्ठ पर सूचना साँचा नहीं जोड़ा जाएगा।');
+					// add this nomination to the user's userspace log, if the user has enabled it
+					if (params.lognomination) {
+						Twinkle.speedy.callbacks.user.addToLog(params, params.initialContrib);
+					}
 					return;
 				}
 				
