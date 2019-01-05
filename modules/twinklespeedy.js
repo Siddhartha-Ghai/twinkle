@@ -752,7 +752,7 @@ Twinkle.speedy.callbacks = {
 		} else {
 			parameters = params.templateParams[0] || [];
 			code = "{{शीह-";
-			if (params.value === 'talk') {
+			if (params.values[0] === 'talk') {
 				code+= "कारण|हटाए गए पृष्ठ का वार्ता पृष्ठ";
 			}
 			else {
