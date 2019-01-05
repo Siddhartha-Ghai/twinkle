@@ -531,9 +531,9 @@ Twinkle.speedy.fileList = [
 		subgroup: {
 			name: 'nowcommons_filename',
 			type: 'input',
-			label: 'कॉमन्स पर फ़ाइल का नाम: ',
+			label: 'कॉमन्स पर फ़ाइल का नाम (बिना नामस्थान के): ',
 			value: Morebits.pageNameNorm,
-			tooltip: 'यदि कॉमन्स पर फ़ाइल का यही नाम है तो आप इसे रिक्त छोड़ सकते हैं। फ़ाइल के नाम से पहले "File:" अथवा "चित्र:" लगाना वैकल्पिक है।'
+			tooltip: 'यदि कॉमन्स पर फ़ाइल का यही नाम है तो आप इसे रिक्त छोड़ सकते हैं।'
 		},
 		hideWhenMultiple: true
 	},
